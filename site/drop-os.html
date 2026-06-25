@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VORG-EAVY Drop OS</title>
+  <meta name="description" content="Team-facing VORG-EAVY Drop Operating System for stage gates, trend signals, stress tests, and campaign proof." />
+  <meta name="theme-color" content="#f6f4ef" />
+  <link rel="icon" href="assets/logo_mark.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="drop-os.css" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+  <script src="drop-os.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Drop OS navigation">
+      <a class="brand-lockup" href="index.html" aria-label="Open VORG-EAVY public site">
+        <img src="assets/logo_black.png" alt="VORG-EAVY" />
+        <span>Drop OS</span>
+      </a>
+
+      <div class="sidebar-section">
+        <p class="sidebar-label">Drop</p>
+        <div class="drop-switch">
+          <strong>Drop 001</strong>
+          <span>Ottawa/Gatineau - FW26</span>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <p class="sidebar-label">Stage gates</p>
+        <div id="stageNav" class="stage-nav"></div>
+      </div>
+
+      <div class="sidebar-section sidebar-actions">
+        <p class="sidebar-label">Portable access</p>
+        <button id="importButton" class="utility-button" type="button">
+          <i data-lucide="upload"></i>
+          Import CSV
+        </button>
+        <button id="exportButton" class="utility-button" type="button">
+          <i data-lucide="download"></i>
+          Export CSV
+        </button>
+        <button id="snapshotButton" class="utility-button" type="button">
+          <i data-lucide="copy"></i>
+          Copy Snapshot
+        </button>
+        <button id="resetButton" class="utility-button danger" type="button">
+          <i data-lucide="refresh-cw"></i>
+          Reset Demo
+        </button>
+        <input id="csvInput" class="hidden-input" type="file" accept=".csv,text/csv" />
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Internal operating dashboard</p>
+          <h1>Signal, stress test, launch.</h1>
+        </div>
+        <div class="topbar-actions">
+          <a class="link-button" href="../strategy/drop-operating-system.md">
+            <i data-lucide="file-text"></i>
+            Operating Doc
+          </a>
+          <a class="link-button" href="../launch/campaign-proof-playbook.md">
+            <i data-lucide="megaphone"></i>
+            Campaign Playbook
+          </a>
+          <a class="link-button dark" href="index.html">
+            <i data-lucide="external-link"></i>
+            Public Site
+          </a>
+        </div>
+      </header>
+
+      <section class="metric-grid" aria-label="Drop health summary">
+        <article class="metric">
+          <span class="metric-label">Launch confidence</span>
+          <strong id="metricConfidence">0%</strong>
+          <small id="metricGate">Waiting for scores</small>
+        </article>
+        <article class="metric">
+          <span class="metric-label">Campaign success rate</span>
+          <strong id="metricCampaign">0%</strong>
+          <small>Working forecast, not a guarantee</small>
+        </article>
+        <article class="metric">
+          <span class="metric-label">Stage progress</span>
+          <strong id="metricProgress">0/10</strong>
+          <small id="metricProgressText">No stages complete</small>
+        </article>
+        <article class="metric">
+          <span class="metric-label">Next city signal</span>
+          <strong id="metricCity">Montreal</strong>
+          <small id="metricCityText">Based on current inputs</small>
+        </article>
+      </section>
+
+      <section class="hero-board">
+        <div class="stage-detail" id="stageDetail"></div>
+        <div class="proof-preview">
+          <div class="preview-header">
+            <p class="eyebrow">Product proof</p>
+            <button id="cycleProductButton" class="icon-button" type="button" aria-label="Cycle product preview">
+              <i data-lucide="rotate-cw"></i>
+            </button>
+          </div>
+          <div id="productPreview" class="product-preview"></div>
+        </div>
+      </section>
+
+      <section class="tool-grid">
+        <section class="panel stress-panel" aria-labelledby="stressTitle">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Stress test</p>
+              <h2 id="stressTitle">Should this idea move forward?</h2>
+            </div>
+            <span id="stressBadge" class="status-badge">Test</span>
+          </div>
+          <div id="stressControls" class="slider-stack"></div>
+          <div class="decision-strip">
+            <div>
+              <span>Decision</span>
+              <strong id="decisionText">Revise before spend</strong>
+            </div>
+            <div>
+              <span>Primary weakness</span>
+              <strong id="weaknessText">Evidence</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel signal-panel" aria-labelledby="signalTitle">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Signal teller</p>
+              <h2 id="signalTitle">What is starting to move?</h2>
+            </div>
+          </div>
+          <form id="signalForm" class="inline-form">
+            <input id="signalItem" type="text" placeholder="Signal or item" required />
+            <select id="signalCity" aria-label="Signal city">
+              <option>Ottawa/Gatineau</option>
+              <option>Montreal</option>
+              <option>Toronto</option>
+              <option>Vancouver</option>
+              <option>Halifax</option>
+            </select>
+            <input id="signalStrength" type="number" min="0" max="100" value="55" aria-label="Signal strength" />
+            <button class="icon-button solid" type="submit" aria-label="Add signal">
+              <i data-lucide="plus"></i>
+            </button>
+          </form>
+          <div id="signalList" class="signal-list"></div>
+        </section>
+      </section>
+
+      <section class="tool-grid lower">
+        <section class="panel campaign-panel" aria-labelledby="campaignTitle">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Campaign lab</p>
+              <h2 id="campaignTitle">Real-proof mechanics</h2>
+            </div>
+          </div>
+          <div id="tacticList" class="tactic-list"></div>
+        </section>
+
+        <section class="panel task-panel" aria-labelledby="taskTitle">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Execution board</p>
+              <h2 id="taskTitle">What the team does next</h2>
+            </div>
+            <select id="taskFilter" aria-label="Filter tasks by stage">
+              <option value="all">All stages</option>
+            </select>
+          </div>
+          <form id="taskForm" class="inline-form">
+            <input id="taskTitleInput" type="text" placeholder="Add next action" required />
+            <select id="taskStageInput" aria-label="Task stage"></select>
+            <button class="icon-button solid" type="submit" aria-label="Add task">
+              <i data-lucide="plus"></i>
+            </button>
+          </form>
+          <div id="taskList" class="task-list"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="snapshotDialog" class="snapshot-dialog">
+    <div class="dialog-header">
+      <h2>Snapshot copied</h2>
+      <button id="closeDialogButton" class="icon-button" type="button" aria-label="Close snapshot dialog">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <p>The current stage status, stress score, signals, tactics, and tasks were copied as JSON.</p>
+    <textarea id="snapshotText" readonly></textarea>
+  </dialog>
+</body>
+</html>

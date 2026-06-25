@@ -1,0 +1,11 @@
+drop,city,season,stage,owner,status,evidence_link,gate_score,gate_result,next_action,due_date
+Drop 001,Ottawa/Gatineau,FW26,0 Signal,Founder / signal lead,in progress,research/trend-radar-industry-benchmark.md,,test,Lock final SKU thesis,
+Drop 001,Ottawa/Gatineau,FW26,1 Concept,Founder / product lead,in progress,product/README.md,,revise,Confirm second SKU path,
+Drop 001,Ottawa/Gatineau,FW26,2 Sample,Product lead,not started,,,,"Build tech pack v1 and supplier tracker",
+Drop 001,Ottawa/Gatineau,FW26,3 Campaign Proof,Campaign lead,not started,launch/campaign-proof-playbook.md,,,Shoot sample proof sprint once samples arrive,
+Drop 001,Ottawa/Gatineau,FW26,4 Production,Production / finance,not started,,,,"Quote MOQ and landed COGS",
+Drop 001,Ottawa/Gatineau,FW26,5 Campaign Build,Campaign lead,not started,,,,"Build trailer and cutdown board",
+Drop 001,Ottawa/Gatineau,FW26,6 Open Online Drop,Ecommerce lead,not started,launch/drop-001.md,,,Build open Shopify launch state,
+Drop 001,Ottawa/Gatineau,FW26,7 Pop-Up,Event lead,not started,ops/popup-blueprint.md,,,Scout approved venue,
+Drop 001,Ottawa/Gatineau,FW26,8 VORG After,Event / campaign,not started,,,,"Define theme and next-city capture",
+Drop 001,Ottawa/Gatineau,FW26,9 Postmortem,Finance / founder,not started,,,,"Prepare proof report template",

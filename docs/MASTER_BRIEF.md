@@ -1,6 +1,6 @@
 # VORG-EAVY Master Brief
 
-Last updated: 2026-05-13
+Last updated: 2026-06-25
 
 ## Executive Summary
 
@@ -37,7 +37,7 @@ The strategic reference stack is:
 - Luxury restraint: lasting objects, materials, quiet spaces, craft.
 - Fashion plus lifestyle: lookbook, sound, store, cafe, editorial, community.
 - Youth energy: members, creative platform, emotionally expressive product culture.
-- Scarcity mechanics: password access, late specificity, local proof, physical event pressure.
+- Scarcity mechanics: controlled units, late specificity, local proof, physical event pressure, and sold-out archive.
 
 Do not copy any one brand. VORG-EAVY should synthesize the principles.
 
@@ -123,8 +123,8 @@ Assets:
 
 Launch mechanics:
 
-- password-gated storefront
-- waitlist
+- open DTC storefront at launch
+- pre-launch waitlist/SMS capture
 - seeded local connectors
 - controlled day-to-night pop-up
 - strong recap content
@@ -153,8 +153,7 @@ Shopify remains the recommended starting platform unless a specific blocker appe
 
 Required states:
 
-- pre-launch password/waitlist
-- early-access password window
+- pre-launch waitlist/SMS capture
 - public launch
 - sold-out archive/waitlist
 
@@ -222,7 +221,7 @@ Each risk should have a concrete trigger and contingency.
 1. Lock Drop 001 SKU count and price architecture.
 2. Build tech pack v1 for jacket, top, and cap.
 3. Open vendor shortlist and sample request tracker.
-4. Create Shopify skeleton and password/waitlist capture.
+4. Create Shopify skeleton and waitlist/SMS capture.
 5. Approve palette, wordmark direction, and invitation system.
 6. Scout three indoor venues and one backup.
 7. Shortlist photographer, editor, and security.

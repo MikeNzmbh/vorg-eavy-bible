@@ -11,7 +11,7 @@ Do not start as a broad marketplace.
 - Channel: DTC only.
 - Geography: Ottawa/Gatineau first.
 - Catalog: 3 SKUs only.
-- Launch format: password-gated store plus one physical event.
+- Launch format: open online drop plus one physical event.
 - Cash rule: reinvest first, withdraw later.
 - Salary rule: load founder salary into economics, but preserve cash until the next PO is funded.
 
@@ -20,6 +20,8 @@ Do not start as a broad marketplace.
 ```text
 Media -> Access pressure -> Sales -> Cash + Data + UGC -> Better product -> Stronger launch
 ```
+
+Current access rule: the online launch is not password-gated. Use controlled inventory, waitlist/SMS preheat, local seeding, pop-up RSVP control, and sold-out archive to create pressure.
 
 ## Why Narrow
 

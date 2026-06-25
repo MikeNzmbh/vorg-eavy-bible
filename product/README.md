@@ -21,3 +21,4 @@ Avoid broad true-leather runs until demand is proven.
 ## Files
 
 - `drop-001.md` - first product system and SKU roles
+- `tech-packs/barrel-jeans-supplier-brief.md` - Alibaba RFQ handoff for the VE-BJ-001 barrel-jean concept; outside Drop 001 unless approved

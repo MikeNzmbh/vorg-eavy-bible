@@ -1,6 +1,6 @@
 # VORG-EAVY Agent Handoff
 
-Last updated: 2026-05-13
+Last updated: 2026-06-25
 
 ## What This Repo Is
 
@@ -29,7 +29,7 @@ The immediate thesis:
 - SKUs: The Firm Jacket, Structured Rib Top / Bodysuit, Signature Cap.
 - Target revenue: about C$20.6k in the base case.
 - Channel: direct-to-consumer only.
-- Storefront: password-gated.
+- Storefront: open online drop at launch; no password gate.
 - Event: one controlled day-to-night pop-up.
 
 ## Important Adjacent Work
@@ -65,7 +65,7 @@ Apply that mindset to strategy too. Do not let docs drift into hype without evid
 - Which vendor can produce the jacket at the target landed COGS?
 - Should the second SKU be a bodysuit, rib top, tee, or long-sleeve?
 - Which exact Ottawa/Gatineau venue is safest for the first pop-up?
-- Which Shopify theme and content model should be used for the password-gated launch?
+- Which Shopify theme and content model should be used for the open online launch?
 - Which AI garment stack is worth integrating first into Atelier?
 - What legal/compliance checklist should be locked before event deposits?
 

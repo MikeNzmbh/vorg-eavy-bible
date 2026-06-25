@@ -10,7 +10,9 @@ Direct-to-consumer only.
 
 ## Storefront
 
-Password-gated Shopify storefront with waitlist capture.
+Open Shopify storefront with pre-launch waitlist/SMS capture.
+
+No password gate at online launch. The public storefront should open at release time with controlled inventory, clear sizing, checkout QA, low-stock states, sold-out archive, and Drop 002 / next-city waitlist capture.
 
 ## Product Mix
 
@@ -37,7 +39,8 @@ Working assumptions only.
 The launch should build pressure in waves:
 
 1. Tease the world.
-2. Capture waitlist.
-3. Gate access.
-4. Prove the line/event.
-5. Convert sell-out into Drop 002 waitlist demand.
+2. Capture waitlist/SMS intent.
+3. Prove product care through founder-led and fit content.
+4. Open the online drop publicly.
+5. Prove the line/event through pop-up and recap.
+6. Convert sell-out and content response into Drop 002 / next-city demand.

@@ -15,6 +15,7 @@ Use it for the brand thesis, launch strategy, product system, financial model, p
 - `ops/` - vendors, run-of-show, compliance, logistics, checklists
 - `finance/` - unit economics, budgets, P&L assumptions, cash gates
 - `research/` - source notes, competitor references, models, citations
+- `site/` - public Drop 001 site prototype and team-facing Drop OS dashboard
 
 ## Working Rule
 
