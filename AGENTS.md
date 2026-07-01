@@ -10,7 +10,7 @@ The near-term business target is Drop 001 in September 2026:
 
 - 3 SKUs.
 - 150 planned units.
-- Password-gated storefront.
+- Open direct-to-consumer online drop; no password gate at launch.
 - One day-to-night pop-up.
 - Ottawa/Gatineau as the first wedge.
 - Proof before scale.
@@ -25,6 +25,14 @@ The near-term business target is Drop 001 in September 2026:
 - When adding numbers, include the source or mark them as working assumptions.
 - Prefer concise Markdown files over giant mixed notes.
 - Update the relevant section README when a major file is added.
+
+## Apparel Tech Pack Visual Standard
+
+- For sketch packs, apparel tech packs, supplier RFQs, Alibaba packets, and manufacturer-facing sample instructions, use `$visual-tech-pack-builder` alongside `$tech-pack-builder`.
+- Use GPT Images for detailed garment sketches, construction visuals, stitch/fabric/trim microshots, and label/tag mockups when drawing is required.
+- Use approved VORG-EAVY logo assets only. Prefer the white logo on pack covers/brand strips and approved label/tag mockups; do not let image generation redraw or approximate the logo.
+- If Canva tools are available, use them to retrieve approved brand assets. If not, search local/Drive assets and clearly mark missing logo proof as blocked.
+- Treat generated visuals as visual intent only. Measurements, BOM, construction notes, testing gates, vendor confirmations, and sample evidence control manufacturing truth.
 
 ## Canonical Files
 

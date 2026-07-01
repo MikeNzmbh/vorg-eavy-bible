@@ -1,0 +1,11 @@
+{
+  "buildCommand": "node build-config.mjs",
+  "outputDirectory": ".",
+  "rewrites": [
+    { "source": "/drop-os", "destination": "/drop-os.html" },
+    { "source": "/guide", "destination": "/drop-os-guide.html" }
+  ],
+  "redirects": [
+    { "source": "/", "destination": "/drop-os.html", "permanent": false }
+  ]
+}

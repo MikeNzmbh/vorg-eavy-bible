@@ -1,6 +1,6 @@
 # VORG-EAVY Agent Handoff
 
-Last updated: 2026-05-13
+Last updated: 2026-07-01
 
 ## What This Repo Is
 
@@ -29,7 +29,7 @@ The immediate thesis:
 - SKUs: The Firm Jacket, Structured Rib Top / Bodysuit, Signature Cap.
 - Target revenue: about C$20.6k in the base case.
 - Channel: direct-to-consumer only.
-- Storefront: password-gated.
+- Storefront: open online drop at launch; no password gate.
 - Event: one controlled day-to-night pop-up.
 
 ## Important Adjacent Work
@@ -60,12 +60,25 @@ Borrowed from the Atelier repo:
 
 Apply that mindset to strategy too. Do not let docs drift into hype without evidence.
 
+## Drop OS (internal squad desk)
+
+Checked: 2026-07-01
+
+- **Live:** https://site-blond-kappa.vercel.app/drop-os
+- **Guide:** https://site-blond-kappa.vercel.app/guide
+- **Code:** `site/drop-os.html`, `site/drop-os.js`, `site/drop-os-supabase.js`
+- **Supabase project:** `vorg-eavy-drop-os` (`ca-central-1`) — schema in `site/supabase/schema.sql`
+- **Squad sync:** Vercel env vars `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `DROP_SYNC_SLUG`, `DROP_SYNC_PIN` → `build-config.mjs` at deploy
+- **Local config:** copy `site/drop-os-config.example.js` → `drop-os-config.js` (gitignored)
+- **QA:** `python -m http.server 4182` in `site/`, then `node site/test-drop-os-flow.mjs` (29 tests)
+- **Honest limit:** sync pin is squad-shared; SKU photos stay local until Storage v2
+
 ## Current Open Questions
 
 - Which vendor can produce the jacket at the target landed COGS?
 - Should the second SKU be a bodysuit, rib top, tee, or long-sleeve?
 - Which exact Ottawa/Gatineau venue is safest for the first pop-up?
-- Which Shopify theme and content model should be used for the password-gated launch?
+- Which Shopify theme and content model should be used for the open online launch?
 - Which AI garment stack is worth integrating first into Atelier?
 - What legal/compliance checklist should be locked before event deposits?
 
@@ -77,3 +90,4 @@ Apply that mindset to strategy too. Do not let docs drift into hype without evid
 4. Build a Shopify information architecture doc.
 5. Create a decision log for every major strategic choice.
 6. Keep this repo synced with the Atelier app when technical capabilities change.
+7. Run Drop 001 milestones in Drop OS and keep Supabase state backed up via Handoff snapshots.

@@ -11,7 +11,7 @@ Two modes in one room:
 
 ```text
 ENTRY / RSVP DESK
-password list / guest check / bag drop
+RSVP list / guest check / bag drop
 
 HERO DISPLAY
 one jacket pedestal

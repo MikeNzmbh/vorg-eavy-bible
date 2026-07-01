@@ -21,3 +21,5 @@
 ## Files
 
 - `popup-blueprint.md` - first pop-up layout, staffing, compliance reminders
+- `drop-pipeline-tracker-template.md` - reusable stage-gate tracker for product/drop execution
+- `drop-pipeline-tracker.csv` - spreadsheet-importable starter tracker for Drop 001

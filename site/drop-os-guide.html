@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Drop OS — Full Walkthrough</title>
+  <link rel="icon" href="assets/logo_mark.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="drop-os.css" />
+  <style>
+    .guide-page { max-width: 820px; margin: 0 auto; padding: 40px 24px 100px; }
+    .guide-page h1 { font-size: 2.25rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .guide-lead { color: var(--ink-secondary); margin-bottom: 32px; line-height: 1.65; font-size: 15px; }
+    .guide-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 36px; position: sticky; top: 12px; z-index: 10; padding: 12px 0; background: rgba(244, 242, 255, 0.92); backdrop-filter: blur(8px); }
+    .guide-nav a { padding: 8px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .guide-nav a:hover { border-color: var(--primary); color: var(--primary); }
+    .guide-section { margin-bottom: 48px; scroll-margin-top: 80px; }
+    .guide-section h2 { font-size: 1.35rem; font-weight: 800; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--line-soft); letter-spacing: -0.01em; }
+    .guide-section h3 { font-size: 1rem; font-weight: 700; margin: 18px 0 8px; color: var(--ink); }
+    .guide-section p, .guide-section li { font-size: 15px; color: var(--ink-secondary); line-height: 1.65; }
+    .guide-section ol, .guide-section ul { padding-left: 20px; margin: 10px 0 16px; }
+    .guide-section li { margin-bottom: 8px; }
+    .guide-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+    .step-num { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 8px; background: var(--primary-soft); color: var(--primary); font-size: 12px; font-weight: 800; margin-right: 8px; }
+    .shot { margin: 16px 0 20px; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow-card); background: var(--surface); }
+    .shot img { width: 100%; height: auto; display: block; }
+    .shot figcaption { padding: 10px 14px; font-size: 12px; font-weight: 600; color: var(--ink-muted); border-top: 1px solid var(--line-soft); }
+    .callout { padding: 14px 16px; background: linear-gradient(135deg, var(--primary-soft), var(--lime-soft)); border-radius: var(--radius); font-size: 14px; color: var(--ink-secondary); margin: 16px 0; line-height: 1.55; }
+    .callout.warn { background: var(--warning-soft); }
+    .flow-diagram { padding: 18px; background: var(--surface); border: 1px solid var(--line-soft); border-radius: var(--radius-lg); font-size: 13px; line-height: 1.9; color: var(--ink-secondary); margin: 16px 0; }
+    .role-grid { display: grid; gap: 10px; }
+    .role-card { padding: 14px; background: var(--surface); border: 1px solid var(--line-soft); border-radius: var(--radius); font-size: 14px; color: var(--ink-secondary); line-height: 1.55; }
+    .role-card strong { display: block; margin-bottom: 4px; color: var(--ink); }
+    .toc-step { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <div class="guide-page">
+    <div class="guide-top">
+      <a class="top-btn outline" href="drop-os.html">← Back to drop desk</a>
+      <span class="badge">Walkthrough · checked 2026-07-01</span>
+    </div>
+
+    <h1>Drop OS walkthrough</h1>
+    <p class="guide-lead">
+      Screenshot guide for the whole desk — every lane, every move. Drop OS is VORG-EAVY's internal drop desk:
+      one collection, one city wedge, bag checks before bulk spend. If you're new, do the tour on first open, then use this page when you need the receipts.
+    </p>
+
+    <nav class="guide-nav" aria-label="Guide sections">
+      <a href="#start">Start</a>
+      <a href="#desk">Drop desk</a>
+      <a href="#heat">Heat radar</a>
+      <a href="#sku">SKU room</a>
+      <a href="#campaign">Campaign</a>
+      <a href="#factory">Factory</a>
+      <a href="#shopify">Online drop</a>
+      <a href="#popup">Pop-up</a>
+      <a href="#city">Next city</a>
+      <a href="#debrief">Debrief</a>
+      <a href="#handoff">Handoff</a>
+      <a href="#help">Help</a>
+      <a href="#roles">Roles</a>
+      <a href="#limits">Real talk</a>
+    </nav>
+
+    <!-- START -->
+    <section class="guide-section" id="start">
+      <h2>0. First open — orientation tour</h2>
+      <p>First time on this device? You get a 4-step tour. It explains bag check (GO / TEST / FIX IT / HOLD), the 10 gates, picking your lane, and that data lives in this browser until you export.</p>
+      <figure class="shot">
+        <img src="assets/guide/01-onboarding.png" alt="Onboarding dialog welcoming you to the drop desk" loading="lazy" />
+        <figcaption>Step 0 — Welcome tour. Hit <strong>Next</strong> or <strong>Skip tour</strong>.</figcaption>
+      </figure>
+      <ol>
+        <li><span class="step-num">1</span>Open <code>drop-os.html</code> in Chrome, Edge, or Safari.</li>
+        <li><span class="step-num">2</span>Read each tour card — 4 steps total.</li>
+        <li><span class="step-num">3</span>Land on <strong>Drop desk</strong> when done.</li>
+      </ol>
+      <div class="flow-diagram">
+        Heat → Concept → Sample → <strong>Campaign Proof</strong> → Production → Campaign Build → Online Drop → Pop-Up → VORG After → Debrief
+      </div>
+      <div class="callout warn">
+        Drop 001 launches <strong>open on Shopify</strong> — no password gate. Scarcity = units + timing + the room.
+      </div>
+    </section>
+
+    <!-- DROP DESK -->
+    <section class="guide-section" id="desk">
+      <h2>1. Drop desk — home base (2 min every session)</h2>
+      <p>Start here every time. Read the bag check, peep the bag lock banner, update your gate, stack this week's run.</p>
+      <figure class="shot">
+        <img src="assets/guide/02-drop-desk.png" alt="Drop desk with bag check HOLD, drop energy, and task list" loading="lazy" />
+        <figcaption>Drop desk — bag check, drop energy, sell-through vibe, gates cleared.</figcaption>
+      </figure>
+
+      <h3>Playbook strip</h3>
+      <p>The gradient bar under the header changes per lane. On the desk it tells you: read bag check → bag lock → tap your gate → stack moves.</p>
+      <figure class="shot">
+        <img src="assets/guide/03-playbook-strip.png" alt="Purple playbook strip under the header" loading="lazy" />
+        <figcaption>Playbook strip — lane-specific instructions.</figcaption>
+      </figure>
+
+      <h3>Update a milestone (gate workbench)</h3>
+      <ol>
+        <li>Scroll to <strong>Drop milestones</strong> timeline.</li>
+        <li>Tap your gate (e.g. Campaign Proof).</li>
+        <li>Set <strong>Status</strong>, <strong>Gate result</strong> (test / revise / approve / kill), score, and <strong>Proof link</strong>.</li>
+      </ol>
+      <figure class="shot">
+        <img src="assets/guide/04-milestone-workbench.png" alt="Milestone workbench with status, gate, and proof link fields" loading="lazy" />
+        <figcaption>Gate workbench — honest status + proof link (Drive, tech pack, Loom).</figcaption>
+      </figure>
+
+      <h3>Add a move to this week's run</h3>
+      <ol>
+        <li>In <strong>This week's run</strong>, type what ships (e.g. "Book fit relay shoot").</li>
+        <li>Pick the gate from the dropdown.</li>
+        <li>Hit <strong>+</strong>. Tap ○ to mark done.</li>
+      </ol>
+      <figure class="shot">
+        <img src="assets/guide/05-this-week-task.png" alt="This week's run task form" loading="lazy" />
+        <figcaption>This week's run — squad-visible moves (max 5 shown undone).</figcaption>
+      </figure>
+
+      <h3>Proof links</h3>
+      <p>The desk now pulls every gate's proof link into one receipts panel. If a tech pack, quote, Drive folder, campaign clip, or Loom matters, paste it into the gate workbench so the bag check has real proof attached.</p>
+
+      <h3>Readiness model (optional deep dive)</h3>
+      <p>Expand <strong>Readiness model</strong> to see proof check, milestone pace, market heat, content proof, risk tax, and stress sliders.</p>
+      <figure class="shot">
+        <img src="assets/guide/19-readiness-model.png" alt="Expanded readiness model with sliders" loading="lazy" />
+        <figcaption>Readiness model v0.2 — working scores, not factory guarantees.</figcaption>
+      </figure>
+    </section>
+
+    <!-- HEAT -->
+    <section class="guide-section" id="heat">
+      <h2>2. Heat radar — log what's pulling</h2>
+      <p>DMs, saves, waitlist joins, fit questions, creator buzz — log it while it's hot.</p>
+      <figure class="shot">
+        <img src="assets/guide/06-heat-radar.png" alt="Heat radar workspace with city bar and signal list" loading="lazy" />
+        <figcaption>Heat radar — city scores + signal cards.</figcaption>
+      </figure>
+      <ol>
+        <li>Sidebar → <strong>Heat radar</strong>.</li>
+        <li>Describe the pull (e.g. "Jacket fit DMs after founder table").</li>
+        <li>Add source (IG DMs, TikTok, pop-up…).</li>
+        <li>Pick city. Set heat 0–100 (vibes, not forecast).</li>
+        <li>Hit <strong>Log heat</strong>.</li>
+      </ol>
+      <figure class="shot">
+        <img src="assets/guide/07-log-heat-form.png" alt="Log heat form filled out" loading="lazy" />
+        <figcaption>Log heat form — name the pull before it goes cold.</figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="assets/guide/07b-heat-logged.png" alt="New heat signal appearing in the list" loading="lazy" />
+        <figcaption>After logging — signal card appears + feeds next-city scores.</figcaption>
+      </figure>
+    </section>
+
+    <!-- SKU -->
+    <section class="guide-section" id="sku">
+      <h2>3. SKU room — samples &amp; hero pics</h2>
+      <p>Three SKUs for Drop 001. Upload reference shots (browser-local). Link tech packs in the gate proof field on the desk.</p>
+      <figure class="shot">
+        <img src="assets/guide/08-sku-room.png" alt="SKU room showing jacket top and cap with upload button" loading="lazy" />
+        <figcaption>SKU room — pick a SKU, upload sample flat / hanger / table still.</figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="assets/guide/08b-sku-edit.png" alt="SKU edit form for units, price, and risks" loading="lazy" />
+        <figcaption>Edit SKU — update units, price, margin target, sample status, and risk notes.</figcaption>
+      </figure>
+      <ol>
+        <li>Sidebar → <strong>SKU room</strong>.</li>
+        <li>Tap jacket, top, or cap in the nav.</li>
+        <li>Hit <strong>Upload photo</strong> — picks from your device, compresses in-browser.</li>
+        <li>Use <strong>Edit SKU</strong> to fix units, price, or risk fields after the line changes.</li>
+        <li>Paste final asset links in the milestone proof field on Drop desk.</li>
+      </ol>
+      <div class="callout">Uploads are desk reference only — not final Shopify assets until e-comm photography is locked.</div>
+    </section>
+
+    <!-- CAMPAIGN -->
+    <section class="guide-section" id="campaign">
+      <h2>4. Campaign proof — content before bulk</h2>
+      <p>Approve tactics only when the proof mechanic is real and consented. No bulk until Campaign Proof clears.</p>
+      <figure class="shot">
+        <img src="assets/guide/09-campaign.png" alt="Campaign proof with tactics and content score" loading="lazy" />
+        <figcaption>Campaign proof — tactic cards + content score (separate from drop energy).</figcaption>
+      </figure>
+      <ol>
+        <li>Sidebar → <strong>Campaign</strong>.</li>
+        <li>Read the campaign gate banner.</li>
+        <li>Approve tactics (Founder Table, Firm Sightings, etc.) only when proof exists.</li>
+      </ol>
+    </section>
+
+    <!-- FACTORY -->
+    <section class="guide-section" id="factory">
+      <h2>5. Factory gate — quotes &amp; PP sample</h2>
+      <p>Vendor quotes, MOQ, landed COGS, PP sample — checklist before any bulk PO. Tap cards as proof lands; progress saves in this browser and snapshot.</p>
+      <figure class="shot">
+        <img src="assets/guide/10-factory.png" alt="Factory gate checklist" loading="lazy" />
+        <figcaption>Factory gate — 10-item production readiness checklist.</figcaption>
+      </figure>
+    </section>
+
+    <!-- SHOPIFY -->
+    <section class="guide-section" id="shopify">
+      <h2>6. Online drop — Shopify goes live</h2>
+      <p>Open storefront, sizing, checkout, sold-out UX, next-city waitlist. No password gate on Drop 001.</p>
+      <figure class="shot">
+        <img src="assets/guide/11-online-drop.png" alt="Online drop launch checklist" loading="lazy" />
+        <figcaption>Online drop — Shopify launch checklist.</figcaption>
+      </figure>
+    </section>
+
+    <!-- POPUP -->
+    <section class="guide-section" id="popup">
+      <h2>7. Pop-up &amp; VORG After — the room and the night</h2>
+      <p>Toggle between day-room pop-up checklist and VORG After night party checklist.</p>
+      <figure class="shot">
+        <img src="assets/guide/12-popup.png" alt="Pop-up checklist with day and night toggle" loading="lazy" />
+        <figcaption>Pop-up — venue, RSVP, consent, run-of-show. Toggle for VORG After.</figcaption>
+      </figure>
+    </section>
+
+    <!-- CITY -->
+    <section class="guide-section" id="city">
+      <h2>8. Next city — where the line travels</h2>
+      <p>Scores blend all logged heat per city. Ottawa/Gatineau is the wedge — others are expansion reads only.</p>
+      <figure class="shot">
+        <img src="assets/guide/13-next-city.png" alt="Next city expansion scores" loading="lazy" />
+        <figcaption>Next city — Montreal, Toronto, Vancouver, Halifax ranked from heat.</figcaption>
+      </figure>
+    </section>
+
+    <!-- DEBRIEF -->
+    <section class="guide-section" id="debrief">
+      <h2>9. Debrief — what the drop proved</h2>
+      <p>Run after the January 2027 business-quality gate. Log revenue, sell-through, margin, content, and city pull — then pick repeat, revise, or scale.</p>
+      <figure class="shot">
+        <img src="assets/guide/14-debrief.png" alt="Drop debrief form with sell-through and verdict" loading="lazy" />
+        <figcaption>Debrief — sell-through form with verdict (repeat / revise / scale).</figcaption>
+      </figure>
+      <ol>
+        <li>Sidebar → <strong>Debrief</strong>.</li>
+        <li>Fill units sold, margin achieved, and campaign highlight.</li>
+        <li>Pick a <strong>verdict</strong> and save — exports in snapshot + Supabase sync.</li>
+      </ol>
+    </section>
+
+    <!-- HANDOFF -->
+    <section class="guide-section" id="handoff">
+      <h2>10. Handoff — backup &amp; squad sync</h2>
+      <p>Export for laptops without sync. With Supabase configured, the squad row updates automatically — still snapshot daily for SKU photos.</p>
+      <figure class="shot">
+        <img src="assets/guide/15-handoff.png" alt="Handoff with backup ritual, squad sync, and export buttons" loading="lazy" />
+        <figcaption>Handoff — daily backup ritual, squad sync panel, export/import, snapshot download.</figcaption>
+      </figure>
+
+      <h3>Copy or download snapshot (daily backup)</h3>
+      <ol>
+        <li><strong>Handoff</strong> → <strong>Copy snapshot</strong> or <strong>Download snapshot</strong>.</li>
+        <li>JSON dialog opens — copy all of it. The daily backup status flips to <strong>Done</strong>.</li>
+        <li>Teammate: <strong>Import snapshot</strong> and paste/select the file.</li>
+      </ol>
+      <figure class="shot">
+        <img src="assets/guide/16-snapshot-dialog.png" alt="Drop snapshot JSON dialog" loading="lazy" />
+        <figcaption>Snapshot dialog — full drop state + SKU photos as base64 in JSON.</figcaption>
+      </figure>
+
+      <h3>Start the next drop (Drop 002+)</h3>
+      <ol>
+        <li><strong>Snapshot first</strong> — don't lose Drop 001 history or pics.</li>
+        <li><strong>Start next drop</strong> → name, city wedge, season code.</li>
+        <li>Hit <strong>Open next drop desk</strong>.</li>
+      </ol>
+      <figure class="shot">
+        <img src="assets/guide/18-new-drop-dialog.png" alt="Start next drop dialog" loading="lazy" />
+        <figcaption>New drop dialog — fresh tracker in this browser.</figcaption>
+      </figure>
+
+      <h3>Other handoff moves</h3>
+      <ul>
+        <li><strong>Export stage CSV</strong> — milestone tracker for spreadsheets.</li>
+        <li><strong>Import stage CSV</strong> — refresh gates from a sheet.</li>
+        <li><strong>Investor read</strong> — conservative external summary (not raw JSON).</li>
+        <li><strong>Reset Drop 001 demo</strong> — back to sample data on this device.</li>
+      </ul>
+    </section>
+
+    <!-- HELP -->
+    <section class="guide-section" id="help">
+      <h2>11. In-app help</h2>
+      <p>Top bar <strong>Help</strong> = quick hits. <strong>Full guide</strong> = this page.</p>
+      <figure class="shot">
+        <img src="assets/guide/17-help-dialog.png" alt="Help dialog with quick recipes" loading="lazy" />
+        <figcaption>Help dialog — 2-min session loop + drop moves + real talk limits.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ROLES -->
+    <section class="guide-section" id="roles">
+      <h2>12. Who owns what</h2>
+      <div class="role-grid">
+        <div class="role-card"><strong>Founder / signal</strong> Heat radar, concept gate, SKU thesis, founder-table content</div>
+        <div class="role-card"><strong>Product</strong> SKU room, sample gate, tech packs, fit relay</div>
+        <div class="role-card"><strong>Campaign</strong> Campaign proof + build — tactics, clips, trailer</div>
+        <div class="role-card"><strong>Production / finance</strong> Factory gate — quotes, MOQ, COGS, PP sample</div>
+        <div class="role-card"><strong>Ecommerce</strong> Online drop — Shopify, sizing, checkout, analytics</div>
+        <div class="role-card"><strong>Events</strong> Pop-up &amp; VORG After — venue, RSVP, consent, recap</div>
+        <div class="role-card"><strong>Finance / founder</strong> Debrief — sell-through, margin, reinvest call</div>
+      </div>
+      <p style="margin-top:12px">Early team = many hats. The desk still names owners so handoffs stay clean.</p>
+    </section>
+
+    <!-- LIMITS -->
+    <section class="guide-section" id="limits">
+      <h2>13. Real talk — what works &amp; what doesn't</h2>
+      <h3>Works today</h3>
+      <ul>
+        <li>Any browser — open <code>drop-os.html</code>, no install</li>
+        <li>Saves to this device (localStorage)</li>
+        <li>CSV + JSON handoff between teammates</li>
+        <li>SKU reference photos compressed in-browser</li>
+        <li>All 10 lanes navigate + playbook strips render</li>
+        <li>Bag check, heat logging, tasks, proof links, interactive checklists, snapshots, help, new drop dialog</li>
+      </ul>
+      <h3>Not built yet</h3>
+      <ul>
+        <li>Cloud sync or shared login</li>
+        <li>Server-hosted image CDN</li>
+        <li>Content calendar, role filters, proof file uploads</li>
+      </ul>
+      <div class="callout">
+        Drop energy and sell-through vibe are <strong>working models</strong> — not factory guarantees or investor benchmarks. Pair the investor read with real sample, vendor, and test proof.
+      </div>
+    </section>
+
+    <p style="margin-top:48px">
+      <a class="top-btn primary" href="drop-os.html">Open drop desk</a>
+    </p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VORG-EAVY — A Home for Originals</title>
+  <meta name="description" content="VORG-EAVY Drop 001. Three objects. One city. September 2026. Open online drop with controlled units and local proof." />
+  <meta name="theme-color" content="#F5F3EE" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=drop001-look" />
+</head>
+<body>
+
+
+
+  <!-- WAITLIST MODAL -->
+  <div id="waitlist-modal" class="modal-overlay">
+    <div class="modal-glass">
+      <button class="modal-close" onclick="closeWaitlist()">✕</button>
+      <div class="modal-brand"><img src="assets/logo_black.png" alt="VORG-EAVY" class="logo-img logo-sm" /></div>
+      <h2 class="modal-title">Join The Firm</h2>
+      <p class="modal-subtitle">Be first for Drop 001. Ottawa / Gatineau. September 2026.</p>
+      <form class="waitlist-form" onsubmit="submitWaitlist(event)">
+        <input type="text" placeholder="Full name" required />
+        <input type="email" placeholder="Email address" required />
+        <input type="tel" placeholder="Phone (optional)" />
+        <select>
+          <option value="" disabled selected>City</option>
+          <option>Ottawa</option>
+          <option>Gatineau</option>
+          <option>Montréal</option>
+          <option>Toronto</option>
+          <option>Other</option>
+        </select>
+        <button type="submit" class="btn-primary">Request Access</button>
+      </form>
+      <div class="waitlist-confirm" id="waitlist-confirm">
+        <div class="confirm-mark">✓</div>
+        <p>You're on the list.<br/>We'll reach out directly when access opens.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- THANK YOU CARD MODAL -->
+  <div id="thankyou-modal" class="modal-overlay">
+    <div class="thankyou-card-wrap">
+      <button class="modal-close thankyou-close" onclick="closeThankyou()">✕</button>
+      <div class="thankyou-card" id="thankyou-card-content"></div>
+    </div>
+  </div>
+
+  <!-- CART SIDEBAR -->
+  <div id="cart-sidebar" class="cart-sidebar">
+    <div class="cart-header">
+      <span class="cart-title">Your Selection</span>
+      <button class="cart-close" onclick="toggleCart()">✕</button>
+    </div>
+    <div class="cart-items" id="cart-items"></div>
+    <div class="cart-footer" id="cart-footer">
+      <div class="cart-total" id="cart-total"></div>
+      <button class="btn-primary cart-checkout" onclick="checkout()">Proceed to Checkout</button>
+    </div>
+    <div class="cart-empty" id="cart-empty">
+      <p>Your selection is empty.</p>
+      <a href="#" onclick="showView('collection'); toggleCart()">Explore Drop 001</a>
+    </div>
+  </div>
+  <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+
+  <!-- NAVIGATION -->
+  <nav id="main-nav" class="nav-glass">
+    <div class="nav-left">
+      <button class="nav-link" onclick="showView('home')">Home</button>
+      <button class="nav-link" onclick="showView('collection')">Drop 001</button>
+      <button class="nav-link" onclick="showView('atelier')">Atelier</button>
+    </div>
+    <div class="nav-center">
+      <button class="nav-wordmark" onclick="showView('home')">
+        <img src="assets/logo_nav_full.png" alt="VORG-EAVY" class="logo-img logo-nav" />
+      </button>
+    </div>
+    <div class="nav-right">
+      <button class="nav-link" onclick="showView('about')">The Firm</button>
+      <button class="nav-link cart-btn" id="cart-toggle-btn" onclick="toggleCart()">
+        Cart <span class="cart-count" id="cart-count">0</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- VIEWS -->
+  <main id="app">
+
+    <!-- HOME VIEW -->
+    <div id="view-home" class="view active">
+      <section class="hero">
+        <div class="hero-media">
+          <img src="assets/lookbook_hero_drop001.png" alt="VORG-EAVY model wearing the Drop 001 jacket, rib top, and cap" class="hero-img" />
+          <div class="hero-grain"></div>
+        </div>
+        <div class="hero-content">
+          <div class="hero-eyebrow">VORG-EAVY presents · Ottawa / Gatineau</div>
+          <h1 class="hero-title">A Home<br/><em>for Originals.</em></h1>
+          <p class="hero-sub">Drop 001 begins with three objects, 150 planned pieces,<br/>and one room moving from day into night.</p>
+          <div class="hero-actions">
+            <button class="btn-primary" onclick="showView('collection')">Enter the Drop</button>
+            <button class="btn-ghost" onclick="openWaitlist(event)">Join The Firm</button>
+          </div>
+        </div>
+        <div class="hero-scroll-hint">
+          <span>Scroll</span>
+          <div class="scroll-line"></div>
+        </div>
+      </section>
+
+      <section class="story-prologue">
+        <div class="story-rail" aria-label="Drop 001 chapter details">
+          <span>Chapter 01</span>
+          <span>The First Room</span>
+          <span>September 2026</span>
+        </div>
+        <div class="story-prologue-main">
+          <div class="story-kicker">Come for the objects. Stay for the room.</div>
+          <h2 class="story-heading">We are not opening a store.<br/><em>We are setting a scene.</em></h2>
+          <div class="story-columns">
+            <p>Drop 001 is designed as a day-to-night gathering in Ottawa / Gatineau: part fitting room, part listening room, part proof that a local fashion label can feel like culture before it feels like scale.</p>
+            <p>Three objects hold the first chapter together. The online drop opens publicly, the edition is controlled, and the atmosphere matters as much as what leaves on your back.</p>
+          </div>
+        </div>
+        <aside class="story-ticket" aria-label="Drop 001 note">
+          <span class="ticket-mark">V/E</span>
+          <span>One city first</span>
+          <span>150 planned units</span>
+          <span>One day into night</span>
+          <button onclick="openWaitlist(event)">Join the waitlist</button>
+        </aside>
+      </section>
+
+      <section class="drop-strip">
+        <div class="drop-strip-label">
+          <span class="ds-tag">Chapter 02 · The Objects</span>
+          <span class="ds-date">Three pieces. Nothing accidental.</span>
+        </div>
+        <div class="product-grid home-grid">
+          <div class="product-card" onclick="showProduct('jacket')">
+            <div class="product-card-img-wrap">
+              <img src="assets/hero_jacket.png" alt="The Firm Jacket" />
+              <div class="product-card-hover"><span>View Object</span></div>
+            </div>
+            <div class="product-card-meta">
+              <div class="product-card-name">The Firm Jacket</div>
+              <div class="product-card-price">C$295</div>
+              <div class="product-card-units">36 units · Drop 001</div>
+            </div>
+          </div>
+          <div class="product-card" onclick="showProduct('top')">
+            <div class="product-card-img-wrap">
+              <img src="assets/hero_top.png" alt="Structured Rib Top" />
+              <div class="product-card-hover"><span>View Object</span></div>
+            </div>
+            <div class="product-card-meta">
+              <div class="product-card-name">Structured Rib Top</div>
+              <div class="product-card-price">C$95</div>
+              <div class="product-card-units">84 units · Drop 001</div>
+            </div>
+          </div>
+          <div class="product-card" onclick="showProduct('cap')">
+            <div class="product-card-img-wrap">
+              <img src="assets/hero_cap.png" alt="Signature Cap" />
+              <div class="product-card-hover"><span>View Object</span></div>
+            </div>
+            <div class="product-card-meta">
+              <div class="product-card-name">Signature Cap</div>
+              <div class="product-card-price">C$65</div>
+              <div class="product-card-units">30 units · Drop 001</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="editorial-band">
+        <div class="editorial-text">
+          <div class="editorial-quote">"A label becomes real when people have somewhere to belong."</div>
+          <div class="editorial-byline">Chapter 03 — The room between the clothes</div>
+        </div>
+        <div class="editorial-accent-line"></div>
+      </section>
+
+      <section class="firm-module">
+        <div class="firm-text">
+          <div class="firm-eyebrow">Chapter 04 · The Invitation</div>
+          <h2 class="firm-title">The door opens once.<br/><em>Be in the room.</em></h2>
+          <p class="firm-body">The first edition is not built for endless restocks or anonymous traffic. It is a controlled beginning: one city, one pop-up, one chance to learn who VORG-EAVY belongs to next.</p>
+          <button class="btn-outline" onclick="openWaitlist(event)">Join The Firm</button>
+        </div>
+        <div class="firm-stamp">
+          <div class="firm-stamp-inner">
+            <img src="assets/logo_black.png" alt="VORG-EAVY" class="logo-img logo-stamp" />
+            <div class="stamp-line stamp-sm">DROP 001 · 2026</div>
+            <div class="stamp-divider"></div>
+            <div class="stamp-line stamp-sm">OTTAWA / GATINEAU</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- COLLECTION VIEW -->
+    <div id="view-collection" class="view">
+      <div class="collection-header">
+        <div class="collection-eyebrow">Drop 001 · September 2026</div>
+        <h1 class="collection-title">The Firm Collection</h1>
+        <p class="collection-subtitle">Three objects built for access, polish, and belonging.<br/>Ottawa / Gatineau. 150 units.</p>
+      </div>
+      <div class="product-grid collection-grid">
+        <div class="product-card large-card" onclick="showProduct('jacket')">
+          <div class="product-card-img-wrap">
+            <img src="assets/hero_jacket.png" alt="The Firm Jacket" />
+            <div class="product-card-hover"><span>View Object</span></div>
+          </div>
+          <div class="product-card-meta">
+            <div class="product-card-name">The Firm Jacket</div>
+            <div class="product-card-price">C$295</div>
+            <div class="product-card-units">36 units · Object №001</div>
+          </div>
+        </div>
+        <div class="product-card" onclick="showProduct('top')">
+          <div class="product-card-img-wrap">
+            <img src="assets/hero_top.png" alt="Structured Rib Top" />
+            <div class="product-card-hover"><span>View Object</span></div>
+          </div>
+          <div class="product-card-meta">
+            <div class="product-card-name">Structured Rib Top</div>
+            <div class="product-card-price">C$95</div>
+            <div class="product-card-units">84 units · Object №002</div>
+          </div>
+        </div>
+        <div class="product-card" onclick="showProduct('cap')">
+          <div class="product-card-img-wrap">
+            <img src="assets/hero_cap.png" alt="Signature Cap" />
+            <div class="product-card-hover"><span>View Object</span></div>
+          </div>
+          <div class="product-card-meta">
+            <div class="product-card-name">Signature Cap</div>
+            <div class="product-card-price">C$65</div>
+            <div class="product-card-units">30 units · Object №003</div>
+          </div>
+        </div>
+      </div>
+      <div class="collection-footer-note">All objects are non-replenished. When sold, the edition closes.</div>
+    </div>
+
+    <!-- PRODUCT DETAIL VIEW -->
+    <div id="view-product" class="view">
+      <div id="product-detail-content"></div>
+    </div>
+
+    <!-- ATELIER VIEW -->
+    <div id="view-atelier" class="view">
+      <div class="atelier-header">
+        <div class="atelier-eyebrow">Internal</div>
+        <h1 class="atelier-title">VORG-EAVY Atelier</h1>
+        <p class="atelier-subtitle">The internal garment reconstruction and material-editing cockpit.<br/>Access restricted to The Firm.</p>
+      </div>
+      <div class="atelier-grid">
+        <div class="atelier-card">
+          <div class="atelier-card-icon">◎</div>
+          <div class="atelier-card-title">Artifact Lifecycle</div>
+          <p>Every garment moves through a defined lifecycle: concept → sample → approved → production. No fake production claims.</p>
+        </div>
+        <div class="atelier-card">
+          <div class="atelier-card-icon">◈</div>
+          <div class="atelier-card-title">Evidence Gates</div>
+          <p>Approval at every stage requires physical evidence — vendor quote, QC report, sample photo, or drop test.</p>
+        </div>
+        <div class="atelier-card">
+          <div class="atelier-card-icon">◇</div>
+          <div class="atelier-card-title">Material Library</div>
+          <p>Coated cotton twill, waxed canvas, structured rib. Every material is tracked with source, landed cost, and run risk.</p>
+        </div>
+        <div class="atelier-card">
+          <div class="atelier-card-icon">◉</div>
+          <div class="atelier-card-title">Confidence Scoring</div>
+          <p>Each decision carries an explicit confidence score. Assumptions are marked. Nothing presented as proven before it is.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT VIEW -->
+    <div id="view-about" class="view">
+      <div class="about-header">
+        <div class="about-eyebrow">About</div>
+        <h1 class="about-title">The Firm</h1>
+      </div>
+      <div class="about-body">
+        <div class="about-section">
+          <div class="about-section-label">The Idea</div>
+          <div class="about-section-text">
+            <p>VORG-EAVY is a direct-to-consumer fashion micro-label. A home for Originals. Built selective, controlled, and culturally charged — where luxury restraint meets youth access pressure.</p>
+          </div>
+        </div>
+        <div class="about-divider"></div>
+        <div class="about-section">
+          <div class="about-section-label">The Model</div>
+          <div class="about-section-text">
+            <p>One city first. One drop architecture. One pop-up. One reinvestment loop until demand is proven. Ottawa and Gatineau are the first wedge.</p>
+          </div>
+        </div>
+        <div class="about-divider"></div>
+        <div class="about-section">
+          <div class="about-section-label">Drop 001</div>
+          <div class="about-section-text">
+            <p>Three objects. 150 units. C$295 / C$95 / C$65. Open online drop. One day-to-night pop-up. September 2026.</p>
+            <p>This is a proof machine, not a mature fashion label. Proof before scale.</p>
+          </div>
+        </div>
+        <div class="about-divider"></div>
+        <div class="about-section">
+          <div class="about-section-label">The Release</div>
+          <div class="about-section-text">
+            <p>The first drop opens online at release time with controlled units. Waitlist members receive priority updates and pop-up invitation signals.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-brand">
+      <img src="assets/logo_black.png" alt="VORG-EAVY" class="logo-img logo-footer" />
+    </div>
+    <div class="footer-tagline">A Home for Originals.</div>
+    <div class="footer-links">
+      <button onclick="showView('collection')">Drop 001</button>
+      <button onclick="openWaitlist(event)">The Firm Waitlist</button>
+      <button onclick="showView('about')">About</button>
+      <button onclick="showView('atelier')">Atelier</button>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 VORG-EAVY. Ottawa / Gatineau.</span>
+      <span>All objects non-replenished.</span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

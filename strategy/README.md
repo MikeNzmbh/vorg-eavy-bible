@@ -23,3 +23,5 @@ Minimum conditions before treating full-time self-employment as realistic:
 ## Files
 
 - `operating-model.md` - current business model and proof loop
+- `drop-operating-system.md` - repeatable stage-gate system from signal to next-city expansion
+- `drop-os-ui-restructure.md` - OS algorithm and UI restructure brief for the next dashboard rebuild
