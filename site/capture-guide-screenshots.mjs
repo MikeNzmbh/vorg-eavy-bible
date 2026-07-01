@@ -71,6 +71,11 @@ async function main() {
   await clickNav(page, 'SKU room');
   await shot(page, '08-sku-room');
 
+  // 08b — SKU edit form
+  await page.locator('[data-edit-product="sku-jacket"]').click();
+  await page.waitForTimeout(400);
+  await shot(page, '08b-sku-edit');
+
   // 09 — campaign
   await clickNav(page, 'Campaign');
   await shot(page, '09-campaign');
@@ -93,6 +98,9 @@ async function main() {
 
   // 14 — debrief
   await clickNav(page, 'Debrief');
+  await page.locator('#pmUnitsSold').fill('92');
+  await page.locator('#pmVerdict').selectOption('repeat');
+  await page.waitForTimeout(300);
   await shot(page, '14-debrief');
 
   // 15 — handoff

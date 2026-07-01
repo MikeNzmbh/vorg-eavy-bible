@@ -169,10 +169,15 @@
         <img src="assets/guide/08-sku-room.png" alt="SKU room showing jacket top and cap with upload button" loading="lazy" />
         <figcaption>SKU room — pick a SKU, upload sample flat / hanger / table still.</figcaption>
       </figure>
+      <figure class="shot">
+        <img src="assets/guide/08b-sku-edit.png" alt="SKU edit form for units, price, and risks" loading="lazy" />
+        <figcaption>Edit SKU — update units, price, margin target, sample status, and risk notes.</figcaption>
+      </figure>
       <ol>
         <li>Sidebar → <strong>SKU room</strong>.</li>
         <li>Tap jacket, top, or cap in the nav.</li>
         <li>Hit <strong>Upload photo</strong> — picks from your device, compresses in-browser.</li>
+        <li>Use <strong>Edit SKU</strong> to fix units, price, or risk fields after the line changes.</li>
         <li>Paste final asset links in the milestone proof field on Drop desk.</li>
       </ol>
       <div class="callout">Uploads are desk reference only — not final Shopify assets until e-comm photography is locked.</div>
@@ -236,25 +241,30 @@
     <!-- DEBRIEF -->
     <section class="guide-section" id="debrief">
       <h2>9. Debrief — what the drop proved</h2>
-      <p>Run after the January 2027 business-quality gate. Revenue, margin, sell-through, content, city pull.</p>
+      <p>Run after the January 2027 business-quality gate. Log revenue, sell-through, margin, content, and city pull — then pick repeat, revise, or scale.</p>
       <figure class="shot">
-        <img src="assets/guide/14-debrief.png" alt="Drop debrief template" loading="lazy" />
-        <figcaption>Debrief — post-drop proof template.</figcaption>
+        <img src="assets/guide/14-debrief.png" alt="Drop debrief form with sell-through and verdict" loading="lazy" />
+        <figcaption>Debrief — sell-through form with verdict (repeat / revise / scale).</figcaption>
       </figure>
+      <ol>
+        <li>Sidebar → <strong>Debrief</strong>.</li>
+        <li>Fill units sold, margin achieved, and campaign highlight.</li>
+        <li>Pick a <strong>verdict</strong> and save — exports in snapshot + Supabase sync.</li>
+      </ol>
     </section>
 
     <!-- HANDOFF -->
     <section class="guide-section" id="handoff">
       <h2>10. Handoff — backup &amp; squad sync</h2>
-      <p>No cloud yet. Export is how you move data between laptops or teammates.</p>
+      <p>Export for laptops without sync. With Supabase configured, the squad row updates automatically — still snapshot daily for SKU photos.</p>
       <figure class="shot">
-        <img src="assets/guide/15-handoff.png" alt="Handoff export buttons" loading="lazy" />
-        <figcaption>Handoff — export, import, snapshot, investor read, reset demo.</figcaption>
+        <img src="assets/guide/15-handoff.png" alt="Handoff with backup ritual, squad sync, and export buttons" loading="lazy" />
+        <figcaption>Handoff — daily backup ritual, squad sync panel, export/import, snapshot download.</figcaption>
       </figure>
 
-      <h3>Copy snapshot (daily backup)</h3>
+      <h3>Copy or download snapshot (daily backup)</h3>
       <ol>
-        <li><strong>Handoff</strong> → <strong>Copy snapshot</strong>.</li>
+        <li><strong>Handoff</strong> → <strong>Copy snapshot</strong> or <strong>Download snapshot</strong>.</li>
         <li>JSON dialog opens — copy all of it. The daily backup status flips to <strong>Done</strong>.</li>
         <li>Teammate: <strong>Import snapshot</strong> and paste/select the file.</li>
       </ol>

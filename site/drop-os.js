@@ -331,8 +331,8 @@ const ONBOARD_STEPS = [
     body: 'You don\'t need every tab. Campaign lives in Campaign proof. Fit + samples in SKU room. Factory quotes in Factory gate. Open your lane — the playbook strip tells you what to do.'
   },
   {
-    title: 'Lives on this device',
-    body: 'Photos and tracker data stay in this browser until you export. Before Drop 002 or a new laptop: Handoff → Copy snapshot. Full walkthrough: Help → Full guide.'
+    title: 'Lives on this device + squad sync',
+    body: 'Photos stay local until Storage ships. Tracker syncs to Supabase when config is set — still snapshot daily before Drop 002 or a new laptop. Full walkthrough: Help → Full guide.'
   }
 ];
 
