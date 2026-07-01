@@ -7,6 +7,7 @@ window.DROP_OS_CONFIG = {
     url: 'https://YOUR_PROJECT.supabase.co',
     anonKey: 'YOUR_ANON_KEY',
     dropSlug: 'drop-001',
-    syncPin: 'your-squad-sync-pin'
+    // Squad invite is redeemed in-app after email sign-in — do not ship a shared PIN.
+    inviteCode: ''
   }
 };

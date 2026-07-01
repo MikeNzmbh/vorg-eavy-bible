@@ -17,6 +17,10 @@ async function main() {
   await page.goto(BASE);
   await page.evaluate(() => localStorage.removeItem('vorgDropOS.v1'));
   await page.reload({ waitUntil: 'networkidle' });
+  if (await page.locator('#authDialog').isVisible()) {
+    await page.locator('#authCloseBtn').click();
+    await page.waitForTimeout(200);
+  }
 
   // Onboarding
   const onboard = await page.locator('#onboardDialog').isVisible();
@@ -65,9 +69,24 @@ async function main() {
     active?.includes(lane.split(' ')[0]) ? ok(`Lane: ${lane}`) : fail(`Lane: ${lane}`, active);
   }
 
-  // Interactive checklist persistence
+  // Manufacturing truth board
   await page.getByRole('button', { name: 'Factory', exact: true }).click();
   await page.waitForTimeout(200);
+  const mfgBoard = await page.locator('#manufacturingBoard').textContent();
+  mfgBoard?.includes('Manufacturing truth') ? ok('Manufacturing board renders') : fail('Manufacturing board');
+  await page.locator('[data-mfg-sku="sku-jacket"]').click();
+  await page.waitForTimeout(150);
+  await page.locator('#manufacturingForm [name="vendorName"]').fill('QA Factory');
+  await page.locator('#manufacturingForm [name="quoteUrl"]').fill('https://example.com/quote.pdf');
+  await page.locator('#manufacturingForm').evaluate(f => f.requestSubmit());
+  await page.waitForTimeout(300);
+  const mfgSaved = await page.evaluate(() => {
+    const saved = JSON.parse(localStorage.getItem('vorgDropOS.v1'));
+    return saved.products.find(p => p.id === 'sku-jacket')?.manufacturing?.vendorName === 'QA Factory';
+  });
+  mfgSaved ? ok('Manufacturing proof saves') : fail('Manufacturing proof save');
+
+  // Interactive checklist persistence
   await page.locator('[data-checklist-group="production"]').first().click();
   await page.waitForTimeout(200);
   const checklistSaved = await page.evaluate(() => {
@@ -110,7 +129,7 @@ async function main() {
 
   // Squad sync panel
   const syncPanel = await page.locator('#syncPanel').textContent();
-  syncPanel?.includes('Browser-only') || syncPanel?.includes('Supabase') ? ok('Squad sync panel renders') : fail('Squad sync panel');
+  syncPanel?.includes('Browser-only') || syncPanel?.includes('Sign in') || syncPanel?.includes('Squad sync') ? ok('Squad sync panel renders') : fail('Squad sync panel');
   await page.locator('#closeDialogButton').click();
 
   // Help dialog
@@ -133,7 +152,7 @@ async function main() {
   // SKU edit
   await page.getByRole('button', { name: 'SKU room' }).click();
   await page.waitForTimeout(200);
-  await page.locator('[data-product-id="sku-jacket"]').click();
+  await page.locator('#productNav [data-product-id="sku-jacket"]').click();
   await page.waitForTimeout(200);
   await page.locator('[data-edit-product="sku-jacket"]').click();
   await page.waitForTimeout(200);
@@ -157,8 +176,16 @@ async function main() {
     return saved.postmortem?.unitsSold === '92';
   });
   debriefSaved ? ok('Debrief form saves') : fail('Debrief form');
+  const evidenceSection = await page.locator('.evidence-section').count();
+  evidenceSection > 0 ? ok('Debrief evidence tiers render') : fail('Debrief evidence tiers');
 
-  // Sync status pill (hidden until config on live deploy)
+  // Investor snapshot with tiers
+  await page.getByRole('button', { name: 'Handoff', exact: true }).click();
+  await page.locator('#investorBtn').click();
+  await page.waitForTimeout(200);
+  const investor = await page.locator('#investorSnapshot').textContent();
+  investor?.includes('Verified debrief') && investor?.includes('Working desk') ? ok('Investor snapshot tiers') : fail('Investor snapshot tiers');
+
   const pillHidden = await page.locator('#syncStatusPill').isHidden();
   pillHidden ? ok('Sync status pill ready') : ok('Sync status pill visible');
 

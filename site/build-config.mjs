@@ -13,10 +13,10 @@ const cfg = {
     url: process.env.SUPABASE_URL || '',
     anonKey: process.env.SUPABASE_ANON_KEY || '',
     dropSlug: process.env.DROP_SYNC_SLUG || 'drop-001',
-    syncPin: process.env.DROP_SYNC_PIN || ''
+    inviteCode: process.env.DROP_INVITE_CODE || ''
   }
 };
 
 const out = `window.DROP_OS_CONFIG = ${JSON.stringify(cfg, null, 2)};\n`;
 writeFileSync(join(root, 'drop-os-config.js'), out, 'utf8');
-console.log('Wrote drop-os-config.js', cfg.supabase.url ? '(Supabase configured)' : '(local-only)');
+console.log('Wrote drop-os-config.js', cfg.supabase.url ? '(Supabase v2 configured)' : '(local-only)');

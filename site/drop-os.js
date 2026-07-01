@@ -2,7 +2,7 @@
 
 /* ═══════════════════════════════════════════════════════════════
    VORG-EAVY Drop OS v2 — Drop desk architecture
-   Algorithm: VORG Drop OS score v0.2
+   Algorithm: VORG Drop OS score v0.3
    Preserves: localStorage, CSV import/export, snapshot, all state
    ═══════════════════════════════════════════════════════════════ */
 
@@ -25,6 +25,7 @@ const DEFAULT_STATE = {
     target: 'September 2026'
   },
   productImages: {},
+  productImageMeta: {},
   products: null,
   readinessChecks: {},
   backup: {
@@ -47,7 +48,15 @@ const DEFAULT_STATE = {
     campaignHighlight: '',
     cityPull: '',
     verdict: 'pending',
-    teamNotes: ''
+    teamNotes: '',
+    revenueTier: 'unresolved',
+    revenueProofUrl: '',
+    marginTier: 'unresolved',
+    marginProofUrl: '',
+    sellThroughTier: 'unresolved',
+    sellThroughProofUrl: '',
+    verifiedBy: '',
+    verifiedAt: ''
   },
   stress: {
     demand: 64,
@@ -176,6 +185,20 @@ const DEFAULT_STATE = {
   ]
 };
 
+const MANUFACTURING_TEMPLATE = {
+  vendorName: '',
+  quoteRef: '',
+  quoteUrl: '',
+  moq: '',
+  landedCogs: '',
+  leadTimeDays: '',
+  quoteDate: '',
+  sampleStage: 'none',
+  sampleProofUrl: '',
+  ppApproved: false,
+  evidenceTier: 'unresolved'
+};
+
 const PRODUCT_TEMPLATE = {
   image: 'assets/hero_top.png',
   sampleStatus: 'Not started',
@@ -216,7 +239,7 @@ const DEFAULT_PRODUCTS = [
   }
 ];
 
-const ALGORITHM_VERSION = 'VORG Drop OS score v0.2';
+const ALGORITHM_VERSION = 'VORG Drop OS score v0.3';
 
 const WORKSPACE_META = {
   command: { crumb: 'Drop desk', heading: 'Drop desk', sub: 'Bag check, blockers, this week\'s run' },
@@ -486,7 +509,43 @@ function getOperationsEffective() {
 
 function getStressValue(key) {
   if (key === 'operations') return getOperationsEffective();
+  if (key === 'product') return getProductProofScore();
   return state.stress[key];
+}
+
+function computeManufacturingTier(mfg) {
+  if (!mfg) return 'unresolved';
+  if (mfg.ppApproved && mfg.quoteUrl && mfg.landedCogs && mfg.sampleProofUrl) return 'known';
+  if (mfg.quoteUrl || mfg.landedCogs || mfg.sampleProofUrl || mfg.vendorName) return 'assumed';
+  return 'unresolved';
+}
+
+function getManufacturingScore() {
+  const products = getProducts();
+  if (!products.length) return 0;
+  const scores = products.map(p => {
+    const tier = p.manufacturing?.evidenceTier || computeManufacturingTier(p.manufacturing);
+    if (tier === 'known') return 100;
+    if (tier === 'assumed') return 58;
+    return 22;
+  });
+  return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+}
+
+function getProductProofScore() {
+  const rollup = getManufacturingScore();
+  return Math.round(state.stress.product * 0.35 + rollup * 0.65);
+}
+
+function formatEvidenceBadge(tier) {
+  if (tier === 'known') return '<span class="evidence-badge known">Known</span>';
+  if (tier === 'assumed') return '<span class="evidence-badge assumed">Assumed</span>';
+  return '<span class="evidence-badge unresolved">Unresolved</span>';
+}
+
+function investorMetric(label, value, tier, proofUrl) {
+  const proof = proofUrl ? ` <a href="${proofUrl}" target="_blank" rel="noopener">proof</a>` : '';
+  return `<div class="investor-row"><span class="investor-row-label">${label}</span><span class="investor-row-value">${formatEvidenceBadge(tier)} ${value || '—'}${proof}</span></div>`;
 }
 
 function getRepoBaseUrl() {
@@ -524,7 +583,7 @@ function toggleChecklistItem(group, key) {
   refreshIcons();
 }
 
-/* ─── Algorithm (v0.2 — unchanged) ─── */
+/* ─── Algorithm (v0.3 — manufacturing + investor tiers) ─── */
 function calculateScores() {
   const stress = state.stress;
   const operationsEffective = getOperationsEffective();
@@ -616,6 +675,11 @@ function normalizeProducts(saved) {
   return saved.map((p, i) => ({
     ...clone(PRODUCT_TEMPLATE),
     ...p,
+    manufacturing: {
+      ...clone(MANUFACTURING_TEMPLATE),
+      ...(p.manufacturing || {}),
+      evidenceTier: p.manufacturing?.evidenceTier || computeManufacturingTier(p.manufacturing)
+    },
     id: p.id || `sku-${i}-${Date.now()}`
   }));
 }
@@ -675,12 +739,13 @@ function loadState() {
       ...clone(DEFAULT_STATE), ...parsed,
       products,
       drop: { ...clone(DEFAULT_STATE).drop, ...(parsed.drop || {}) },
-      productImages: migrateProductImages(parsed.productImages, products, parsed.activeProduct),
       activeProductId: resolveActiveProductId(parsed, products),
       readinessChecks: { ...(parsed.readinessChecks || {}) },
       backup: { ...clone(DEFAULT_STATE).backup, ...(parsed.backup || {}) },
       syncMeta: { ...clone(DEFAULT_STATE).syncMeta, ...(parsed.syncMeta || {}) },
       postmortem: { ...clone(DEFAULT_STATE).postmortem, ...(parsed.postmortem || {}) },
+      productImageMeta: { ...(parsed.productImageMeta || {}) },
+      productImages: migrateProductImages(parsed.productImages, products, parsed.activeProduct),
       stress: { ...clone(DEFAULT_STATE).stress, ...(parsed.stress || {}) }
     };
   } catch (e) {
@@ -772,7 +837,10 @@ function renderPlaybook() {
 
 function getProductImage(productId) {
   const product = getProduct(productId);
-  return state.productImages?.[productId] || product?.image || '';
+  return state.productImageMeta?.[productId]?.url
+    || state.productImages?.[productId]
+    || product?.image
+    || '';
 }
 
 function createProduct({ name, units, price, proof, role }) {
@@ -849,6 +917,11 @@ function removeProduct(productId) {
   if (!window.confirm(`Remove "${product.name}" from this drop?`)) return;
   state.products = products.filter(p => p.id !== productId);
   if (state.productImages) delete state.productImages[productId];
+  if (state.productImageMeta?.[productId]) {
+    const meta = state.productImageMeta[productId];
+    if (meta.path) window.DropOSSync?.deleteSkuImage?.(meta.path).catch(() => {});
+    delete state.productImageMeta[productId];
+  }
   if (state.activeProductId === productId) {
     state.activeProductId = state.products[0]?.id;
   }
@@ -894,9 +967,19 @@ function compressImageFile(file) {
 async function handleProductImageUpload(file, productId) {
   if (!file || !productId) return;
   try {
-    const dataUrl = await compressImageFile(file);
-    if (!state.productImages) state.productImages = {};
-    state.productImages[productId] = dataUrl;
+    let stored = null;
+    if (window.DropOSSync?.uploadSkuImage) {
+      stored = await window.DropOSSync.uploadSkuImage(productId, file);
+    }
+    if (stored?.url) {
+      if (!state.productImageMeta) state.productImageMeta = {};
+      state.productImageMeta[productId] = stored;
+      if (state.productImages) delete state.productImages[productId];
+    } else {
+      const dataUrl = await compressImageFile(file);
+      if (!state.productImages) state.productImages = {};
+      state.productImages[productId] = dataUrl;
+    }
     saveState();
     renderProductLab();
     refreshIcons();
@@ -905,7 +988,12 @@ async function handleProductImageUpload(file, productId) {
   }
 }
 
-function clearProductImage(productId) {
+async function clearProductImage(productId) {
+  const meta = state.productImageMeta?.[productId];
+  if (meta?.path && window.DropOSSync?.deleteSkuImage) {
+    try { await window.DropOSSync.deleteSkuImage(meta.path); } catch (e) { console.warn(e); }
+  }
+  if (state.productImageMeta) delete state.productImageMeta[productId];
   if (state.productImages) delete state.productImages[productId];
   saveState();
   renderProductLab();
@@ -1015,9 +1103,15 @@ function renderCommandCenter() {
 
 function renderSyncStatusPill() {
   const el = qs('#syncStatusPill');
+  const authBtn = qs('#authOpenBtn');
   if (!el) return;
   const sync = window.DropOSSync?.getStatus?.() || { mode: 'local' };
   const configured = Boolean(window.DROP_OS_CONFIG?.supabase?.url);
+
+  if (authBtn) {
+    authBtn.hidden = !configured;
+    authBtn.onclick = () => window.DropOSAuth?.open?.();
+  }
 
   if (!configured) {
     el.hidden = true;
@@ -1032,13 +1126,27 @@ function renderSyncStatusPill() {
     return;
   }
 
-  if (sync.mode === 'cloud') {
+  if (sync.auth === 'member' && sync.mode === 'cloud') {
     el.className = 'sync-status-pill cloud';
     const when = sync.lastSyncAt
       ? new Date(sync.lastSyncAt).toLocaleTimeString('en-CA', { hour: 'numeric', minute: '2-digit' })
-      : 'connecting';
+      : 'live';
     el.textContent = `Cloud · ${when}`;
-    el.title = 'Squad sync active — edits debounce to Supabase';
+    el.title = sync.userEmail ? `Signed in as ${sync.userEmail}` : 'Squad sync active';
+    return;
+  }
+
+  if (sync.auth === 'needs_invite') {
+    el.className = 'sync-status-pill local';
+    el.textContent = 'Invite needed';
+    el.title = 'Sign in, then redeem squad invite';
+    return;
+  }
+
+  if (sync.mode === 'auth-required' || sync.auth === 'signed_out') {
+    el.className = 'sync-status-pill local';
+    el.textContent = 'Sign in';
+    el.title = 'Squad auth required for cloud sync';
     return;
   }
 
@@ -1368,7 +1476,9 @@ function renderProductLab() {
   const product = getActiveProduct();
   const productId = product.id;
   const imgSrc = getProductImage(productId);
-  const hasCustom = Boolean(state.productImages?.[productId]);
+  const hasCustom = Boolean(state.productImages?.[productId] || state.productImageMeta?.[productId]);
+  const cloudBacked = Boolean(state.productImageMeta?.[productId]?.storage);
+  const sync = window.DropOSSync?.getStatus?.() || {};
   const editing = state.editingProductId === productId;
 
   qs('#productSkuCount').textContent = `${products.length} SKU${products.length === 1 ? '' : 's'}`;
@@ -1425,7 +1535,11 @@ function renderProductLab() {
         </button>
         ${hasCustom ? `<button class="top-btn outline compact" type="button" data-clear-img="${productId}">Remove photo</button>` : ''}
       </div>
-      <p class="upload-note">Internal reference only — stored in this browser. Final Shopify imagery still lives in the approved asset folder.</p>
+      <p class="upload-note">${cloudBacked
+    ? 'Backed up to squad Storage — URL syncs across devices when signed in.'
+    : sync.auth === 'member'
+      ? 'Upload saves to squad Storage automatically.'
+      : 'Stored in this browser until you sign in — then photos upload to squad Storage.'}</p>
     </div>
     <div class="product-info">
       <div class="product-info-head">
@@ -1551,7 +1665,91 @@ function renderChecklist(containerId, group) {
 }
 
 function renderProductionReadiness() {
+  renderManufacturingBoard();
   renderChecklist('productionChecklist', 'production');
+}
+
+function renderManufacturingBoard() {
+  const el = qs('#manufacturingBoard');
+  if (!el) return;
+  const products = getProducts();
+  const activeId = state.manufacturingSkuId || state.activeProductId || products[0]?.id;
+  const product = getProduct(activeId) || products[0];
+  if (!product) return;
+  const mfg = { ...clone(MANUFACTURING_TEMPLATE), ...(product.manufacturing || {}) };
+  const tier = mfg.evidenceTier || computeManufacturingTier(mfg);
+  const score = getManufacturingScore();
+
+  el.innerHTML = `
+    <div class="manufacturing-head">
+      <div>
+        <span class="eyebrow">Manufacturing truth</span>
+        <h3>Vendor quotes &amp; PP sample — ${score}/100</h3>
+        <p>Factory gate math uses quote + sample proof tiers, not vibes. ${formatEvidenceBadge(tier)} on active SKU.</p>
+      </div>
+      <div class="manufacturing-nav">
+        ${products.map(p => `<button type="button" class="product-nav-btn${p.id === product.id ? ' active' : ''}" data-mfg-sku="${p.id}">${p.name}</button>`).join('')}
+      </div>
+    </div>
+    <form id="manufacturingForm" class="manufacturing-form stack-form" data-product-id="${product.id}">
+      <div class="field-row">
+        <div class="field"><label>Vendor</label><input name="vendorName" value="${mfg.vendorName}" placeholder="Factory name" /></div>
+        <div class="field"><label>Quote ref</label><input name="quoteRef" value="${mfg.quoteRef}" placeholder="RFQ-001" /></div>
+        <div class="field"><label>Quote date</label><input name="quoteDate" type="date" value="${mfg.quoteDate}" /></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>MOQ</label><input name="moq" value="${mfg.moq}" placeholder="150" /></div>
+        <div class="field"><label>Landed COGS</label><input name="landedCogs" value="${mfg.landedCogs}" placeholder="C$42" /></div>
+        <div class="field"><label>Lead time (days)</label><input name="leadTimeDays" value="${mfg.leadTimeDays}" placeholder="45" /></div>
+      </div>
+      <div class="field"><label>Quote proof URL</label><input name="quoteUrl" value="${mfg.quoteUrl}" placeholder="Drive PDF or Alibaba thread" /></div>
+      <div class="field-row">
+        <div class="field"><label>Sample stage</label>
+          <select name="sampleStage">
+            ${['none', 'ordered', 'lab', 'pp', 'approved'].map(s => `<option value="${s}"${mfg.sampleStage === s ? ' selected' : ''}>${s}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field"><label>Sample proof URL</label><input name="sampleProofUrl" value="${mfg.sampleProofUrl}" placeholder="Photo or lab report link" /></div>
+      </div>
+      <label class="check-inline"><input type="checkbox" name="ppApproved" ${mfg.ppApproved ? 'checked' : ''} /> PP sample approved for bulk</label>
+      <button class="btn-primary compact" type="submit">Save manufacturing proof</button>
+    </form>
+  `;
+
+  qsa('[data-mfg-sku]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.manufacturingSkuId = btn.dataset.mfgSku;
+      renderManufacturingBoard();
+      refreshIcons();
+    });
+  });
+  qs('#manufacturingForm')?.addEventListener('submit', saveManufacturing);
+}
+
+function saveManufacturing(e) {
+  e.preventDefault();
+  const form = e.target;
+  const productId = form.dataset.productId;
+  const product = getProduct(productId);
+  if (!product) return;
+  const mfg = {
+    vendorName: form.vendorName.value.trim(),
+    quoteRef: form.quoteRef.value.trim(),
+    quoteUrl: form.quoteUrl.value.trim(),
+    moq: form.moq.value.trim(),
+    landedCogs: form.landedCogs.value.trim(),
+    leadTimeDays: form.leadTimeDays.value.trim(),
+    quoteDate: form.quoteDate.value,
+    sampleStage: form.sampleStage.value,
+    sampleProofUrl: form.sampleProofUrl.value.trim(),
+    ppApproved: Boolean(form.ppApproved?.checked)
+  };
+  mfg.evidenceTier = computeManufacturingTier(mfg);
+  product.manufacturing = mfg;
+  saveState();
+  renderManufacturingBoard();
+  if (state.activeWorkspace === 'command') renderCommandCenter();
+  refreshIcons();
 }
 
 function renderLaunchReadiness() {
@@ -1690,6 +1888,32 @@ function renderPostmortem() {
         <label for="pmNotes">Team notes</label>
         <textarea id="pmNotes" name="teamNotes" rows="4" placeholder="What surprised you, what broke, what to keep">${pm.teamNotes}</textarea>
       </div>
+      <div class="evidence-section">
+        <h3>Investor-grade proof tiers</h3>
+        <p class="card-body">Mark metrics <strong>Known</strong> only with a proof URL (Shopify export, bank deposit, margin sheet).</p>
+        <div class="field-row">
+          <div class="field"><label>Revenue proof URL</label><input name="revenueProofUrl" value="${pm.revenueProofUrl}" placeholder="Shopify orders export or bank CSV" /></div>
+          <div class="field"><label>Revenue tier</label>
+            <select name="revenueTier">${['unresolved', 'assumed', 'known'].map(t => `<option value="${t}"${pm.revenueTier === t ? ' selected' : ''}>${t}</option>`).join('')}</select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Margin proof URL</label><input name="marginProofUrl" value="${pm.marginProofUrl}" placeholder="Landed COGS worksheet" /></div>
+          <div class="field"><label>Margin tier</label>
+            <select name="marginTier">${['unresolved', 'assumed', 'known'].map(t => `<option value="${t}"${pm.marginTier === t ? ' selected' : ''}>${t}</option>`).join('')}</select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Sell-through proof URL</label><input name="sellThroughProofUrl" value="${pm.sellThroughProofUrl}" placeholder="Inventory + sales reconciliation" /></div>
+          <div class="field"><label>Sell-through tier</label>
+            <select name="sellThroughTier">${['unresolved', 'assumed', 'known'].map(t => `<option value="${t}"${pm.sellThroughTier === t ? ' selected' : ''}>${t}</option>`).join('')}</select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Verified by</label><input name="verifiedBy" value="${pm.verifiedBy}" placeholder="Finance lead name" /></div>
+          <div class="field"><label>Verified at</label><input name="verifiedAt" type="date" value="${(pm.verifiedAt || '').slice(0, 10)}" /></div>
+        </div>
+      </div>
       <button class="btn-primary compact" type="submit">Save debrief</button>
     </form>
     <div class="postmortem-section">
@@ -1723,7 +1947,15 @@ function savePostmortem(e) {
     campaignHighlight: form.campaignHighlight.value.trim(),
     cityPull: form.cityPull.value.trim(),
     verdict: form.verdict.value,
-    teamNotes: form.teamNotes.value.trim()
+    teamNotes: form.teamNotes.value.trim(),
+    revenueProofUrl: form.revenueProofUrl.value.trim(),
+    revenueTier: form.revenueTier.value,
+    marginProofUrl: form.marginProofUrl.value.trim(),
+    marginTier: form.marginTier.value,
+    sellThroughProofUrl: form.sellThroughProofUrl.value.trim(),
+    sellThroughTier: form.sellThroughTier.value,
+    verifiedBy: form.verifiedBy.value.trim(),
+    verifiedAt: form.verifiedAt.value
   };
   saveState();
   renderPostmortem();
@@ -1809,20 +2041,37 @@ function renderSyncPanel() {
     ? new Date(sync.lastSyncAt).toLocaleString('en-CA', { dateStyle: 'medium', timeStyle: 'short' })
     : 'Not yet';
 
+  let headline = 'Browser-only mode';
+  let blurb = 'Copy drop-os-config.example.js → drop-os-config.js and run site/supabase/schema-v2.sql to enable squad sync.';
+  let canSync = false;
+
+  if (configured) {
+    if (sync.auth === 'member' && sync.mode === 'cloud') {
+      headline = 'Squad sync live';
+      blurb = `Signed in${sync.userEmail ? ` as ${sync.userEmail}` : ''}. State debounces to Supabase; SKU photos upload to Storage when signed in.`;
+      canSync = true;
+    } else if (sync.auth === 'needs_invite') {
+      headline = 'Invite required';
+      blurb = 'You are signed in but not on the drop squad yet. Redeem the invite code from Sign in.';
+    } else {
+      headline = 'Sign in to sync';
+      blurb = 'Drop 001 uses email magic link + squad invite — no shared PIN. SKU photos stay in-browser until you sign in.';
+    }
+  }
+
   el.innerHTML = `
     <div class="sync-panel-copy">
-      <span class="eyebrow">Squad sync</span>
-      <h3>${sync.mode === 'cloud' ? 'Supabase connected' : 'Browser-only mode'}</h3>
-      <p>${configured
-    ? 'Changes debounce to the shared drop row. SKU photos still stay local until Storage ships.'
-    : 'Copy drop-os-config.example.js → drop-os-config.js and run site/supabase/schema.sql to enable live sync.'}</p>
+      <span class="eyebrow">Squad sync v2</span>
+      <h3>${headline}</h3>
+      <p>${blurb}</p>
       ${sync.lastError ? `<p class="sync-error">${sync.lastError}</p>` : ''}
       ${sync.conflict ? `<p class="sync-error">Conflict — pull squad state or force your version below.</p>` : ''}
+      ${configured && sync.auth !== 'member' ? `<button class="top-btn primary compact" type="button" id="syncSignInBtn">Sign in</button>` : ''}
     </div>
     <div class="sync-panel-status">
-      <strong>${sync.mode === 'cloud' ? 'Cloud' : 'Local'}</strong>
+      <strong>${canSync ? 'Cloud' : 'Local'}</strong>
       <span>Last sync: ${last}</span>
-      ${sync.mode === 'cloud' ? `
+      ${canSync ? `
         <div class="sync-panel-actions">
           <button class="top-btn outline compact" type="button" id="syncPullBtn">Pull now</button>
           <button class="top-btn primary compact" type="button" id="syncPushBtn">Push now</button>
@@ -1832,6 +2081,7 @@ function renderSyncPanel() {
     </div>
   `;
 
+  qs('#syncSignInBtn')?.addEventListener('click', () => window.DropOSAuth?.open?.());
   qs('#syncPullBtn')?.addEventListener('click', async () => {
     await window.DropOSSync?.pullNow?.();
     switchWorkspace(state.activeWorkspace);
@@ -1881,32 +2131,48 @@ function renderInvestorSnapshot() {
   const complete = state.stages.filter(s => s.status === 'done').length;
   const rollup = getReadinessRollup();
   const pm = { ...clone(DEFAULT_STATE).postmortem, ...(state.postmortem || {}) };
+  const mfgScore = getManufacturingScore();
   const verdictLabels = {
     pending: 'Pending',
     repeat: 'Repeat',
     revise: 'Revise',
     scale: 'Scale'
   };
+  const sellThroughDisplay = pm.sellThroughPct
+    ? `${pm.sellThroughPct}%`
+    : (pm.unitsSold && pm.unitsPlanned
+      ? `${Math.round((Number(pm.unitsSold) / Number(pm.unitsPlanned)) * 100)}%`
+      : '');
 
   qs('#investorSnapshot').innerHTML = `
     <div class="investor-header">
       <h2>Investor read</h2>
-      <p>Conservative drop proof — ${new Date().toLocaleDateString('en-CA')}. Not a sell-through or production guarantee.</p>
+      <p>Conservative drop proof — ${new Date().toLocaleDateString('en-CA')}. Working scores below; verified metrics need proof URLs.</p>
     </div>
-    <div class="investor-row"><span class="investor-row-label">Bag check</span><span class="investor-row-value">${formatGateLabel(scores.gate)}</span></div>
-    <div class="investor-row"><span class="investor-row-label">Drop energy</span><span class="investor-row-value">${scores.confidence}%</span></div>
-    <div class="investor-row"><span class="investor-row-label">Sell-through vibe</span><span class="investor-row-value">${scores.campaignRate}%</span></div>
-    <div class="investor-row"><span class="investor-row-label">Checklists</span><span class="investor-row-value">${rollup.pct}% (${rollup.done}/${rollup.total})</span></div>
-    <div class="investor-row"><span class="investor-row-label">Launch ops (eff.)</span><span class="investor-row-value">${scores.operationsEffective ?? getOperationsEffective()}</span></div>
-    <div class="investor-row"><span class="investor-row-label">Stage progress</span><span class="investor-row-value">${complete} / ${state.stages.length}</span></div>
-    <div class="investor-row"><span class="investor-row-label">Proof check</span><span class="investor-row-value">${scores.evidenceFloor}</span></div>
-    <div class="investor-row"><span class="investor-row-label">What's giving mid</span><span class="investor-row-value">${scores.bottleneck}</span></div>
-    <div class="investor-row"><span class="investor-row-label">Next city signal</span><span class="investor-row-value">${citySignal.city} (${citySignal.score}/100)</span></div>
-    <div class="investor-row"><span class="investor-row-label">Risk drag</span><span class="investor-row-value">${scores.riskDrag}</span></div>
-    <div class="investor-row"><span class="investor-row-label">Debrief verdict</span><span class="investor-row-value">${verdictLabels[pm.verdict] || 'Pending'}</span></div>
-    ${pm.unitsSold ? `<div class="investor-row"><span class="investor-row-label">Units sold</span><span class="investor-row-value">${pm.unitsSold} / ${pm.unitsPlanned || 150}</span></div>` : ''}
-    ${pm.revenueActual ? `<div class="investor-row"><span class="investor-row-label">Revenue actual</span><span class="investor-row-value">${pm.revenueActual}</span></div>` : ''}
-    <div class="investor-row"><span class="investor-row-label">Next spend move</span><span class="investor-row-value">${decisionText(scores.gate)}</span></div>
+    <div class="investor-section">
+      <span class="eyebrow">Working desk scores</span>
+      <div class="investor-row"><span class="investor-row-label">Bag check</span><span class="investor-row-value">${formatGateLabel(scores.gate)}</span></div>
+      <div class="investor-row"><span class="investor-row-label">Drop energy</span><span class="investor-row-value">${scores.confidence}% ${formatEvidenceBadge('assumed')}</span></div>
+      <div class="investor-row"><span class="investor-row-label">Sell-through vibe</span><span class="investor-row-value">${scores.campaignRate}% ${formatEvidenceBadge('assumed')}</span></div>
+      <div class="investor-row"><span class="investor-row-label">Manufacturing proof</span><span class="investor-row-value">${mfgScore}/100 ${formatEvidenceBadge(mfgScore >= 80 ? 'known' : mfgScore >= 45 ? 'assumed' : 'unresolved')}</span></div>
+      <div class="investor-row"><span class="investor-row-label">Checklists</span><span class="investor-row-value">${rollup.pct}% (${rollup.done}/${rollup.total})</span></div>
+      <div class="investor-row"><span class="investor-row-label">Launch ops (eff.)</span><span class="investor-row-value">${scores.operationsEffective ?? getOperationsEffective()}</span></div>
+      <div class="investor-row"><span class="investor-row-label">Stage progress</span><span class="investor-row-value">${complete} / ${state.stages.length}</span></div>
+      <div class="investor-row"><span class="investor-row-label">Proof check</span><span class="investor-row-value">${scores.evidenceFloor}</span></div>
+      <div class="investor-row"><span class="investor-row-label">What's giving mid</span><span class="investor-row-value">${scores.bottleneck}</span></div>
+      <div class="investor-row"><span class="investor-row-label">Next city signal</span><span class="investor-row-value">${citySignal.city} (${citySignal.score}/100)</span></div>
+      <div class="investor-row"><span class="investor-row-label">Risk drag</span><span class="investor-row-value">${scores.riskDrag}</span></div>
+      <div class="investor-row"><span class="investor-row-label">Debrief verdict</span><span class="investor-row-value">${verdictLabels[pm.verdict] || 'Pending'}</span></div>
+      <div class="investor-row"><span class="investor-row-label">Next spend move</span><span class="investor-row-value">${decisionText(scores.gate)}</span></div>
+    </div>
+    <div class="investor-section">
+      <span class="eyebrow">Verified debrief metrics</span>
+      ${investorMetric('Revenue actual', pm.revenueActual, pm.revenueTier, pm.revenueProofUrl)}
+      ${investorMetric('Margin achieved', pm.marginActual, pm.marginTier, pm.marginProofUrl)}
+      ${investorMetric('Sell-through', sellThroughDisplay, pm.sellThroughTier, pm.sellThroughProofUrl)}
+      ${pm.unitsSold ? investorMetric('Units sold', `${pm.unitsSold} / ${pm.unitsPlanned || 150}`, pm.sellThroughTier, pm.sellThroughProofUrl) : ''}
+      ${pm.verifiedBy ? `<div class="investor-row"><span class="investor-row-label">Verified by</span><span class="investor-row-value">${pm.verifiedBy}${pm.verifiedAt ? ` · ${pm.verifiedAt}` : ''}</span></div>` : ''}
+    </div>
   `;
 }
 
@@ -2013,7 +2279,9 @@ function buildSnapshotPayload() {
     backup: state.backup || {},
     syncMeta: state.syncMeta || {},
     postmortem: state.postmortem || {},
-    productImages: state.productImages || {}
+    productImages: state.productImages || {},
+    productImageMeta: state.productImageMeta || {},
+    manufacturingScore: getManufacturingScore()
   };
 }
 
@@ -2139,6 +2407,7 @@ function importJsonSnapshot(file) {
         ...parsed,
         products,
         drop: { ...clone(DEFAULT_STATE).drop, ...parsedDrop },
+        productImageMeta: { ...(parsed.productImageMeta || {}) },
         productImages: migrateProductImages(parsed.productImages, products, parsed.activeProduct),
         activeProductId: resolveActiveProductId(parsed, products),
         readinessChecks: { ...(parsed.readinessChecks || {}) },

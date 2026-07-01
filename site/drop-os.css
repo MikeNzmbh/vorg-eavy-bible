@@ -2158,3 +2158,107 @@ img { display: block; max-width: 100%; }
   .backup-ritual-status { width: 100%; }
   .proof-links-list { grid-template-columns: 1fr; }
 }
+
+/* ─── v2: manufacturing truth, evidence tiers, squad auth ─── */
+.manufacturing-board {
+  margin-bottom: 20px;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.manufacturing-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.manufacturing-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.manufacturing-form .field-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.check-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.evidence-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.evidence-badge.known {
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+
+.evidence-badge.assumed {
+  background: #fff8e1;
+  color: #e65100;
+}
+
+.evidence-badge.unresolved {
+  background: var(--surface-muted);
+  color: var(--ink-secondary);
+}
+
+.evidence-section {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.evidence-section h3 {
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.investor-section {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.investor-section .eyebrow {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.auth-dialog .auth-forms {
+  display: grid;
+  gap: 16px;
+}
+
+.auth-dialog #authMessage {
+  font-size: 13px;
+  color: var(--ink-secondary);
+  min-height: 1.2em;
+}
+
+.upload-note {
+  font-size: 12px;
+  color: var(--ink-secondary);
+  margin-top: 8px;
+  line-height: 1.45;
+}

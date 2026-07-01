@@ -1,21 +1,23 @@
 'use strict';
 
 /**
- * Optional Supabase sync for Drop OS — local-first with cloud handoff.
- * Loads only when DROP_OS_CONFIG.supabase is filled in drop-os-config.js.
+ * Drop OS v2 — Supabase auth sync + Storage SKU images.
  */
 (function () {
   const DEBOUNCE_MS = 1800;
+  const BUCKET = 'drop-sku-images';
   let client = null;
   let cfg = null;
   let pushTimer = null;
   let pushing = false;
   const status = {
     mode: 'local',
+    auth: 'none',
     lastSyncAt: null,
     lastError: null,
     revision: 0,
-    conflict: false
+    conflict: false,
+    userEmail: null
   };
 
   function getCfg() {
@@ -24,19 +26,31 @@
 
   function isConfigured() {
     const c = getCfg();
-    return Boolean(c?.url && c?.anonKey && c?.dropSlug && c?.syncPin);
+    return Boolean(c?.url && c?.anonKey && c?.dropSlug);
   }
 
-  function stripForCloud(fullState) {
-    const payload = JSON.parse(JSON.stringify(fullState));
-    delete payload.productImages;
-    payload._syncNote = 'SKU photos stay local until Storage ships';
-    return payload;
+  function notifyUi() {
+    if (window.renderSyncPanel) window.renderSyncPanel();
+    if (window.renderSyncStatusPill) window.renderSyncStatusPill();
+    if (window.renderSyncConflictBanner) window.renderSyncConflictBanner();
   }
 
   async function loadClient() {
     const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
     return createClient(cfg.url, cfg.anonKey);
+  }
+
+  async function getSession() {
+    if (!client) return null;
+    const { data } = await client.auth.getSession();
+    return data.session || null;
+  }
+
+  function stripForCloud(fullState) {
+    const payload = JSON.parse(JSON.stringify(fullState));
+    delete payload.productImages;
+    payload._syncNote = 'SKU photos in Storage v2 — URLs in productImageMeta';
+    return payload;
   }
 
   function applyRemote(remoteState, revision, updatedAt) {
@@ -48,7 +62,8 @@
     const merged = {
       ...current,
       ...remoteState,
-      productImages: { ...localImages, ...(remoteState.productImages || {}) }
+      productImages: { ...localImages, ...(remoteState.productImages || {}) },
+      productImageMeta: { ...(current.productImageMeta || {}), ...(remoteState.productImageMeta || {}) }
     };
     if (!merged.syncMeta) merged.syncMeta = {};
     merged.syncMeta.revision = revision || 0;
@@ -61,15 +76,37 @@
 
   async function pull() {
     if (!client) return null;
-    const { data, error } = await client.rpc('fetch_drop_state', {
-      p_slug: cfg.dropSlug,
-      p_pin: cfg.syncPin
-    });
-    if (error) throw error;
-    if (!data?.found) return null;
-    status.revision = Number(data.revision) || 0;
-    status.lastSyncAt = data.updated_at || new Date().toISOString();
-    return data;
+    const session = await getSession();
+
+    if (session) {
+      const { data, error } = await client.rpc('fetch_drop_state_auth', { p_slug: cfg.dropSlug });
+      if (error) throw error;
+      if (data?.error === 'not_authorized') {
+        status.auth = 'needs_invite';
+        return null;
+      }
+      if (!data?.found) return null;
+      status.revision = Number(data.revision) || 0;
+      status.lastSyncAt = data.updated_at || new Date().toISOString();
+      status.auth = 'member';
+      return data;
+    }
+
+    if (cfg.syncPin) {
+      const { data, error } = await client.rpc('fetch_drop_state', {
+        p_slug: cfg.dropSlug,
+        p_pin: cfg.syncPin
+      });
+      if (error) throw error;
+      if (!data?.found) return null;
+      status.revision = Number(data.revision) || 0;
+      status.lastSyncAt = data.updated_at || new Date().toISOString();
+      status.auth = 'legacy_pin';
+      return data;
+    }
+
+    status.auth = 'signed_out';
+    return null;
   }
 
   async function push(fullState) {
@@ -79,14 +116,35 @@
       const payload = stripForCloud(fullState);
       if (!payload.syncMeta) payload.syncMeta = {};
       payload.syncMeta.updatedAt = new Date().toISOString();
+      const revision = Number(fullState.syncMeta?.revision) || 0;
+      const session = await getSession();
+      let data;
+      let error;
 
-      const { data, error } = await client.rpc('save_drop_state', {
-        p_slug: cfg.dropSlug,
-        p_pin: cfg.syncPin,
-        p_state: payload,
-        p_revision: Number(fullState.syncMeta?.revision) || 0
-      });
+      if (session && status.auth === 'member') {
+        ({ data, error } = await client.rpc('save_drop_state_auth', {
+          p_slug: cfg.dropSlug,
+          p_state: payload,
+          p_revision: revision
+        }));
+      } else if (cfg.syncPin) {
+        ({ data, error } = await client.rpc('save_drop_state', {
+          p_slug: cfg.dropSlug,
+          p_pin: cfg.syncPin,
+          p_state: payload,
+          p_revision: revision
+        }));
+      } else {
+        status.lastError = 'Sign in and redeem squad invite to sync';
+        return;
+      }
+
       if (error) throw error;
+      if (data?.error === 'not_authorized') {
+        status.auth = 'needs_invite';
+        status.lastError = 'Redeem squad invite in Sign in panel';
+        return;
+      }
 
       if (data?.conflict) {
         status.conflict = true;
@@ -112,16 +170,67 @@
       console.warn('Drop OS sync push failed.', e);
     } finally {
       pushing = false;
-      if (window.renderSyncPanel) window.renderSyncPanel();
-      if (window.renderSyncStatusPill) window.renderSyncStatusPill();
-      if (window.renderSyncConflictBanner) window.renderSyncConflictBanner();
+      notifyUi();
     }
   }
 
   function schedulePush(fullState) {
-    if (!client) return;
+    if (!client || status.auth !== 'member' && !cfg.syncPin) return;
     clearTimeout(pushTimer);
     pushTimer = setTimeout(() => push(fullState), DEBOUNCE_MS);
+  }
+
+  async function uploadSkuImage(productId, file) {
+    if (!client) return null;
+    const session = await getSession();
+    if (!session || status.auth !== 'member') return null;
+
+    const ext = (file.name || 'jpg').split('.').pop()?.toLowerCase() || 'jpg';
+    const safeExt = ['jpg', 'jpeg', 'png', 'webp'].includes(ext) ? ext : 'jpg';
+    const path = `${cfg.dropSlug}/${productId}/${Date.now()}.${safeExt}`;
+
+    const { error } = await client.storage.from(BUCKET).upload(path, file, {
+      upsert: true,
+      contentType: file.type || `image/${safeExt === 'jpg' ? 'jpeg' : safeExt}`
+    });
+    if (error) throw error;
+
+    const { data } = client.storage.from(BUCKET).getPublicUrl(path);
+    return { url: data.publicUrl, path, storage: true, uploadedAt: new Date().toISOString() };
+  }
+
+  async function deleteSkuImage(path) {
+    if (!client || !path) return;
+    const session = await getSession();
+    if (!session || status.auth !== 'member') return;
+    await client.storage.from(BUCKET).remove([path]);
+  }
+
+  async function refreshAuthState() {
+    const session = await getSession();
+    status.userEmail = session?.user?.email || null;
+    if (!session) {
+      status.auth = 'signed_out';
+      status.mode = 'auth-required';
+      return status;
+    }
+
+    try {
+      const probe = await client.rpc('fetch_drop_state_auth', { p_slug: cfg.dropSlug });
+      if (probe.data?.error === 'not_authorized') {
+        status.auth = 'needs_invite';
+        status.mode = 'auth-required';
+      } else {
+        status.auth = 'member';
+        status.mode = 'cloud';
+      }
+    } catch (e) {
+      status.auth = 'signed_out';
+      status.mode = 'auth-required';
+      status.lastError = e.message;
+    }
+    notifyUi();
+    return status;
   }
 
   async function init() {
@@ -133,40 +242,44 @@
 
     try {
       client = await loadClient();
-      status.mode = 'cloud';
-      const bridge = window.DropOSBridge;
-      const remote = await pull();
+      window.DropOSAuth?.bindClient?.(client, cfg);
+      await refreshAuthState();
 
-      if (remote?.state && Object.keys(remote.state).length) {
-        const remoteAt = remote.updated_at ? new Date(remote.updated_at).getTime() : 0;
-        const local = window.DropOSBridge?.getState?.();
-        const localAt = local?.syncMeta?.updatedAt
-          ? new Date(local.syncMeta.updatedAt).getTime()
-          : 0;
-
-        if (remoteAt >= localAt) {
-          applyRemote(remote.state, remote.revision, remote.updated_at);
-        } else {
+      if (status.auth === 'member') {
+        const bridge = window.DropOSBridge;
+        const remote = await pull();
+        if (remote?.state && Object.keys(remote.state).length) {
+          const remoteAt = remote.updated_at ? new Date(remote.updated_at).getTime() : 0;
+          const local = bridge?.getState?.();
+          const localAt = local?.syncMeta?.updatedAt
+            ? new Date(local.syncMeta.updatedAt).getTime()
+            : 0;
+          if (remoteAt >= localAt) {
+            applyRemote(remote.state, remote.revision, remote.updated_at);
+          } else {
+            await push(bridge.getState());
+          }
+        } else if (bridge?.getState) {
           await push(bridge.getState());
         }
-      } else if (bridge?.getState) {
-        await push(bridge.getState());
+        status.lastError = null;
+      } else if (status.auth === 'signed_out' || status.auth === 'needs_invite') {
+        status.mode = 'auth-required';
       }
-
-      status.lastError = null;
     } catch (e) {
       status.mode = 'local';
       status.lastError = e.message || 'Could not connect to Supabase';
       console.warn('Drop OS sync init failed — staying local.', e);
     }
 
-    if (window.renderSyncPanel) window.renderSyncPanel();
+    notifyUi();
     return status;
   }
 
   async function pullNow() {
     if (!client) return status;
     try {
+      await refreshAuthState();
       const remote = await pull();
       if (remote?.state) {
         applyRemote(remote.state, remote.revision, remote.updated_at);
@@ -177,19 +290,16 @@
     } catch (e) {
       status.lastError = e.message || 'Pull failed';
     }
-    if (window.renderSyncPanel) window.renderSyncPanel();
-    if (window.renderSyncStatusPill) window.renderSyncStatusPill();
-    if (window.renderSyncConflictBanner) window.renderSyncConflictBanner();
+    notifyUi();
     return status;
   }
 
   async function pushNow() {
     const current = window.DropOSBridge?.getState?.();
     if (!client || !current) return status;
+    await refreshAuthState();
     await push(current);
-    if (window.renderSyncPanel) window.renderSyncPanel();
-    if (window.renderSyncStatusPill) window.renderSyncStatusPill();
-    if (window.renderSyncConflictBanner) window.renderSyncConflictBanner();
+    notifyUi();
     return status;
   }
 
@@ -210,9 +320,7 @@
     } catch (e) {
       status.lastError = e.message || 'Force push failed';
     }
-    if (window.renderSyncPanel) window.renderSyncPanel();
-    if (window.renderSyncStatusPill) window.renderSyncStatusPill();
-    if (window.renderSyncConflictBanner) window.renderSyncConflictBanner();
+    notifyUi();
     return status;
   }
 
@@ -222,6 +330,10 @@
     pullNow,
     pushNow,
     pushForce,
+    uploadSkuImage,
+    deleteSkuImage,
+    refreshAuthState,
+    getClient: () => client,
     getStatus: () => ({ ...status })
   };
 })();

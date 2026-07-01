@@ -67,11 +67,14 @@ Checked: 2026-07-01
 - **Live:** https://site-blond-kappa.vercel.app/drop-os
 - **Guide:** https://site-blond-kappa.vercel.app/guide
 - **Code:** `site/drop-os.html`, `site/drop-os.js`, `site/drop-os-supabase.js`
-- **Supabase project:** `vorg-eavy-drop-os` (`ca-central-1`) — schema in `site/supabase/schema.sql`
-- **Squad sync:** Vercel env vars `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `DROP_SYNC_SLUG`, `DROP_SYNC_PIN` → `build-config.mjs` at deploy
-- **Local config:** copy `site/drop-os-config.example.js` → `drop-os-config.js` (gitignored)
-- **QA:** `python -m http.server 4182` in `site/`, then `node site/test-drop-os-flow.mjs` (29 tests)
-- **Honest limit:** sync pin is squad-shared; SKU photos stay local until Storage v2
+- **Supabase project:** `vorg-eavy-drop-os` (`ca-central-1`) — `site/supabase/schema-v2.sql` (auth + Storage)
+- **Squad sync v2:** email magic link + invite redemption — no shared PIN on `drop-001` (`auth_only = true`)
+- **Vercel env:** `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `DROP_SYNC_SLUG` (`drop-001`); optional `DROP_INVITE_CODE` for onboarding hint only
+- **Squad invite (seed):** `ve-invite-drop001-2026` — rotate in Supabase if leaked
+- **Storage:** bucket `drop-sku-images` — SKU photos upload when signed in as squad member
+- **QA:** `python -m http.server 4182` in `site/`, then `node site/test-drop-os-flow.mjs` (34 tests)
+- **Manufacturing truth:** Factory lane — vendor quote + PP sample proof URLs per SKU
+- **Investor read:** working desk scores vs verified debrief metrics (Known / Assumed / Unresolved)
 
 ## Current Open Questions
 

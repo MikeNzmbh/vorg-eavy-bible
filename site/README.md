@@ -10,9 +10,11 @@ Checked: 2026-07-01
 - `DROP_OS_GUIDE.md` - same guide in Markdown for repo handoff.
 - `drop-os.css` - dashboard styling.
 - `drop-os.js` - dashboard interactions, local storage, CSV import/export, snapshot copy.
-- `drop-os-supabase.js` - optional Supabase squad sync (loads when `drop-os-config.js` is present).
-- `drop-os-config.example.js` - template for Supabase URL, anon key, drop slug, and sync pin.
-- `supabase/schema.sql` - RPC-backed shared state table for squad sync.
+- `drop-os-supabase.js` - Supabase auth sync + Storage SKU images (when `drop-os-config.js` is present).
+- `drop-os-auth.js` - email OTP sign-in + squad invite redemption.
+- `drop-os-config.example.js` - template for Supabase URL, anon key, and drop slug.
+- `supabase/schema-v2.sql` - auth members, invites, RPC sync, Storage bucket (current).
+- `supabase/schema.sql` - legacy pin sync (superseded by v2 for Drop 001).
 - `vercel.json` - `/drop-os` and `/guide` rewrites for deploy.
 
 ## How People Access It
@@ -44,7 +46,7 @@ For team sharing, host the `site/` folder through a static host such as Vercel, 
 | Add squad move | Drop desk → This week's run |
 | Clear checklist item | Factory / Online drop / Pop-up → tap card |
 | Start Drop 002+ | Handoff → snapshot → Start next drop |
-| Sync squad | Handoff → CSV, snapshot, or Supabase (config file) |
+| Sync squad | Handoff → Sign in (email + invite) or snapshot export |
 
 ### Drop lanes (sidebar)
 
@@ -62,15 +64,17 @@ For team sharing, host the `site/` folder through a static host such as Vercel, 
 - Smoke test: `node site/test-drop-os-flow.mjs` (with `python -m http.server 4182` in `site/`)
 - Regenerate guide screenshots: `node site/capture-guide-screenshots.mjs`
 
-### Supabase squad sync (optional)
+### Supabase squad sync v2
 
-1. Create a Supabase project.
-2. Run `site/supabase/schema.sql` in the SQL editor.
-3. Seed a row: `insert into drop_states (drop_slug, sync_pin, state) values ('drop-001', 'your-pin', '{}');`
-4. Copy `drop-os-config.example.js` → `drop-os-config.js` (gitignored) with URL, anon key, slug, and pin.
-5. Redeploy `site/`. Handoff → Squad sync shows status; edits debounce to cloud. SKU photos stay local until Storage v2.
+1. Run `site/supabase/schema-v2.sql` in the Supabase SQL editor.
+2. Enable Email auth (magic link) in Supabase Auth settings.
+3. Seed invite + `drop_states` row (included in schema-v2.sql for `drop-001`).
+4. Set Vercel env: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `DROP_SYNC_SLUG=drop-001`.
+5. Squad flow: **Sign in** → email link → redeem invite code → cloud sync + SKU photo Storage.
 
-Without config, the browser saves to local storage only.
+Without sign-in, the browser saves to local storage only; SKU photos stay in-browser until authenticated.
+
+**Onboarding invite (Drop 001 seed):** `ve-invite-drop001-2026` — share privately; rotate in `drop_invites` if leaked.
 
 ## Squad readiness — when to use Drop OS
 
@@ -79,11 +83,10 @@ Without config, the browser saves to local storage only.
 | Gate | Status |
 | --- | --- |
 | Live URL + guide | ✅ https://site-blond-kappa.vercel.app/drop-os |
-| Smoke tests | ✅ 29/29 local |
-| Squad sync (Supabase) | ✅ Production env configured |
-| Milestones, tasks, heat, SKUs | ✅ |
-| Checklists → bag check math | ✅ |
-| Debrief + investor read | ✅ |
+| Smoke tests | ✅ 34/34 local |
+| Squad sync (Supabase v2) | ✅ Auth + Storage on production |
+| Manufacturing proof board | ✅ Factory lane |
+| Debrief + investor tiers | ✅ Working vs verified |
 | Daily snapshot ritual | ✅ copy + download |
 | Conflict handling | ✅ pull / force push |
 
@@ -91,12 +94,12 @@ Without config, the browser saves to local storage only.
 
 **Before you rely on it for spend calls:**
 
-1. Two teammates open the live URL — confirm top-bar pill shows **Cloud**.
-2. Edit a milestone on device A — device B pulls and sees the change.
-3. Run one daily snapshot to Drive.
-4. Keep sync pin squad-private; rotate if leaked.
+1. Teammate opens live URL → **Sign in** → magic link → redeem squad invite.
+2. Top-bar pill shows **Cloud**; edit on device A — device B pulls and sees the change.
+3. Upload a SKU photo while signed in — confirm Storage URL in `productImageMeta`.
+4. Run one daily snapshot to Drive as backup.
 
-**Still out of scope (v2):** per-user auth, SKU photo cloud storage, Shopify/Sheets live feeds, mobile polish pass.
+**Still out of scope:** Shopify/Sheets live feeds, mobile polish pass, vendor-quote PDF parsing.
 
 ## Design References
 
@@ -109,11 +112,11 @@ Used for inspiration only, not copied.
 
 ## Current Limit
 
-This is a working static prototype with optional Supabase sync. It is usable by non-Codex teammates. SKU photos and very large snapshots still favor local export until Storage ships.
+This is a working static prototype with Supabase v2 squad auth when deployed. Manufacturing and sell-through metrics are tiered (Known / Assumed / Unresolved) — not manufacturing-ready until vendor quotes, PP samples, and reconciled sell-through proof land.
 
 ## Current Algorithm
 
-The dashboard now uses `VORG Drop OS score v0.2`.
+The dashboard uses `VORG Drop OS score v0.3`.
 
 - Launch confidence is proof-gated by evidence, product proof, operations, stage momentum, signal heat, campaign proof, and risk drag.
 - Campaign success rate remains a working forecast, not a guarantee.
