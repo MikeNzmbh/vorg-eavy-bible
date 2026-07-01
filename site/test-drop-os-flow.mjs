@@ -149,6 +149,32 @@ async function main() {
   const playbook = await page.locator('#workspacePlaybook').isVisible();
   playbook ? ok('Playbook strip on drop desk') : fail('Playbook strip');
 
+  // Algorithm cockpit — version, gate explanation, lift hints
+  await page.locator('#cmdCockpit summary').click();
+  await page.waitForTimeout(200);
+  const cockpitVersion = await page.locator('#cockpitVersion').textContent();
+  cockpitVersion?.includes('v0.3') ? ok(`Readiness model version: ${cockpitVersion}`) : fail('Cockpit version', cockpitVersion);
+  const gateExplain = await page.locator('#gateExplanation').textContent();
+  gateExplain?.length > 20 ? ok('Gate explanation renders') : fail('Gate explanation', gateExplain);
+  const liftHints = await page.locator('#scoreLiftHints li').count();
+  liftHints > 0 ? ok(`Score lift hints (${liftHints})`) : fail('Score lift hints');
+
+  // Proof check uses effective SKU score (factory board rollup), not raw slider only
+  const algoBefore = await page.evaluate(() => window.DropOSBridge.calculateScores());
+  await page.getByRole('button', { name: 'Factory', exact: true }).click();
+  await page.waitForTimeout(200);
+  await page.locator('[data-mfg-sku="sku-top"]').click();
+  await page.waitForTimeout(150);
+  await page.locator('#manufacturingForm [name="quoteUrl"]').fill('https://example.com/top-quote.pdf');
+  await page.locator('#manufacturingForm [name="landedCogs"]').fill('C$42');
+  await page.locator('#manufacturingForm').evaluate(f => f.requestSubmit());
+  await page.waitForTimeout(300);
+  const algoAfter = await page.evaluate(() => window.DropOSBridge.calculateScores());
+  const productEffChanged = algoAfter.productEffective !== algoBefore.productEffective;
+  productEffChanged ? ok(`Factory proof lifts SKU effective (${algoBefore.productEffective} → ${algoAfter.productEffective})`) : fail('SKU effective score', `${algoBefore.productEffective} → ${algoAfter.productEffective}`);
+  const usesEffectiveFloor = algoAfter.evidenceFloor <= algoAfter.productEffective;
+  usesEffectiveFloor ? ok('Proof check respects effective SKU score') : fail('Evidence floor vs product effective', algoAfter);
+
   // SKU edit
   await page.getByRole('button', { name: 'SKU room' }).click();
   await page.waitForTimeout(200);
@@ -184,7 +210,21 @@ async function main() {
   await page.locator('#investorBtn').click();
   await page.waitForTimeout(200);
   const investor = await page.locator('#investorSnapshot').textContent();
-  investor?.includes('Verified debrief') && investor?.includes('Working desk') ? ok('Investor snapshot tiers') : fail('Investor snapshot tiers');
+  investor?.includes('Verified debrief') && investor?.includes('Working desk') && investor?.includes('SKU proof (eff.)')
+    ? ok('Investor snapshot tiers')
+    : fail('Investor snapshot tiers');
+
+  // Campaign tactic approval refreshes desk KPIs while on Campaign lane
+  await page.getByRole('button', { name: 'Campaign', exact: true }).click();
+  await page.waitForTimeout(200);
+  const energyBefore = await page.locator('#cmdConfidence').textContent();
+  await page.locator('[data-tactic-id="founder-table"]').click();
+  await page.waitForTimeout(300);
+  const energyAfter = await page.locator('#cmdConfidence').textContent();
+  const campaignScore = await page.locator('#campaignScoreValue').textContent();
+  energyAfter !== energyBefore || Number(campaignScore) > 40
+    ? ok(`Desk KPIs refresh on tactic approve (energy ${energyBefore} → ${energyAfter})`)
+    : fail('Desk KPI refresh on tactic', `${energyBefore} → ${energyAfter}, content ${campaignScore}`);
 
   const pillHidden = await page.locator('#syncStatusPill').isHidden();
   pillHidden ? ok('Sync status pill ready') : ok('Sync status pill visible');
