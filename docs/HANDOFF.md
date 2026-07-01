@@ -1,6 +1,6 @@
 # VORG-EAVY Agent Handoff
 
-Last updated: 2026-06-25
+Last updated: 2026-07-01
 
 ## What This Repo Is
 
@@ -60,6 +60,19 @@ Borrowed from the Atelier repo:
 
 Apply that mindset to strategy too. Do not let docs drift into hype without evidence.
 
+## Drop OS (internal squad desk)
+
+Checked: 2026-07-01
+
+- **Live:** https://site-blond-kappa.vercel.app/drop-os
+- **Guide:** https://site-blond-kappa.vercel.app/guide
+- **Code:** `site/drop-os.html`, `site/drop-os.js`, `site/drop-os-supabase.js`
+- **Supabase project:** `vorg-eavy-drop-os` (`ca-central-1`) — schema in `site/supabase/schema.sql`
+- **Squad sync:** Vercel env vars `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `DROP_SYNC_SLUG`, `DROP_SYNC_PIN` → `build-config.mjs` at deploy
+- **Local config:** copy `site/drop-os-config.example.js` → `drop-os-config.js` (gitignored)
+- **QA:** `python -m http.server 4182` in `site/`, then `node site/test-drop-os-flow.mjs` (29 tests)
+- **Honest limit:** sync pin is squad-shared; SKU photos stay local until Storage v2
+
 ## Current Open Questions
 
 - Which vendor can produce the jacket at the target landed COGS?
@@ -77,3 +90,4 @@ Apply that mindset to strategy too. Do not let docs drift into hype without evid
 4. Build a Shopify information architecture doc.
 5. Create a decision log for every major strategic choice.
 6. Keep this repo synced with the Atelier app when technical capabilities change.
+7. Run Drop 001 milestones in Drop OS and keep Supabase state backed up via Handoff snapshots.

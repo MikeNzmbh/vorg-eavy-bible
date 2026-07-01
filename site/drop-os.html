@@ -4,207 +4,486 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VORG-EAVY Drop OS</title>
-  <meta name="description" content="Team-facing VORG-EAVY Drop Operating System for stage gates, trend signals, stress tests, and campaign proof." />
-  <meta name="theme-color" content="#f6f4ef" />
+  <meta name="description" content="VORG-EAVY Drop OS — the internal drop desk. Bag checks, heat radar, SKU room, campaign proof, and pop-up ops for Drop 001." />
+  <meta name="theme-color" content="#F5F7FB" />
   <link rel="icon" href="assets/logo_mark.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="drop-os.css" />
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+  <script src="drop-os-config.js" defer onerror="void 0"></script>
+  <script src="drop-os-supabase.js" defer></script>
   <script src="drop-os.js" defer></script>
 </head>
 <body>
   <div class="app-shell">
-    <aside class="sidebar" aria-label="Drop OS navigation">
-      <a class="brand-lockup" href="index.html" aria-label="Open VORG-EAVY public site">
-        <img src="assets/logo_black.png" alt="VORG-EAVY" />
-        <span>Drop OS</span>
+
+    <!-- Sidebar — Flowza / Taskflow Behance pattern -->
+    <aside class="sidebar" aria-label="Workspace navigation">
+      <a class="sidebar-brand" href="index.html">
+        <span class="brand-mark"><img src="assets/logo_mark.svg" alt="" width="22" height="22" /></span>
+        <div class="sidebar-brand-text">
+          <strong>Drop OS</strong>
+          <span>VORG-EAVY · one drop · one city</span>
+        </div>
       </a>
 
-      <div class="sidebar-section">
-        <p class="sidebar-label">Drop</p>
-        <div class="drop-switch">
-          <strong>Drop 001</strong>
-          <span>Ottawa/Gatineau - FW26</span>
-        </div>
-      </div>
+      <p class="nav-section">The lanes</p>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-workspace="command" type="button">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Drop desk</span>
+        </button>
+        <button class="nav-item" data-workspace="signals" type="button">
+          <i data-lucide="radio"></i>
+          <span>Heat radar</span>
+        </button>
+        <button class="nav-item" data-workspace="product" type="button">
+          <i data-lucide="layers"></i>
+          <span>SKU room</span>
+        </button>
+        <button class="nav-item" data-workspace="campaign" type="button">
+          <i data-lucide="zap"></i>
+          <span>Campaign</span>
+        </button>
+        <button class="nav-item" data-workspace="production" type="button">
+          <i data-lucide="factory"></i>
+          <span>Factory</span>
+        </button>
+        <button class="nav-item" data-workspace="launch" type="button">
+          <i data-lucide="rocket"></i>
+          <span>Online drop</span>
+        </button>
+        <button class="nav-item" data-workspace="events" type="button">
+          <i data-lucide="calendar"></i>
+          <span>Pop-up</span>
+        </button>
+        <button class="nav-item" data-workspace="cities" type="button">
+          <i data-lucide="map-pin"></i>
+          <span>Next city</span>
+        </button>
+        <button class="nav-item" data-workspace="postmortem" type="button">
+          <i data-lucide="file-check"></i>
+          <span>Debrief</span>
+        </button>
+        <button class="nav-item" data-workspace="data" type="button">
+          <i data-lucide="hard-drive"></i>
+          <span>Handoff</span>
+        </button>
+      </nav>
 
-      <div class="sidebar-section">
-        <p class="sidebar-label">Stage gates</p>
-        <div id="stageNav" class="stage-nav"></div>
-      </div>
-
-      <div class="sidebar-section sidebar-actions">
-        <p class="sidebar-label">Portable access</p>
-        <button id="importButton" class="utility-button" type="button">
-          <i data-lucide="upload"></i>
-          Import CSV
-        </button>
-        <button id="exportButton" class="utility-button" type="button">
-          <i data-lucide="download"></i>
-          Export CSV
-        </button>
-        <button id="snapshotButton" class="utility-button" type="button">
-          <i data-lucide="copy"></i>
-          Copy Snapshot
-        </button>
-        <button id="resetButton" class="utility-button danger" type="button">
-          <i data-lucide="refresh-cw"></i>
-          Reset Demo
-        </button>
-        <input id="csvInput" class="hidden-input" type="file" accept=".csv,text/csv" />
+      <div class="sidebar-project">
+        <span class="project-label">Live drop</span>
+        <strong id="sidebarDropLabel">Drop 001</strong>
+        <span class="project-meta" id="sidebarDropMeta">Ottawa/Gatineau · FW26</span>
       </div>
     </aside>
 
-    <main class="workspace">
-      <header class="topbar">
-        <div>
-          <p class="eyebrow">Internal operating dashboard</p>
-          <h1>Signal, stress test, launch.</h1>
+    <div class="main-frame">
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <p class="breadcrumb"><span id="breadcrumbDrop">Drop 001</span> / <span id="topBarTitle">Drop desk</span></p>
+          <h1 class="top-bar-title" id="topBarHeading">Drop desk</h1>
+          <p class="top-bar-sub" id="topBarSub">Bag check, blockers, this week's run</p>
         </div>
-        <div class="topbar-actions">
-          <a class="link-button" href="../strategy/drop-operating-system.md">
-            <i data-lucide="file-text"></i>
-            Operating Doc
-          </a>
-          <a class="link-button" href="../launch/campaign-proof-playbook.md">
-            <i data-lucide="megaphone"></i>
-            Campaign Playbook
-          </a>
-          <a class="link-button dark" href="index.html">
-            <i data-lucide="external-link"></i>
-            Public Site
-          </a>
+        <div class="top-bar-actions">
+          <button class="top-btn outline" id="helpOpenBtn" type="button">
+            <i data-lucide="circle-help"></i>
+            <span>Help</span>
+          </button>
+          <a class="top-btn outline" href="drop-os-guide.html">Full guide</a>
+          <a class="top-btn outline" href="../strategy/drop-operating-system.md">Operating doc</a>
+          <a class="top-btn primary" href="index.html">Public site</a>
         </div>
       </header>
 
-      <section class="metric-grid" aria-label="Drop health summary">
-        <article class="metric">
-          <span class="metric-label">Launch confidence</span>
-          <strong id="metricConfidence">0%</strong>
-          <small id="metricGate">Waiting for scores</small>
-        </article>
-        <article class="metric">
-          <span class="metric-label">Campaign success rate</span>
-          <strong id="metricCampaign">0%</strong>
-          <small>Working forecast, not a guarantee</small>
-        </article>
-        <article class="metric">
-          <span class="metric-label">Stage progress</span>
-          <strong id="metricProgress">0/10</strong>
-          <small id="metricProgressText">No stages complete</small>
-        </article>
-        <article class="metric">
-          <span class="metric-label">Next city signal</span>
-          <strong id="metricCity">Montreal</strong>
-          <small id="metricCityText">Based on current inputs</small>
-        </article>
-      </section>
+      <div id="workspacePlaybook" class="workspace-playbook" hidden></div>
 
-      <section class="hero-board">
-        <div class="stage-detail" id="stageDetail"></div>
-        <div class="proof-preview">
-          <div class="preview-header">
-            <p class="eyebrow">Product proof</p>
-            <button id="cycleProductButton" class="icon-button" type="button" aria-label="Cycle product preview">
-              <i data-lucide="rotate-cw"></i>
-            </button>
-          </div>
-          <div id="productPreview" class="product-preview"></div>
-        </div>
-      </section>
+      <main class="workspace-main">
 
-      <section class="tool-grid">
-        <section class="panel stress-panel" aria-labelledby="stressTitle">
-          <div class="panel-header">
-            <div>
-              <p class="eyebrow">Stress test</p>
-              <h2 id="stressTitle">Should this idea move forward?</h2>
+        <section class="ws active" id="ws-command">
+          <div class="ws-inner">
+            <div class="kpi-row">
+              <article class="kpi-card kpi-decision" id="kpiDecision">
+                <div class="kpi-icon"><i data-lucide="shield"></i></div>
+                <div class="kpi-body">
+                  <span class="kpi-label">Bag check</span>
+                  <strong class="kpi-value gate-badge" id="cmdGateResult">HOLD</strong>
+                  <p class="kpi-note" id="cmdGateText">Pause the drop — reset or cut</p>
+                </div>
+              </article>
+              <article class="kpi-card">
+                <div class="kpi-icon indigo"><i data-lucide="trending-up"></i></div>
+                <div class="kpi-body">
+                  <span class="kpi-label">Drop energy</span>
+                  <strong class="kpi-value"><span id="cmdConfidence">52</span><small>%</small></strong>
+                  <p class="kpi-note">Proof-gated — not a sell-through promise</p>
+                </div>
+              </article>
+              <article class="kpi-card">
+                <div class="kpi-icon violet"><i data-lucide="megaphone"></i></div>
+                <div class="kpi-body">
+                  <span class="kpi-label">Sell-through vibe</span>
+                  <strong class="kpi-value"><span id="cmdCampaignRate">48</span><small>%</small></strong>
+                  <p class="kpi-note">Working forecast from heat + content</p>
+                </div>
+              </article>
+              <article class="kpi-card">
+                <div class="kpi-icon slate"><i data-lucide="flag"></i></div>
+                <div class="kpi-body">
+                  <span class="kpi-label">Gates cleared</span>
+                  <strong class="kpi-value" id="cmdStageProgress">0 / 10</strong>
+                  <p class="kpi-note">Of 10 drop gates — no skipping</p>
+                </div>
+              </article>
             </div>
-            <span id="stressBadge" class="status-badge">Test</span>
-          </div>
-          <div id="stressControls" class="slider-stack"></div>
-          <div class="decision-strip">
-            <div>
-              <span>Decision</span>
-              <strong id="decisionText">Revise before spend</strong>
+
+            <div class="cmd-spend" id="cmdSpend">
+              <i data-lucide="lock"></i>
+              <span id="cmdSpendText">Bag locked — rebuild or hard pause before any major spend</span>
             </div>
-            <div>
-              <span>Primary weakness</span>
-              <strong id="weaknessText">Evidence</strong>
+
+            <div class="backup-nudge" id="backupNudge" hidden></div>
+
+            <div class="cmd-grid">
+              <article class="panel-card">
+                <header class="panel-head">
+                  <i data-lucide="alert-circle"></i>
+                  <span>What's giving mid</span>
+                </header>
+                <h2 id="cmdBlockerTitle">Proof check</h2>
+                <p class="card-body" id="cmdBlockerText">Weakest proof input is pulling the bag check below green-light.</p>
+              </article>
+              <article class="panel-card">
+                <header class="panel-head">
+                  <i data-lucide="git-branch"></i>
+                  <span>Current milestone</span>
+                </header>
+                <h2 id="cmdStageName">Campaign Proof</h2>
+                <div class="cmd-stage-meta">
+                  <span id="cmdStageOwner">Campaign lead</span>
+                  <span class="badge" id="cmdStageStatus">not started</span>
+                </div>
+                <p class="card-body" id="cmdStageNext">&rarr; Shoot the 7-day sample proof sprint once samples arrive.</p>
+              </article>
+              <article class="panel-card">
+                <header class="panel-head">
+                  <i data-lucide="list-todo"></i>
+                  <span>This week's run</span>
+                </header>
+                <div id="cmdTaskList" class="cmd-task-list"></div>
+              </article>
             </div>
+
+            <div class="cmd-metrics" id="cmdMetrics">
+              <div class="cmd-metric">
+                <span class="cmd-metric-label">Next city heat</span>
+                <strong id="cmdCitySignal">Montreal</strong>
+              </div>
+              <div class="cmd-metric">
+                <span class="cmd-metric-label">Proof check</span>
+                <strong id="cmdEvidenceFloor">42</strong>
+              </div>
+              <div class="cmd-metric">
+                <span class="cmd-metric-label">Milestone pace</span>
+                <strong id="cmdStageMomentum">0</strong>
+              </div>
+              <div class="cmd-metric">
+                <span class="cmd-metric-label">Risk tax</span>
+                <strong id="cmdRiskDrag">0</strong>
+              </div>
+              <div class="cmd-metric">
+                <span class="cmd-metric-label">Checklists</span>
+                <strong id="cmdReadiness">0%</strong>
+              </div>
+            </div>
+
+            <section id="proofLinksPanel" class="proof-links-panel"></section>
+
+            <details class="cockpit-panel" id="cmdCockpit">
+              <summary class="cockpit-toggle">
+                <span>Readiness model</span>
+                <span class="cockpit-version">v0.2</span>
+              </summary>
+              <div class="cockpit-content">
+                <div id="algorithmBreakdown" class="algo-grid"></div>
+                <div id="stressControls" class="stress-grid"></div>
+                <div class="decision-strip">
+                  <div class="decision-strip-item">
+                    <span>Bag check</span>
+                    <strong id="decisionText">Fix gaps before spend</strong>
+                  </div>
+                  <div class="decision-strip-item">
+                    <span>Weakest link</span>
+                    <strong id="weaknessText">Proof quality</strong>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <div class="cmd-timeline">
+              <header class="section-head">
+                <h3>Drop milestones</h3>
+                <p>Tap a gate to open the workbench — update status, bag check, and proof link</p>
+              </header>
+              <div id="stageTimeline" class="timeline-row"></div>
+            </div>
+
+            <div id="stageDetail" class="stage-detail-panel"></div>
           </div>
         </section>
 
-        <section class="panel signal-panel" aria-labelledby="signalTitle">
-          <div class="panel-header">
-            <div>
-              <p class="eyebrow">Signal teller</p>
-              <h2 id="signalTitle">What is starting to move?</h2>
+        <section class="ws" id="ws-signals">
+          <div class="ws-inner">
+            <div class="ws-header">
+              <div>
+                <p class="eyebrow">Heat radar</p>
+                <h2 class="ws-title">Who's actually pulling?</h2>
+                <p class="ws-sub">DMs, saves, waitlist, fit questions, creator buzz — log it while it's hot, not mid.</p>
+              </div>
             </div>
+            <div id="signalCityBar" class="city-bar"></div>
+            <div class="flow-card">
+              <header class="flow-card-head">
+                <h3>Log heat</h3>
+                <p>Name the pull, where you saw it, and how hot it feels (0–100). Feeds next-city scores and drop energy.</p>
+              </header>
+              <form id="signalForm" class="inline-form">
+                <input id="signalItem" type="text" placeholder="e.g. Jacket fit DMs after founder table" required />
+                <input id="signalSource" type="text" placeholder="Source — TikTok, IG DMs, pop-up…" aria-label="Signal source" />
+                <select id="signalCity" aria-label="Signal city">
+                  <option>Ottawa/Gatineau</option>
+                  <option>Montreal</option>
+                  <option>Toronto</option>
+                  <option>Vancouver</option>
+                  <option>Halifax</option>
+                </select>
+                <input id="signalStrength" type="number" min="0" max="100" value="55" aria-label="Heat score" title="0–100: how hot the pull feels" />
+                <button class="btn-primary" type="submit" aria-label="Log heat">
+                  <i data-lucide="plus"></i>
+                  <span>Log heat</span>
+                </button>
+              </form>
+            </div>
+            <div id="signalList" class="signal-grid"></div>
           </div>
-          <form id="signalForm" class="inline-form">
-            <input id="signalItem" type="text" placeholder="Signal or item" required />
-            <select id="signalCity" aria-label="Signal city">
-              <option>Ottawa/Gatineau</option>
-              <option>Montreal</option>
-              <option>Toronto</option>
-              <option>Vancouver</option>
-              <option>Halifax</option>
-            </select>
-            <input id="signalStrength" type="number" min="0" max="100" value="55" aria-label="Signal strength" />
-            <button class="icon-button solid" type="submit" aria-label="Add signal">
-              <i data-lucide="plus"></i>
-            </button>
-          </form>
-          <div id="signalList" class="signal-list"></div>
         </section>
-      </section>
 
-      <section class="tool-grid lower">
-        <section class="panel campaign-panel" aria-labelledby="campaignTitle">
-          <div class="panel-header">
-            <div>
-              <p class="eyebrow">Campaign lab</p>
-              <h2 id="campaignTitle">Real-proof mechanics</h2>
+        <section class="ws" id="ws-product">
+          <div class="ws-inner">
+            <div class="ws-header">
+              <div>
+                <p class="eyebrow">SKU room</p>
+                <h2 class="ws-title">Samples, fit, hero pics</h2>
+                <p class="ws-sub">Add SKUs for this drop — upload reference shots. Link tech packs in the milestone proof field.</p>
+              </div>
+              <span class="badge" id="productSkuCount">3 SKUs</span>
             </div>
+            <div class="flow-card product-add-card">
+              <header class="flow-card-head">
+                <h3>Add SKU</h3>
+                <p>Name it, set units and price, pick a role tag. Drop 001 starts with three — add more anytime.</p>
+              </header>
+              <form id="productAddForm" class="inline-form product-add-form">
+                <input name="name" type="text" placeholder="e.g. Barrel Jean" required aria-label="SKU name" />
+                <input name="units" type="number" min="1" max="99999" value="30" placeholder="Units" aria-label="Planned units" />
+                <input name="price" type="text" placeholder="C$120" aria-label="Retail price" />
+                <select name="proof" aria-label="SKU role">
+                  <option value="Hero authority item">Hero</option>
+                  <option value="Entry item">Entry</option>
+                  <option value="Access signal">Access</option>
+                  <option value="Volume driver">Volume</option>
+                  <option value="New SKU">Other</option>
+                </select>
+                <input name="role" type="text" placeholder="One-line role (optional)" aria-label="SKU role note" />
+                <button class="btn-primary" type="submit" aria-label="Add SKU">
+                  <i data-lucide="plus"></i>
+                  <span>Add SKU</span>
+                </button>
+              </form>
+            </div>
+            <div id="productNav" class="product-nav"></div>
+            <div id="productDetail" class="product-detail"></div>
           </div>
-          <div id="tacticList" class="tactic-list"></div>
         </section>
 
-        <section class="panel task-panel" aria-labelledby="taskTitle">
-          <div class="panel-header">
-            <div>
-              <p class="eyebrow">Execution board</p>
-              <h2 id="taskTitle">What the team does next</h2>
+        <section class="ws" id="ws-campaign">
+          <div class="ws-inner">
+            <div class="ws-header">
+              <div>
+                <p class="eyebrow">Campaign proof</p>
+                <h2 class="ws-title">Content before bulk — no cap</h2>
+                <p class="ws-sub">Approve tactics only when the proof is real and consented. No bulk until this clears.</p>
+              </div>
+              <div class="campaign-score-wrap">
+                <span class="eyebrow">Content score</span>
+                <strong class="campaign-score-value" id="campaignScoreValue">0</strong>
+              </div>
             </div>
-            <select id="taskFilter" aria-label="Filter tasks by stage">
-              <option value="all">All stages</option>
-            </select>
+            <div id="campaignGate" class="campaign-gate"></div>
+            <div id="tacticList" class="tactic-grid"></div>
           </div>
-          <form id="taskForm" class="inline-form">
-            <input id="taskTitleInput" type="text" placeholder="Add next action" required />
-            <select id="taskStageInput" aria-label="Task stage"></select>
-            <button class="icon-button solid" type="submit" aria-label="Add task">
-              <i data-lucide="plus"></i>
-            </button>
-          </form>
-          <div id="taskList" class="task-list"></div>
         </section>
-      </section>
-    </main>
+
+        <section class="ws" id="ws-production">
+          <div class="ws-inner">
+            <div class="ws-header">
+              <div>
+                <p class="eyebrow">Factory gate</p>
+                <h2 class="ws-title">Quotes, MOQ, and PP sample</h2>
+                <p class="ws-sub">Nothing bulk until vendor proof and unit economics are locked.</p>
+              </div>
+            </div>
+            <div id="productionChecklist" class="checklist-grid"></div>
+          </div>
+        </section>
+
+        <section class="ws" id="ws-launch">
+          <div class="ws-inner">
+            <div class="ws-header">
+              <div>
+                <p class="eyebrow">Online drop</p>
+                <h2 class="ws-title">Shopify goes live</h2>
+                <p class="ws-sub">Open storefront, sizing, checkout, and sell-through states — no password gate.</p>
+              </div>
+            </div>
+            <div id="launchChecklist" class="checklist-grid"></div>
+          </div>
+        </section>
+
+        <section class="ws" id="ws-events">
+          <div class="ws-inner">
+            <div class="ws-header">
+              <div>
+                <p class="eyebrow">Pop-up &amp; VORG After</p>
+                <h2 class="ws-title">The room and the night</h2>
+                <p class="ws-sub">Controlled day-room pop-up, then the recap party that seeds the next city.</p>
+              </div>
+              <div class="tab-toggle" id="eventsTabToggle">
+                <button class="tab-btn active" data-tab="popup" type="button">Pop-Up</button>
+                <button class="tab-btn" data-tab="vorgafter" type="button">VORG After</button>
+              </div>
+            </div>
+            <div id="popupContent" class="checklist-grid"></div>
+            <div id="vorgAfterContent" class="checklist-grid" hidden></div>
+          </div>
+        </section>
+
+        <section class="ws" id="ws-cities">
+          <div class="ws-inner">
+            <div class="ws-header">
+              <div>
+                <p class="eyebrow">Next city</p>
+                <h2 class="ws-title">Where the line travels next</h2>
+                <p class="ws-sub">Expansion reads from logged heat — not one loud comment thread.</p>
+              </div>
+            </div>
+            <div id="cityGrid" class="city-grid"></div>
+          </div>
+        </section>
+
+        <section class="ws" id="ws-postmortem">
+          <div class="ws-inner">
+            <div class="ws-header">
+              <div>
+                <p class="eyebrow">Drop debrief</p>
+                <h2 class="ws-title">What the drop proved</h2>
+                <p class="ws-sub">Sell-through, margin, content, and city pull — decide repeat, revise, or scale.</p>
+              </div>
+            </div>
+            <div id="postmortemContent" class="postmortem-body"></div>
+          </div>
+        </section>
+
+        <section class="ws" id="ws-data">
+          <div class="ws-inner">
+            <div class="ws-header">
+              <div>
+                <p class="eyebrow">Handoff</p>
+                <h2 class="ws-title">Backup &amp; squad sync</h2>
+                <p class="ws-sub">Export before you switch devices or spin up the next drop.</p>
+              </div>
+            </div>
+            <div id="backupRitual" class="backup-ritual"></div>
+            <div id="syncPanel" class="sync-panel"></div>
+            <div id="dataActions" class="data-actions"></div>
+            <div id="investorSnapshot" class="investor-snapshot"></div>
+          </div>
+        </section>
+
+      </main>
+    </div>
   </div>
 
   <dialog id="snapshotDialog" class="snapshot-dialog">
     <div class="dialog-header">
-      <h2>Snapshot copied</h2>
-      <button id="closeDialogButton" class="icon-button" type="button" aria-label="Close snapshot dialog">
+      <h2>Drop snapshot</h2>
+      <button id="closeDialogButton" class="btn-icon" type="button" aria-label="Close">
         <i data-lucide="x"></i>
       </button>
     </div>
-    <p>The current stage status, stress score, signals, tactics, and tasks were copied as JSON.</p>
+    <p>JSON backup of this drop — paste into Handoff → Import snapshot on another device, or download the file.</p>
     <textarea id="snapshotText" readonly></textarea>
+    <div class="dialog-actions">
+      <button id="downloadDialogBtn" class="top-btn outline" type="button">Download file</button>
+    </div>
+  </dialog>
+
+  <input id="csvInput" class="sr-only" type="file" accept=".csv,text/csv" />
+  <input id="productImageInput" class="sr-only" type="file" accept="image/png,image/jpeg,image/webp" />
+  <input id="jsonImportInput" class="sr-only" type="file" accept="application/json,.json" />
+
+  <!-- Quick help -->
+  <dialog id="helpDialog" class="help-dialog">
+    <div class="dialog-header">
+      <h2>Drop desk — quick hits</h2>
+      <button id="helpCloseBtn" class="btn-icon" type="button" aria-label="Close">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <div class="help-quick" id="helpQuickContent"></div>
+    <p class="help-footer">
+      Open the <a href="drop-os-guide.html">full team playbook</a> for roles, the ten-milestone loop, and honest limits.
+    </p>
+  </dialog>
+
+  <!-- First-visit orientation -->
+  <dialog id="onboardDialog" class="help-dialog onboard-dialog">
+    <div class="dialog-header">
+      <h2>Welcome — you found the drop desk</h2>
+    </div>
+    <div id="onboardBody" class="onboard-body"></div>
+    <div class="onboard-actions">
+      <button id="onboardSkipBtn" class="top-btn outline" type="button">Skip tour</button>
+      <button id="onboardNextBtn" class="top-btn primary" type="button">Next</button>
+    </div>
+  </dialog>
+
+  <!-- New drop -->
+  <dialog id="newDropDialog" class="help-dialog">
+    <div class="dialog-header">
+      <h2>Start the next drop</h2>
+      <button id="newDropCloseBtn" class="btn-icon" type="button" aria-label="Close">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <p class="dialog-lead">Fresh tracker in this browser. Snapshot Drop 001 first if you want to keep history or SKU pics.</p>
+    <form id="newDropForm" class="stack-form">
+      <div class="field">
+        <label for="newDropLabel">Drop name</label>
+        <input id="newDropLabel" type="text" placeholder="Drop 002" required />
+      </div>
+      <div class="field">
+        <label for="newDropCity">Home city wedge</label>
+        <input id="newDropCity" type="text" placeholder="Ottawa/Gatineau" required />
+      </div>
+      <div class="field">
+        <label for="newDropSeason">Season / release code</label>
+        <input id="newDropSeason" type="text" placeholder="SS27" required />
+      </div>
+      <button class="btn-primary full" type="submit">Open next drop desk</button>
+    </form>
   </dialog>
 </body>
 </html>
