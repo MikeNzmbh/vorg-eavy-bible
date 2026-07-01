@@ -113,6 +113,8 @@
     } finally {
       pushing = false;
       if (window.renderSyncPanel) window.renderSyncPanel();
+      if (window.renderSyncStatusPill) window.renderSyncStatusPill();
+      if (window.renderSyncConflictBanner) window.renderSyncConflictBanner();
     }
   }
 
@@ -176,6 +178,8 @@
       status.lastError = e.message || 'Pull failed';
     }
     if (window.renderSyncPanel) window.renderSyncPanel();
+    if (window.renderSyncStatusPill) window.renderSyncStatusPill();
+    if (window.renderSyncConflictBanner) window.renderSyncConflictBanner();
     return status;
   }
 
@@ -184,6 +188,31 @@
     if (!client || !current) return status;
     await push(current);
     if (window.renderSyncPanel) window.renderSyncPanel();
+    if (window.renderSyncStatusPill) window.renderSyncStatusPill();
+    if (window.renderSyncConflictBanner) window.renderSyncConflictBanner();
+    return status;
+  }
+
+  async function pushForce() {
+    const current = window.DropOSBridge?.getState?.();
+    if (!client || !current) return status;
+    try {
+      const remote = await pull();
+      if (remote?.revision) {
+        if (!current.syncMeta) current.syncMeta = {};
+        current.syncMeta.revision = Number(remote.revision) || 0;
+        window.DropOSBridge.setState(current);
+      }
+      status.conflict = false;
+      status.lastError = null;
+      await push(current);
+      window.DropOSBridge?.refresh?.();
+    } catch (e) {
+      status.lastError = e.message || 'Force push failed';
+    }
+    if (window.renderSyncPanel) window.renderSyncPanel();
+    if (window.renderSyncStatusPill) window.renderSyncStatusPill();
+    if (window.renderSyncConflictBanner) window.renderSyncConflictBanner();
     return status;
   }
 
@@ -192,6 +221,7 @@
     schedulePush,
     pullNow,
     pushNow,
+    pushForce,
     getStatus: () => ({ ...status })
   };
 })();

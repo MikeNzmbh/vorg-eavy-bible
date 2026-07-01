@@ -158,6 +158,10 @@ async function main() {
   });
   debriefSaved ? ok('Debrief form saves') : fail('Debrief form');
 
+  // Sync status pill (hidden until config on live deploy)
+  const pillHidden = await page.locator('#syncStatusPill').isHidden();
+  pillHidden ? ok('Sync status pill ready') : ok('Sync status pill visible');
+
   // localStorage persists
   const stored = await page.evaluate(() => !!localStorage.getItem('vorgDropOS.v1'));
   stored ? ok('State saves to localStorage') : fail('localStorage save');

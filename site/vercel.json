@@ -6,7 +6,6 @@
     { "source": "/guide", "destination": "/drop-os-guide.html" }
   ],
   "redirects": [
-    { "source": "/", "has": [{ "type": "host", "value": "site-blond-kappa.vercel.app" }], "destination": "/drop-os.html", "permanent": false },
-    { "source": "/", "has": [{ "type": "host", "value": "site-38589tmz6-mikenzmbhs-projects.vercel.app" }], "destination": "/drop-os.html", "permanent": false }
+    { "source": "/", "destination": "/drop-os.html", "permanent": false }
   ]
 }

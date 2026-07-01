@@ -88,12 +88,13 @@
           <p class="top-bar-sub" id="topBarSub">Bag check, blockers, this week's run</p>
         </div>
         <div class="top-bar-actions">
+          <span id="syncStatusPill" class="sync-status-pill" hidden></span>
           <button class="top-btn outline" id="helpOpenBtn" type="button">
             <i data-lucide="circle-help"></i>
             <span>Help</span>
           </button>
           <a class="top-btn outline" href="drop-os-guide.html">Full guide</a>
-          <a class="top-btn outline" href="../strategy/drop-operating-system.md">Operating doc</a>
+          <a class="top-btn outline" id="operatingDocLink" href="https://github.com/MikeNzmbh/vorg-eavy-bible/blob/main/strategy/drop-operating-system.md" target="_blank" rel="noopener">Operating doc</a>
           <a class="top-btn primary" href="index.html">Public site</a>
         </div>
       </header>
@@ -145,6 +146,7 @@
             </div>
 
             <div class="backup-nudge" id="backupNudge" hidden></div>
+            <div class="sync-conflict-banner" id="syncConflictBanner" hidden></div>
 
             <div class="cmd-grid">
               <article class="panel-card">

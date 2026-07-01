@@ -72,6 +72,32 @@ For team sharing, host the `site/` folder through a static host such as Vercel, 
 
 Without config, the browser saves to local storage only.
 
+## Squad readiness — when to use Drop OS
+
+**Good enough for internal Drop 001 ops today** (checked 2026-07-01):
+
+| Gate | Status |
+| --- | --- |
+| Live URL + guide | ✅ https://site-blond-kappa.vercel.app/drop-os |
+| Smoke tests | ✅ 29/29 local |
+| Squad sync (Supabase) | ✅ Production env configured |
+| Milestones, tasks, heat, SKUs | ✅ |
+| Checklists → bag check math | ✅ |
+| Debrief + investor read | ✅ |
+| Daily snapshot ritual | ✅ copy + download |
+| Conflict handling | ✅ pull / force push |
+
+**Not production-manufacturing truth** — still working assumptions until vendor quotes, samples, and sell-through land.
+
+**Before you rely on it for spend calls:**
+
+1. Two teammates open the live URL — confirm top-bar pill shows **Cloud**.
+2. Edit a milestone on device A — device B pulls and sees the change.
+3. Run one daily snapshot to Drive.
+4. Keep sync pin squad-private; rotate if leaked.
+
+**Still out of scope (v2):** per-user auth, SKU photo cloud storage, Shopify/Sheets live feeds, mobile polish pass.
+
 ## Design References
 
 Used for inspiration only, not copied.

@@ -951,6 +951,7 @@ function renderCommandCenter() {
   qs('#cmdSpendText').textContent = spendGateText(scores.gate);
   spendEl.classList.toggle('unlocked', scores.gate === 'approve');
   renderBackupNudge();
+  renderSyncConflictBanner();
 
   // Blocker
   qs('#cmdBlockerTitle').textContent = scores.bottleneck;
@@ -1009,6 +1010,72 @@ function renderCommandCenter() {
   renderStageTimeline();
   renderStageDetail();
   renderProofLinksPanel();
+  renderSyncStatusPill();
+}
+
+function renderSyncStatusPill() {
+  const el = qs('#syncStatusPill');
+  if (!el) return;
+  const sync = window.DropOSSync?.getStatus?.() || { mode: 'local' };
+  const configured = Boolean(window.DROP_OS_CONFIG?.supabase?.url);
+
+  if (!configured) {
+    el.hidden = true;
+    return;
+  }
+
+  el.hidden = false;
+  if (sync.conflict) {
+    el.className = 'sync-status-pill conflict';
+    el.textContent = 'Sync conflict';
+    el.title = sync.lastError || 'Pull teammate version or force push from Handoff';
+    return;
+  }
+
+  if (sync.mode === 'cloud') {
+    el.className = 'sync-status-pill cloud';
+    const when = sync.lastSyncAt
+      ? new Date(sync.lastSyncAt).toLocaleTimeString('en-CA', { hour: 'numeric', minute: '2-digit' })
+      : 'connecting';
+    el.textContent = `Cloud · ${when}`;
+    el.title = 'Squad sync active — edits debounce to Supabase';
+    return;
+  }
+
+  el.className = 'sync-status-pill local';
+  el.textContent = 'Local only';
+  el.title = sync.lastError || 'Supabase not connected';
+}
+
+function renderSyncConflictBanner() {
+  const el = qs('#syncConflictBanner');
+  if (!el) return;
+  const sync = window.DropOSSync?.getStatus?.() || {};
+  if (!sync.conflict) {
+    el.hidden = true;
+    return;
+  }
+  el.hidden = false;
+  el.innerHTML = `
+    <div>
+      <strong>Squad sync conflict</strong>
+      <span>Someone else saved newer state. Pull their version or force your copy from Handoff.</span>
+    </div>
+    <div class="sync-conflict-actions">
+      <button class="top-btn outline compact" type="button" id="deskSyncPullBtn">Pull squad</button>
+      <button class="top-btn primary compact" type="button" id="deskSyncForceBtn">Use my version</button>
+    </div>
+  `;
+  qs('#deskSyncPullBtn')?.addEventListener('click', async () => {
+    await window.DropOSSync?.pullNow?.();
+    switchWorkspace('command');
+  });
+  qs('#deskSyncForceBtn')?.addEventListener('click', async () => {
+    if (!window.confirm('Overwrite the cloud row with this browser state?')) return;
+    await window.DropOSSync?.pushForce?.();
+    switchWorkspace('command');
+  });
+  refreshIcons();
 }
 
 function renderBackupNudge() {
@@ -1750,6 +1817,7 @@ function renderSyncPanel() {
     ? 'Changes debounce to the shared drop row. SKU photos still stay local until Storage ships.'
     : 'Copy drop-os-config.example.js → drop-os-config.js and run site/supabase/schema.sql to enable live sync.'}</p>
       ${sync.lastError ? `<p class="sync-error">${sync.lastError}</p>` : ''}
+      ${sync.conflict ? `<p class="sync-error">Conflict — pull squad state or force your version below.</p>` : ''}
     </div>
     <div class="sync-panel-status">
       <strong>${sync.mode === 'cloud' ? 'Cloud' : 'Local'}</strong>
@@ -1758,6 +1826,7 @@ function renderSyncPanel() {
         <div class="sync-panel-actions">
           <button class="top-btn outline compact" type="button" id="syncPullBtn">Pull now</button>
           <button class="top-btn primary compact" type="button" id="syncPushBtn">Push now</button>
+          ${sync.conflict ? `<button class="top-btn outline compact" type="button" id="syncForceBtn">Force my version</button>` : ''}
         </div>
       ` : ''}
     </div>
@@ -1770,7 +1839,18 @@ function renderSyncPanel() {
   qs('#syncPushBtn')?.addEventListener('click', async () => {
     await window.DropOSSync?.pushNow?.();
     renderSyncPanel();
+    renderSyncStatusPill();
+    renderSyncConflictBanner();
   });
+  qs('#syncForceBtn')?.addEventListener('click', async () => {
+    if (!window.confirm('Overwrite the cloud row with this browser state?')) return;
+    await window.DropOSSync?.pushForce?.();
+    renderSyncPanel();
+    renderSyncStatusPill();
+    renderSyncConflictBanner();
+    switchWorkspace(state.activeWorkspace);
+  });
+  renderSyncStatusPill();
 }
 
 function renderBackupRitual() {
@@ -1799,6 +1879,14 @@ function renderInvestorSnapshot() {
   const scores = calculateScores();
   const citySignal = getNextCitySignal();
   const complete = state.stages.filter(s => s.status === 'done').length;
+  const rollup = getReadinessRollup();
+  const pm = { ...clone(DEFAULT_STATE).postmortem, ...(state.postmortem || {}) };
+  const verdictLabels = {
+    pending: 'Pending',
+    repeat: 'Repeat',
+    revise: 'Revise',
+    scale: 'Scale'
+  };
 
   qs('#investorSnapshot').innerHTML = `
     <div class="investor-header">
@@ -1808,11 +1896,16 @@ function renderInvestorSnapshot() {
     <div class="investor-row"><span class="investor-row-label">Bag check</span><span class="investor-row-value">${formatGateLabel(scores.gate)}</span></div>
     <div class="investor-row"><span class="investor-row-label">Drop energy</span><span class="investor-row-value">${scores.confidence}%</span></div>
     <div class="investor-row"><span class="investor-row-label">Sell-through vibe</span><span class="investor-row-value">${scores.campaignRate}%</span></div>
+    <div class="investor-row"><span class="investor-row-label">Checklists</span><span class="investor-row-value">${rollup.pct}% (${rollup.done}/${rollup.total})</span></div>
+    <div class="investor-row"><span class="investor-row-label">Launch ops (eff.)</span><span class="investor-row-value">${scores.operationsEffective ?? getOperationsEffective()}</span></div>
     <div class="investor-row"><span class="investor-row-label">Stage progress</span><span class="investor-row-value">${complete} / ${state.stages.length}</span></div>
     <div class="investor-row"><span class="investor-row-label">Proof check</span><span class="investor-row-value">${scores.evidenceFloor}</span></div>
     <div class="investor-row"><span class="investor-row-label">What's giving mid</span><span class="investor-row-value">${scores.bottleneck}</span></div>
     <div class="investor-row"><span class="investor-row-label">Next city signal</span><span class="investor-row-value">${citySignal.city} (${citySignal.score}/100)</span></div>
     <div class="investor-row"><span class="investor-row-label">Risk drag</span><span class="investor-row-value">${scores.riskDrag}</span></div>
+    <div class="investor-row"><span class="investor-row-label">Debrief verdict</span><span class="investor-row-value">${verdictLabels[pm.verdict] || 'Pending'}</span></div>
+    ${pm.unitsSold ? `<div class="investor-row"><span class="investor-row-label">Units sold</span><span class="investor-row-value">${pm.unitsSold} / ${pm.unitsPlanned || 150}</span></div>` : ''}
+    ${pm.revenueActual ? `<div class="investor-row"><span class="investor-row-label">Revenue actual</span><span class="investor-row-value">${pm.revenueActual}</span></div>` : ''}
     <div class="investor-row"><span class="investor-row-label">Next spend move</span><span class="investor-row-value">${decisionText(scores.gate)}</span></div>
   `;
 }
@@ -2201,6 +2294,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     refresh: () => switchWorkspace(state.activeWorkspace || 'command')
   };
   window.renderSyncPanel = renderSyncPanel;
+  window.renderSyncStatusPill = renderSyncStatusPill;
+  window.renderSyncConflictBanner = renderSyncConflictBanner;
 
   bindEvents();
   renderHelpQuick();
@@ -2214,5 +2309,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (window.DropOSSync.getStatus().mode === 'cloud') {
       switchWorkspace(state.activeWorkspace || 'command');
     }
+    renderSyncStatusPill();
+    renderSyncConflictBanner();
   }
 });
