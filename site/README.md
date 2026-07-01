@@ -83,7 +83,7 @@ Without sign-in, the browser saves to local storage only; SKU photos stay in-bro
 | Gate | Status |
 | --- | --- |
 | Live URL + guide | ✅ https://site-blond-kappa.vercel.app/drop-os |
-| Smoke tests | ✅ 39/39 local |
+| Smoke tests | ✅ 40/40 local |
 | Squad sync (Supabase v2) | ✅ Auth + Storage on production |
 | Manufacturing proof board | ✅ Factory lane |
 | Debrief + investor tiers | ✅ Working vs verified |

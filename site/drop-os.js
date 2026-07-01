@@ -574,12 +574,7 @@ function toggleChecklistItem(group, key) {
   if (group === 'production') renderProductionReadiness();
   else if (group === 'launch') renderLaunchReadiness();
   else renderEvents();
-  if (state.activeWorkspace === 'command') {
-    const rollup = getReadinessRollup();
-    const el = qs('#cmdReadiness');
-    if (el) el.textContent = `${rollup.pct}%`;
-    renderCommandCenter();
-  }
+  notifyScoreChange();
   refreshIcons();
 }
 
@@ -1061,32 +1056,65 @@ function refreshIcons() {
   if (window.lucide) window.lucide.createIcons();
 }
 
+function refreshDeskKpis(scores) {
+  if (!scores) scores = calculateScores();
+  const gateEl = qs('#cmdGateResult');
+  if (!gateEl) return;
+
+  gateEl.textContent = formatGateLabel(scores.gate);
+  qs('#cmdGateText').textContent = decisionText(scores.gate);
+  applyGateVisuals(scores.gate);
+  qs('#cmdConfidence').textContent = scores.confidence;
+  qs('#cmdCampaignRate').textContent = scores.campaignRate;
+
+  const spendEl = qs('#cmdSpend');
+  if (spendEl) {
+    qs('#cmdSpendText').textContent = spendGateText(scores.gate);
+    spendEl.classList.toggle('unlocked', scores.gate === 'approve');
+  }
+
+  qs('#cmdBlockerTitle').textContent = scores.bottleneck;
+  qs('#cmdBlockerText').textContent = blockerExplanation(scores);
+
+  const citySignal = getNextCitySignal();
+  const complete = state.stages.filter(s => s.status === 'done').length;
+  const readiness = getReadinessRollup();
+  qs('#cmdStageProgress').textContent = `${complete} / ${state.stages.length}`;
+  qs('#cmdCitySignal').textContent = citySignal.city;
+  qs('#cmdEvidenceFloor').textContent = scores.evidenceFloor;
+  qs('#cmdStageMomentum').textContent = scores.stageScore;
+  qs('#cmdRiskDrag').textContent = scores.riskDrag;
+  const readinessEl = qs('#cmdReadiness');
+  if (readinessEl) readinessEl.textContent = `${readiness.pct}%`;
+}
+
+function notifyScoreChange() {
+  const scores = calculateScores();
+  refreshDeskKpis(scores);
+  if (state.activeWorkspace === 'command') {
+    renderAlgorithmBreakdown(scores);
+    renderStressControls();
+    renderGateContext(scores);
+  } else if (state.activeWorkspace === 'campaign') {
+    qs('#campaignScoreValue').textContent = scores.tacticScore;
+    const gateSpan = qs('#campaignGate span');
+    if (gateSpan) {
+      gateSpan.textContent = `Hold bulk units until campaign proof clears. Current content score: ${scores.tacticScore}/100 — not a sell-through guarantee.`;
+    }
+  }
+}
+
 /* ═══════════════════════════════════════════════════
    Drop desk
    ═══════════════════════════════════════════════════ */
 function renderCommandCenter() {
   const scores = calculateScores();
   const stage = getStage();
-  const citySignal = getNextCitySignal();
   const complete = state.stages.filter(s => s.status === 'done').length;
 
-  // Hero
-  qs('#cmdGateResult').textContent = formatGateLabel(scores.gate);
-  qs('#cmdGateText').textContent = decisionText(scores.gate);
-  applyGateVisuals(scores.gate);
-  qs('#cmdConfidence').textContent = scores.confidence;
-  qs('#cmdCampaignRate').textContent = scores.campaignRate;
-
-  // Spend gate
-  const spendEl = qs('#cmdSpend');
-  qs('#cmdSpendText').textContent = spendGateText(scores.gate);
-  spendEl.classList.toggle('unlocked', scores.gate === 'approve');
+  refreshDeskKpis(scores);
   renderBackupNudge();
   renderSyncConflictBanner();
-
-  // Blocker
-  qs('#cmdBlockerTitle').textContent = scores.bottleneck;
-  qs('#cmdBlockerText').textContent = blockerExplanation(scores);
 
   // Active stage
   qs('#cmdStageName').textContent = stage.name;
@@ -1118,16 +1146,6 @@ function renderCommandCenter() {
   qsa('[data-task-done]').forEach(btn => {
     btn.addEventListener('click', () => toggleTask(btn.dataset.taskDone, true));
   });
-
-  // Metrics
-  qs('#cmdStageProgress').textContent = `${complete} / ${state.stages.length}`;
-  qs('#cmdCitySignal').textContent = citySignal.city;
-  qs('#cmdEvidenceFloor').textContent = scores.evidenceFloor;
-  qs('#cmdStageMomentum').textContent = scores.stageScore;
-  qs('#cmdRiskDrag').textContent = scores.riskDrag;
-  const readiness = getReadinessRollup();
-  const readinessEl = qs('#cmdReadiness');
-  if (readinessEl) readinessEl.textContent = `${readiness.pct}%`;
 
   // Algorithm cockpit
   renderAlgorithmBreakdown(scores);
@@ -1693,6 +1711,7 @@ function renderCampaignProof() {
       tactic.status = tactic.status === 'approved' ? 'draft' : 'approved';
       saveState();
       renderCampaignProof();
+      notifyScoreChange();
       refreshIcons();
     });
   });
@@ -1817,7 +1836,7 @@ function saveManufacturing(e) {
   product.manufacturing = mfg;
   saveState();
   renderManufacturingBoard();
-  if (state.activeWorkspace === 'command') renderCommandCenter();
+  notifyScoreChange();
   refreshIcons();
 }
 
@@ -2224,8 +2243,12 @@ function renderInvestorSnapshot() {
       <div class="investor-row"><span class="investor-row-label">Drop energy</span><span class="investor-row-value">${scores.confidence}% ${formatEvidenceBadge('assumed')}</span></div>
       <div class="investor-row"><span class="investor-row-label">Sell-through vibe</span><span class="investor-row-value">${scores.campaignRate}% ${formatEvidenceBadge('assumed')}</span></div>
       <div class="investor-row"><span class="investor-row-label">Manufacturing proof</span><span class="investor-row-value">${mfgScore}/100 ${formatEvidenceBadge(mfgScore >= 80 ? 'known' : mfgScore >= 45 ? 'assumed' : 'unresolved')}</span></div>
+      <div class="investor-row"><span class="investor-row-label">SKU proof (eff.)</span><span class="investor-row-value">${scores.productEffective ?? getProductProofScore()} ${formatEvidenceBadge((scores.productEffective ?? getProductProofScore()) >= 64 ? 'assumed' : 'unresolved')}</span></div>
       <div class="investor-row"><span class="investor-row-label">Checklists</span><span class="investor-row-value">${rollup.pct}% (${rollup.done}/${rollup.total})</span></div>
       <div class="investor-row"><span class="investor-row-label">Launch ops (eff.)</span><span class="investor-row-value">${scores.operationsEffective ?? getOperationsEffective()}</span></div>
+      <div class="investor-row"><span class="investor-row-label">Content proof</span><span class="investor-row-value">${scores.tacticScore}/100</span></div>
+      <div class="investor-row"><span class="investor-row-label">Market heat</span><span class="investor-row-value">${scores.signalHeat}/100</span></div>
+      <div class="investor-row"><span class="investor-row-label">Milestone pace</span><span class="investor-row-value">${scores.stageScore}/100</span></div>
       <div class="investor-row"><span class="investor-row-label">Stage progress</span><span class="investor-row-value">${complete} / ${state.stages.length}</span></div>
       <div class="investor-row"><span class="investor-row-label">Proof check</span><span class="investor-row-value">${scores.evidenceFloor}</span></div>
       <div class="investor-row"><span class="investor-row-label">What's giving mid</span><span class="investor-row-value">${scores.bottleneck}</span></div>
@@ -2408,6 +2431,7 @@ function addSignal(e) {
   qs('#signalStrength').value = 55;
   saveState();
   renderSignalRadar();
+  notifyScoreChange();
   refreshIcons();
 }
 

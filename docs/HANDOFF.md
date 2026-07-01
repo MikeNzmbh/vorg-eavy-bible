@@ -72,7 +72,7 @@ Checked: 2026-07-01
 - **Vercel env:** `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `DROP_SYNC_SLUG` (`drop-001`); optional `DROP_INVITE_CODE` for onboarding hint only
 - **Squad invite (seed):** `ve-invite-drop001-2026` — rotate in Supabase if leaked
 - **Storage:** bucket `drop-sku-images` — SKU photos upload when signed in as squad member
-- **QA:** `python3 -m http.server 4182` in `site/`, then `node site/test-drop-os-flow.mjs` (39 tests)
+- **QA:** `python3 -m http.server 4182` in `site/`, then `node site/test-drop-os-flow.mjs` (40 tests)
 - **Manufacturing truth:** Factory lane — vendor quote + PP sample proof URLs per SKU
 - **Investor read:** working desk scores vs verified debrief metrics (Known / Assumed / Unresolved)
 

@@ -210,7 +210,21 @@ async function main() {
   await page.locator('#investorBtn').click();
   await page.waitForTimeout(200);
   const investor = await page.locator('#investorSnapshot').textContent();
-  investor?.includes('Verified debrief') && investor?.includes('Working desk') ? ok('Investor snapshot tiers') : fail('Investor snapshot tiers');
+  investor?.includes('Verified debrief') && investor?.includes('Working desk') && investor?.includes('SKU proof (eff.)')
+    ? ok('Investor snapshot tiers')
+    : fail('Investor snapshot tiers');
+
+  // Campaign tactic approval refreshes desk KPIs while on Campaign lane
+  await page.getByRole('button', { name: 'Campaign', exact: true }).click();
+  await page.waitForTimeout(200);
+  const energyBefore = await page.locator('#cmdConfidence').textContent();
+  await page.locator('[data-tactic-id="founder-table"]').click();
+  await page.waitForTimeout(300);
+  const energyAfter = await page.locator('#cmdConfidence').textContent();
+  const campaignScore = await page.locator('#campaignScoreValue').textContent();
+  energyAfter !== energyBefore || Number(campaignScore) > 40
+    ? ok(`Desk KPIs refresh on tactic approve (energy ${energyBefore} → ${energyAfter})`)
+    : fail('Desk KPI refresh on tactic', `${energyBefore} → ${energyAfter}, content ${campaignScore}`);
 
   const pillHidden = await page.locator('#syncStatusPill').isHidden();
   pillHidden ? ok('Sync status pill ready') : ok('Sync status pill visible');
