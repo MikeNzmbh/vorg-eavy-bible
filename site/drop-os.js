@@ -587,11 +587,12 @@ function toggleChecklistItem(group, key) {
 function calculateScores() {
   const stress = state.stress;
   const operationsEffective = getOperationsEffective();
+  const productEffective = getProductProofScore();
   const positiveInputs = STRESS_LABELS.filter(i => i.type === 'positive');
   const inputScore = positiveInputs.reduce((s, i) => s + getStressValue(i.key) * i.weight, 0);
   const inputWeight = positiveInputs.reduce((s, i) => s + i.weight, 0);
   const normalizedInputScore = inputScore / inputWeight;
-  const evidenceFloor = Math.min(stress.evidence, stress.product, operationsEffective);
+  const evidenceFloor = Math.min(stress.evidence, productEffective, operationsEffective);
   const stageScore = average(state.stages.map(s => s.score * statusMultiplier(s.status) * gateMultiplier(s.gate)));
   const approvedTactics = state.tactics.filter(t => t.status === 'approved').length;
   const tacticScore = clamp(40 + approvedTactics * 12 + state.tactics.filter(t => t.status === 'ready').length * 4, 0, 100);
@@ -632,8 +633,50 @@ function calculateScores() {
     version: ALGORITHM_VERSION, confidence, campaignRate, gate, weakness, bottleneck,
     evidenceFloor: Math.round(evidenceFloor), stageScore: Math.round(stageScore),
     tacticScore: Math.round(tacticScore), signalHeat: Math.round(signalHeat),
-    riskDrag: Math.round(riskDrag), operationsEffective
+    riskDrag: Math.round(riskDrag), operationsEffective, productEffective
   };
+}
+
+function gateExplanation(scores) {
+  const risk = state.stress.risk;
+  if (scores.gate === 'kill') {
+    if (scores.evidenceFloor < 34) {
+      return `HOLD — proof check is ${scores.evidenceFloor} (need 34+ to leave kill). Stack vendor quotes, samples, or milestone evidence.`;
+    }
+    if (risk >= 82) {
+      return `HOLD — risk pressure is ${risk} (82+ forces kill). Unblock milestones or lower risk before spend.`;
+    }
+    return `HOLD — confidence ${scores.confidence} with proof check ${scores.evidenceFloor} and risk ${risk}.`;
+  }
+  if (scores.gate === 'approve') {
+    return `GO — confidence ${scores.confidence}, proof check ${scores.evidenceFloor}, risk ${risk}. Major spend is unlocked.`;
+  }
+  if (scores.gate === 'test') {
+    return `TEST — confidence ${scores.confidence} and proof check ${scores.evidenceFloor} allow small proofs. Need 80+ confidence and 64+ proof check for GO.`;
+  }
+  return `FIX IT — confidence ${scores.confidence}. Proof check ${scores.evidenceFloor}, risk tax ${scores.riskDrag}. Close gaps before factory or paid media.`;
+}
+
+function scoreLiftHints(scores) {
+  const hints = [];
+  const productEff = scores.productEffective ?? getProductProofScore();
+  const opsEff = scores.operationsEffective ?? getOperationsEffective();
+  const evidence = state.stress.evidence;
+
+  if (scores.evidenceFloor < 64) {
+    if (evidence <= scores.evidenceFloor) hints.push('Raise proof quality or link evidence on milestone workbenches.');
+    else if (productEff <= scores.evidenceFloor) hints.push('Add vendor quotes, PP samples, or sample proof in Factory lane.');
+    else if (opsEff <= scores.evidenceFloor) hints.push('Clear checklist items in Factory, Online drop, or Pop-up lanes.');
+  }
+  if (scores.stageScore < 50) hints.push('Move milestones forward — update status and bag check on the timeline.');
+  if (scores.signalHeat < 50) hints.push('Log heat signals in Heat radar to lift market pull.');
+  if (scores.tacticScore < 68) hints.push('Approve campaign tactics with real proof in Campaign lane.');
+  if (scores.riskDrag > 15) hints.push('Lower risk pressure or unblock killed milestones to reduce risk tax.');
+  if (scores.gate !== 'approve' && scores.confidence < 80 && scores.evidenceFloor >= 64) {
+    hints.push(`Lift confidence to 80+ (now ${scores.confidence}) via sliders, tactics, or stage momentum.`);
+  }
+  if (!hints.length) hints.push('Scores are in range — keep daily snapshots and milestone proof current.');
+  return hints.slice(0, 4);
 }
 
 function getNextCitySignal() {
@@ -1089,6 +1132,7 @@ function renderCommandCenter() {
   // Algorithm cockpit
   renderAlgorithmBreakdown(scores);
   renderStressControls();
+  renderGateContext(scores);
 
   // Decision strip
   qs('#decisionText').textContent = decisionText(scores.gate);
@@ -1219,7 +1263,7 @@ function blockerExplanation(scores) {
 function renderAlgorithmBreakdown(scores) {
   if (!scores) scores = calculateScores();
   qs('#algorithmBreakdown').innerHTML = [
-    { label: 'Proof check', value: scores.evidenceFloor, note: 'Lowest of proof, SKU, launch ops' },
+    { label: 'Proof check', value: scores.evidenceFloor, note: 'Lowest of proof, SKU eff., launch ops' },
     { label: 'Milestone pace', value: scores.stageScore, note: 'Status and gate weighted' },
     { label: 'Market heat', value: scores.signalHeat, note: 'Logged pull + depth' },
     { label: 'Content proof', value: scores.tacticScore, note: 'Approved tactics & readiness' },
@@ -1233,19 +1277,29 @@ function renderAlgorithmBreakdown(scores) {
   `).join('');
 }
 
+function getStressEffective(key) {
+  if (key === 'operations') return getOperationsEffective();
+  if (key === 'product') return getProductProofScore();
+  return state.stress[key];
+}
+
 function renderStressControls() {
   const wrap = qs('#stressControls');
   const rollup = getReadinessRollup();
+  const mfgScore = getManufacturingScore();
   wrap.innerHTML = STRESS_LABELS.map(item => {
-    const effective = item.key === 'operations' ? getOperationsEffective() : state.stress[item.key];
-    const hint = item.key === 'operations'
-      ? `<small class="slider-hint">Effective ${effective} — 65% checklists (${rollup.pct}%) + 35% slider</small>`
-      : '';
+    const effective = getStressEffective(item.key);
+    let hint = '';
+    if (item.key === 'operations') {
+      hint = `<small class="slider-hint">Effective ${effective} — 65% checklists (${rollup.pct}%) + 35% slider</small>`;
+    } else if (item.key === 'product') {
+      hint = `<small class="slider-hint">Effective ${effective} — 65% factory board (${mfgScore}) + 35% slider</small>`;
+    }
     return `
-    <div class="slider-row">
+    <div class="slider-row${hint ? ' has-hint' : ''}">
       <label for="stress-${item.key}">${item.label}</label>
       <input id="stress-${item.key}" type="range" min="0" max="100" value="${state.stress[item.key]}" data-stress-key="${item.key}" />
-      <output>${item.key === 'operations' ? effective : state.stress[item.key]}</output>
+      <output>${effective}</output>
       ${hint}
     </div>
   `;
@@ -1254,11 +1308,26 @@ function renderStressControls() {
   qsa('[data-stress-key]').forEach(input => {
     input.addEventListener('input', e => {
       state.stress[e.target.dataset.stressKey] = Number(e.target.value);
-      e.target.nextElementSibling.textContent = e.target.value;
       saveState();
       renderCommandCenter();
     });
   });
+}
+
+function renderGateContext(scores) {
+  if (!scores) scores = calculateScores();
+  const explainEl = qs('#gateExplanation');
+  const hintsEl = qs('#scoreLiftHints');
+  if (explainEl) explainEl.textContent = gateExplanation(scores);
+  if (hintsEl) {
+    const hints = scoreLiftHints(scores);
+    hintsEl.innerHTML = `
+      <strong>What moves the bag check</strong>
+      <ul>${hints.map(h => `<li>${h}</li>`).join('')}</ul>
+    `;
+  }
+  const versionEl = qs('#cockpitVersion');
+  if (versionEl) versionEl.textContent = 'v0.3';
 }
 
 function renderStageTimeline() {
@@ -2263,6 +2332,8 @@ function buildSnapshotPayload() {
     gate: scores.gate,
     scoreBreakdown: {
       evidenceFloor: scores.evidenceFloor,
+      productEffective: scores.productEffective,
+      operationsEffective: scores.operationsEffective,
       stageMomentum: scores.stageScore,
       signalHeat: scores.signalHeat,
       campaignProof: scores.tacticScore,
@@ -2560,7 +2631,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.DropOSBridge = {
     getState: () => state,
     setState: (next) => { state = next; },
-    refresh: () => switchWorkspace(state.activeWorkspace || 'command')
+    refresh: () => switchWorkspace(state.activeWorkspace || 'command'),
+    calculateScores: () => calculateScores(),
+    getProductProofScore: () => getProductProofScore(),
+    getOperationsEffective: () => getOperationsEffective()
   };
   window.renderSyncPanel = renderSyncPanel;
   window.renderSyncStatusPill = renderSyncStatusPill;

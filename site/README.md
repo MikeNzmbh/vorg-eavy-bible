@@ -61,7 +61,7 @@ For team sharing, host the `site/` folder through a static host such as Vercel, 
 
 ### QA & screenshots
 
-- Smoke test: `node site/test-drop-os-flow.mjs` (with `python -m http.server 4182` in `site/`)
+- Smoke test: `node site/test-drop-os-flow.mjs` (with `python3 -m http.server 4182` in `site/`)
 - Regenerate guide screenshots: `node site/capture-guide-screenshots.mjs`
 
 ### Supabase squad sync v2
@@ -83,7 +83,7 @@ Without sign-in, the browser saves to local storage only; SKU photos stay in-bro
 | Gate | Status |
 | --- | --- |
 | Live URL + guide | ✅ https://site-blond-kappa.vercel.app/drop-os |
-| Smoke tests | ✅ 34/34 local |
+| Smoke tests | ✅ 39/39 local |
 | Squad sync (Supabase v2) | ✅ Auth + Storage on production |
 | Manufacturing proof board | ✅ Factory lane |
 | Debrief + investor tiers | ✅ Working vs verified |

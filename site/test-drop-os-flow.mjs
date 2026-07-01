@@ -149,6 +149,32 @@ async function main() {
   const playbook = await page.locator('#workspacePlaybook').isVisible();
   playbook ? ok('Playbook strip on drop desk') : fail('Playbook strip');
 
+  // Algorithm cockpit — version, gate explanation, lift hints
+  await page.locator('#cmdCockpit summary').click();
+  await page.waitForTimeout(200);
+  const cockpitVersion = await page.locator('#cockpitVersion').textContent();
+  cockpitVersion?.includes('v0.3') ? ok(`Readiness model version: ${cockpitVersion}`) : fail('Cockpit version', cockpitVersion);
+  const gateExplain = await page.locator('#gateExplanation').textContent();
+  gateExplain?.length > 20 ? ok('Gate explanation renders') : fail('Gate explanation', gateExplain);
+  const liftHints = await page.locator('#scoreLiftHints li').count();
+  liftHints > 0 ? ok(`Score lift hints (${liftHints})`) : fail('Score lift hints');
+
+  // Proof check uses effective SKU score (factory board rollup), not raw slider only
+  const algoBefore = await page.evaluate(() => window.DropOSBridge.calculateScores());
+  await page.getByRole('button', { name: 'Factory', exact: true }).click();
+  await page.waitForTimeout(200);
+  await page.locator('[data-mfg-sku="sku-top"]').click();
+  await page.waitForTimeout(150);
+  await page.locator('#manufacturingForm [name="quoteUrl"]').fill('https://example.com/top-quote.pdf');
+  await page.locator('#manufacturingForm [name="landedCogs"]').fill('C$42');
+  await page.locator('#manufacturingForm').evaluate(f => f.requestSubmit());
+  await page.waitForTimeout(300);
+  const algoAfter = await page.evaluate(() => window.DropOSBridge.calculateScores());
+  const productEffChanged = algoAfter.productEffective !== algoBefore.productEffective;
+  productEffChanged ? ok(`Factory proof lifts SKU effective (${algoBefore.productEffective} → ${algoAfter.productEffective})`) : fail('SKU effective score', `${algoBefore.productEffective} → ${algoAfter.productEffective}`);
+  const usesEffectiveFloor = algoAfter.evidenceFloor <= algoAfter.productEffective;
+  usesEffectiveFloor ? ok('Proof check respects effective SKU score') : fail('Evidence floor vs product effective', algoAfter);
+
   // SKU edit
   await page.getByRole('button', { name: 'SKU room' }).click();
   await page.waitForTimeout(200);
