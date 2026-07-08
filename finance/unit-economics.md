@@ -2,17 +2,33 @@
 
 These are working assumptions. Replace them with vendor quotes as sampling starts.
 
+Current state: reset 2026-07-07 after founder correction to the Drop 001 product set.
+
 ## Base Drop
 
-- Planned units: 150
-- Founder salary load: C$3,000
-- Salary load per unit: C$20
-- Fixed non-inventory launch cost per unit: about C$21.33
-- Variable ops per unit: about C$11.15
+- Active product set: The Firm Jacket, women's low-rise denim jean, men's denim jean, scarf, women's top / bodysuit
+- Initial inventory / production spend ceiling: C$5,000-C$6,000 max
+- Planned units: TBD
+- Founder salary load: TBD after unit plan is rebuilt
+- Fixed non-inventory launch cost per unit: TBD
+- Variable ops per unit: TBD
 
-Each unit needs to recover about C$52.48 above landed COGS before true profit starts.
+The old per-unit recovery math should not be used until the new SKU count, unit quantities, landed COGS, and prices are rebuilt.
 
-## SKU Table
+## Active Costing Table
+
+| Product | Units | Price | Landed COGS | Revenue | COGS | Status |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| The Firm Jacket | TBD | TBD | TBD | TBD | TBD | needs vendor quote |
+| Women's low-rise denim jean | TBD | TBD | TBD | TBD | TBD | needs vendor quote |
+| Men's denim jean | TBD | TBD | TBD | TBD | TBD | needs vendor quote |
+| Scarf | TBD | TBD | TBD | TBD | TBD | needs vendor quote |
+| Women's top / bodysuit | TBD | TBD | TBD | TBD | TBD | needs vendor quote |
+| Total | TBD |  |  | TBD | max C$5,000-C$6,000 | working cap |
+
+## Superseded 2026-06-25 Model
+
+This table is preserved as history only. Do not use it for purchase orders or production approval without rebuilding it around the corrected founder pick.
 
 | SKU | Units | Price | Landed COGS | Revenue | COGS |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -22,6 +38,8 @@ Each unit needs to recover about C$52.48 above landed COGS before true profit st
 | Total | 150 |  |  | C$20,550 | C$6,042 |
 
 ## Scenario Table
+
+Superseded until the new SKU economics are rebuilt.
 
 | Scenario | Sell-through | Revenue | Economic profit after C$3k salary load |
 | --- | --- | ---: | ---: |

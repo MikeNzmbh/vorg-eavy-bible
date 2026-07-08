@@ -16,14 +16,21 @@ No password gate at online launch. The public storefront should open at release 
 
 ## Product Mix
 
-| SKU | Units | Price | Revenue |
-| --- | ---: | ---: | ---: |
-| The Firm Jacket | 36 | C$295 | C$10,620 |
-| Structured Rib Top / Bodysuit | 84 | C$95 | C$7,980 |
-| Signature Cap | 30 | C$65 | C$1,950 |
-| Total | 150 |  | C$20,550 |
+Founder-stated active pick, corrected 2026-07-07:
 
-Working assumptions only.
+| Product | Role | Units | Price | Revenue |
+| --- | --- | ---: | ---: | ---: |
+| The Firm Jacket | Hero product / visual authority | TBD | TBD | TBD |
+| Women's low-rise denim jean | Women's core bottom | TBD | TBD | TBD |
+| Men's denim jean | Men's core bottom | TBD | TBD | TBD |
+| Scarf | Low-size-risk accessory / styling signal | TBD | TBD | TBD |
+| Women's top / bodysuit | Women's fitted top layer | TBD | TBD | TBD |
+
+Working assumptions:
+
+- Initial inventory / production spend ceiling: C$5,000-C$6,000 max.
+- Units, prices, landed COGS, and revenue must be rebuilt from vendor quotes.
+- The older 3-SKU / 150-unit / C$20,550 model is superseded for purchase decisions.
 
 ## Launch Asset Stack
 

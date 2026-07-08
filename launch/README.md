@@ -9,8 +9,10 @@ The online launch should not be password-gated. Scarcity should come from contro
 ## Drop 001 Target
 
 - Launch month: September 2026
-- Planned units: 150
-- Target revenue: about C$20.6k
+- Active product set: The Firm Jacket, women's low-rise denim jean, men's denim jean, scarf, women's top / bodysuit
+- Initial inventory / production spend ceiling: C$5,000-C$6,000 max
+- Planned units: TBD after vendor quotes
+- Target revenue: TBD after prices and units are rebuilt
 - First-drop goal: sell-through plus reusable content and waitlist growth
 
 ## Tone

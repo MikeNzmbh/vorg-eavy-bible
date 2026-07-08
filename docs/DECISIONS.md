@@ -75,3 +75,25 @@ The campaign needs cultural pressure, but fake proof would create brand, legal, 
 Consequence:
 
 Use `launch/campaign-proof-playbook.md` as the approved campaign framework. Any public stunt, exchange, creator payment, venue activation, or donation claim needs founder approval and evidence before launch.
+
+## 2026-07-07 - Correct Drop 001 Founder Product Pick And Budget Cap
+
+Decision:
+
+Replace the older 3-SKU planning simplification with the founder-stated active Drop 001 product set:
+
+- The Firm Jacket
+- women's low-rise denim jean
+- men's denim jean
+- scarf
+- women's top / bodysuit
+
+Set the initial inventory / production spend ceiling at C$5,000-C$6,000 max unless the founder explicitly revises it.
+
+Reason:
+
+The prior repo state listed The Firm Jacket, Structured Rib Top / Bodysuit, and Signature Cap as the active September drop. The founder corrected that list on 2026-07-07.
+
+Consequence:
+
+The old 150-unit / C$20,550 revenue model is superseded for purchase decisions. Finance, launch, product, and handoff docs must treat units, prices, landed COGS, and revenue as TBD until vendor quotes and sample evidence rebuild the plan.

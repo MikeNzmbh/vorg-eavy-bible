@@ -1,6 +1,6 @@
 # VORG-EAVY Master Brief
 
-Last updated: 2026-06-25
+Last updated: 2026-07-07
 
 ## Executive Summary
 
@@ -47,24 +47,30 @@ Drop 001 should launch in September 2026.
 
 Base architecture:
 
-| SKU | Units | Price | Role |
+| Product | Units | Price | Role |
 | --- | ---: | ---: | --- |
-| The Firm Jacket | 36 | C$295 | visual hierarchy and authority |
-| Structured Rib Top / Bodysuit | 84 | C$95 | lower-friction entry product |
-| Signature Cap | 30 | C$65 | accessible belonging marker |
+| The Firm Jacket | TBD | TBD | visual hierarchy and authority |
+| Women's low-rise denim jean | TBD | TBD | women's core bottom |
+| Men's denim jean | TBD | TBD | men's core bottom |
+| Scarf | TBD | TBD | low-size-risk accessory and styling signal |
+| Women's top / bodysuit | TBD | TBD | women's fitted top layer |
 
-Total planned units: 150.
+Initial inventory / production spend ceiling: C$5,000-C$6,000 max.
 
-Base revenue target: C$20,550.
+Total planned units: TBD.
 
-These are working assumptions, not vendor-quoted numbers.
+Base revenue target: TBD after unit quantities and prices are rebuilt.
+
+The older 3-SKU / 150-unit / C$20,550 model is superseded for purchase decisions. These are working assumptions, not vendor-quoted numbers.
 
 ## First C$10,000 Use Of Funds
+
+This table needs a rebuild around the corrected product set and the C$5,000-C$6,000 inventory / production cap.
 
 | Use | Budget |
 | --- | ---: |
 | Development and samples | C$800 |
-| Initial inventory | C$6,042 |
+| Initial inventory / production | C$5,000-C$6,000 max |
 | Trailer/photo/edit | C$700 |
 | Pop-up venue and ops | C$800 |
 | Packaging and invitations | C$400 |
@@ -87,13 +93,13 @@ Pricing should carry:
 
 Current working assumptions:
 
-- Planned units: 150
-- Founder salary load: C$3,000
-- Salary load per unit: C$20
-- Fixed non-inventory launch cost per unit: about C$21.33
-- Variable ops per unit: about C$11.15
+- Planned units: TBD
+- Founder salary load: TBD after unit plan is rebuilt
+- Salary load per unit: TBD
+- Fixed non-inventory launch cost per unit: TBD
+- Variable ops per unit: TBD
 
-Each unit needs to recover about C$52.48 above landed COGS before true profit begins.
+The older per-unit recovery math is superseded until the new SKU plan is quoted.
 
 ## January 2027 Gate
 
@@ -168,7 +174,15 @@ Core content:
 
 ## Product System
 
-The hero product is The Firm Jacket:
+The active founder-stated product set is:
+
+- The Firm Jacket
+- women's low-rise denim jean
+- men's denim jean
+- scarf
+- women's top / bodysuit
+
+The hero product remains The Firm Jacket:
 
 - structured cropped or waist-length jacket
 - strong collar
@@ -177,7 +191,7 @@ The hero product is The Firm Jacket:
 - minimal external branding
 - landed COGS goal around C$85-C$110
 
-If bodysuit fit risk remains high, switch the second SKU to a structured rib tee or long-sleeve.
+If bodysuit fit risk remains high, switch the women's top / bodysuit to a structured rib tee or long-sleeve.
 
 ## KPIs
 
@@ -186,7 +200,7 @@ Launch targets:
 - waitlist: 500 by launch
 - SMS list: 150 by launch
 - first-drop sell-through: 85%-100%
-- launch revenue: C$18k-C$21k
+- launch revenue: TBD after the corrected SKU economics are rebuilt
 - email conversion: 4%-6%
 - return rate: below 12%
 - content output: 30-50 usable assets
@@ -218,8 +232,8 @@ Each risk should have a concrete trigger and contingency.
 
 ## Immediate Priorities
 
-1. Lock Drop 001 SKU count and price architecture.
-2. Build tech pack v1 for jacket, top, and cap.
+1. Lock Drop 001 unit split and price architecture under the C$5,000-C$6,000 production cap.
+2. Build tech pack v1 for jacket, women's denim, men's denim, scarf, and women's top / bodysuit.
 3. Open vendor shortlist and sample request tracker.
 4. Create Shopify skeleton and waitlist/SMS capture.
 5. Approve palette, wordmark direction, and invitation system.

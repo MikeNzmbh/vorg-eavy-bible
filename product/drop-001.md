@@ -1,5 +1,23 @@
 # Drop 001 Product System
 
+## Current Founder Pick
+
+Corrected: 2026-07-07.
+
+The active Drop 001 product set is:
+
+1. The Firm Jacket
+2. Women's low-rise denim jean
+3. Men's denim jean
+4. Scarf
+5. Women's top / bodysuit
+
+Working budget boundary:
+
+- Initial inventory / production spend target: C$5,000-C$6,000 max.
+- Units, prices, landed COGS, and revenue are not locked.
+- Vendor quotes, samples, and fit proof must control final production decisions.
+
 ## The Firm Jacket
 
 Role:
@@ -23,11 +41,58 @@ Material path:
 
 Avoid broad true-leather production until demand is proven.
 
-## Structured Rib Top / Bodysuit
+## Women's Low-Rise Denim Jean
 
 Role:
 
-Lower-friction entry product.
+Women's core bottom and outfit anchor.
+
+Target:
+
+- low-rise or lower-rise fit direction
+- denim construction with clear wash, fit, and measurement spec
+- enough styling strength to pair with the jacket and top / bodysuit
+
+Risk:
+
+Denim increases fit, grading, wash consistency, MOQ, and return risk. It needs stronger sample proof than the scarf or cap.
+
+## Men's Denim Jean
+
+Role:
+
+Men's core bottom and second outfit anchor.
+
+Target:
+
+- men's jean fit to be locked through reference, sample, and measurement spec
+- denim wash and trim direction aligned with the women's jean without requiring identical construction
+
+Risk:
+
+Men's denim must not be treated as a simple size extension of the women's jean. Fit block, rise, inseam, pocketing, and wash behavior need separate proof.
+
+## Scarf
+
+Role:
+
+Low-size-risk accessory and styling signal.
+
+Target:
+
+- controlled branding
+- strong handfeel
+- enough visual identity to work in product shots and at the pop-up
+
+Risk:
+
+The scarf should not become filler. It needs a clear material, trim, and styling reason to exist.
+
+## Women's Top / Bodysuit
+
+Role:
+
+Women's top layer and fitted styling anchor.
 
 Risk:
 
@@ -37,19 +102,10 @@ Fallback:
 
 Switch to structured rib tee or long-sleeve if sample round two does not prove fit confidence.
 
-## Signature Cap
+## Superseded Item
 
-Role:
-
-Accessible belonging marker.
-
-Target:
-
-- structured 6-panel cap
-- curved brim
-- monogram embroidery
-- low MOQ
+Signature Cap was part of the older 3-SKU model. It is no longer the active founder-stated Drop 001 pick unless explicitly restored.
 
 ## Product Rule
 
-Drop 001 should prove demand and repeatable margin. It should not try to prove every future category at once.
+Drop 001 should prove demand and repeatable margin. It should not try to prove every future category at once, and it should not exceed the C$5,000-C$6,000 inventory / production spend ceiling without a deliberate founder decision.

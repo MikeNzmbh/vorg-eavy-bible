@@ -8,8 +8,9 @@ VORG-EAVY is being narrowed into a direct-to-consumer fashion micro-label. The c
 
 The near-term business target is Drop 001 in September 2026:
 
-- 3 SKUs.
-- 150 planned units.
+- Founder-stated active product set: The Firm Jacket, women's low-rise denim jean, men's denim jean, scarf, and women's top/bodysuit.
+- Units, prices, and revenue must be rebuilt from vendor quotes.
+- Initial inventory / production spend ceiling: C$5,000-C$6,000 max unless the founder explicitly revises it.
 - Open direct-to-consumer online drop; no password gate at launch.
 - One day-to-night pop-up.
 - Ottawa/Gatineau as the first wedge.

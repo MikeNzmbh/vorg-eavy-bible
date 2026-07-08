@@ -161,7 +161,7 @@ Do not use:
 
 At the pop-up, build a real-time proof wall:
 
-- `150 planned units`
+- live planned-unit count once the corrected unit model is locked
 - SKU/unit cards
 - sold
 - held
