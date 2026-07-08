@@ -8,6 +8,11 @@
 
 const STORAGE_KEY = 'vorgDropOS.v1';
 const MAX_IMAGE_BYTES = 900000;
+const SCORE_ENGINE = window.VorgDropAlgorithm;
+
+if (!SCORE_ENGINE) {
+  throw new Error('Drop OS algorithm bundle is missing. Run npm run build:algorithm in site/.');
+}
 
 /* ─── Default State ─── */
 const DEFAULT_STATE = {
@@ -39,7 +44,7 @@ const DEFAULT_STATE = {
   postmortem: {
     revenueForecast: '',
     revenueActual: '',
-    unitsPlanned: 150,
+    unitsPlanned: '',
     unitsSold: '',
     marginTarget: '',
     marginActual: '',
@@ -81,10 +86,10 @@ const DEFAULT_STATE = {
       id: 'concept', order: 1, name: 'Concept',
       owner: 'Founder / product lead', status: 'in progress', gate: 'revise', score: 54,
       evidence: '../product/README.md',
-      known: 'Drop 001 direction is narrowed to three SKUs and 150 planned units.',
+      known: 'Drop 001 direction is corrected to jacket, women\'s denim, men\'s denim, scarf, and women\'s top/bodysuit.',
       assumed: 'The collection can balance access, polish, and local story.',
-      unresolved: 'Second and third SKU paths still need sharper proof.',
-      next: 'Confirm the final SKU trio.'
+      unresolved: 'Unit split, pricing, and landed COGS still need vendor proof.',
+      next: 'Rebuild the corrected product set under the C$5k-C$6k cap.'
     },
     {
       id: 'sample', order: 2, name: 'Sample',
@@ -108,8 +113,8 @@ const DEFAULT_STATE = {
       id: 'production', order: 4, name: 'Production',
       owner: 'Production / finance', status: 'not started', gate: 'test', score: 0,
       evidence: '',
-      known: 'Planned run is 150 units.',
-      assumed: 'MOQ, landed COGS, and timeline will stay inside the working model.',
+      known: 'Founder-stated product set is jacket, women\'s denim, men\'s denim, scarf, and women\'s top/bodysuit.',
+      assumed: 'The unit split can be rebuilt inside the C$5k-C$6k production cap.',
       unresolved: 'No vendor quote or approved production sample yet.',
       next: 'Quote MOQ, landed COGS, and production calendar.'
     },
@@ -172,9 +177,9 @@ const DEFAULT_STATE = {
     { id: 'hanger-wall', name: 'Empty Hanger Wall', risk: 'Green', status: 'ready', proof: 'Real inventory movement and size-level sell-through', body: 'Hangers leave the wall only when real units are sold, claimed, or picked up.' }
   ],
   tasks: [
-    { id: 'task-1', stageId: 'signal', title: 'Lock final SKU thesis.', owner: 'Founder', done: false },
-    { id: 'task-2', stageId: 'concept', title: 'Confirm the final SKU trio.', owner: 'Product lead', done: false },
-    { id: 'task-3', stageId: 'sample', title: 'Build tech pack v1 and supplier tracker.', owner: 'Product lead', done: false },
+    { id: 'task-1', stageId: 'signal', title: 'Rebuild founder SKU thesis into unit/price model.', owner: 'Founder', done: false },
+    { id: 'task-2', stageId: 'concept', title: 'Split corrected product set under C$5k-C$6k cap.', owner: 'Product lead', done: false },
+    { id: 'task-3', stageId: 'sample', title: 'Build tech pack v1 and supplier tracker for corrected product set.', owner: 'Product lead', done: false },
     { id: 'task-4', stageId: 'campaign-proof', title: 'Shoot the 7-day sample proof sprint once samples arrive.', owner: 'Campaign lead', done: false },
     { id: 'task-5', stageId: 'production', title: 'Quote MOQ, landed COGS, and production calendar.', owner: 'Production / finance', done: false },
     { id: 'task-6', stageId: 'campaign-build', title: 'Build trailer and short-form content board.', owner: 'Campaign lead', done: false },
@@ -212,34 +217,52 @@ const PRODUCT_TEMPLATE = {
 const DEFAULT_PRODUCTS = [
   {
     id: 'sku-jacket',
-    name: 'The Firm Jacket', units: 36, price: 'C$295', proof: 'Hero authority item',
+    name: 'The Firm Jacket', units: '', price: 'TBD', proof: 'Hero authority item',
     image: 'assets/hero_jacket.png',
     role: 'The statement piece. Establishes the brand as a credible outerwear voice.',
     note: 'Needs table breakdown, fit proof, and sample correction evidence before production.',
-    sampleStatus: 'Awaiting first sample', materialRisk: 'Medium — sourcing unconfirmed',
-    fitRisk: 'High — structured fit needs 3+ body types', marginTarget: '62%'
+    sampleStatus: 'Awaiting first sample', materialRisk: 'Medium - sourcing unconfirmed',
+    fitRisk: 'High - structured fit needs 3+ body types', marginTarget: 'TBD'
   },
   {
-    id: 'sku-top',
-    name: 'Structured Rib Top', units: 84, price: 'C$95', proof: 'Entry item',
+    id: 'sku-womens-denim',
+    name: 'Women\'s Low-Rise Denim Jean', units: '', price: 'TBD', proof: 'Women\'s core bottom',
+    image: '',
+    role: 'The women\'s outfit anchor. Defines fit, attitude, and styling with the jacket/top.',
+    note: 'Needs rise, wash, measurement spec, and body-type fit proof before production.',
+    sampleStatus: 'Awaiting first sample', materialRisk: 'High - denim wash and MOQ unconfirmed',
+    fitRisk: 'High - low-rise denim needs careful grading', marginTarget: 'TBD'
+  },
+  {
+    id: 'sku-mens-denim',
+    name: 'Men\'s Denim Jean', units: '', price: 'TBD', proof: 'Men\'s core bottom',
+    image: '',
+    role: 'The men\'s outfit anchor. Must be developed as its own fit block, not a size extension.',
+    note: 'Needs fit reference, inseam/rise decision, wash spec, and sample review.',
+    sampleStatus: 'Awaiting first sample', materialRisk: 'High - denim wash and MOQ unconfirmed',
+    fitRisk: 'High - separate men\'s block required', marginTarget: 'TBD'
+  },
+  {
+    id: 'sku-scarf',
+    name: 'Scarf', units: '', price: 'TBD', proof: 'Low-size-risk accessory',
+    image: '',
+    role: 'The styling signal. Adds brand presence without heavy fit risk.',
+    note: 'Needs material, dimensions, finishing, and brand placement decision.',
+    sampleStatus: 'Awaiting first sample', materialRisk: 'Medium - material handfeel unconfirmed',
+    fitRisk: 'Low - size-flexible accessory', marginTarget: 'TBD'
+  },
+  {
+    id: 'sku-womens-top-bodysuit',
+    name: 'Women\'s Top / Bodysuit', units: '', price: 'TBD', proof: 'Women\'s fitted top layer',
     image: 'assets/hero_top.png',
-    role: 'The accessible entry point. Drives volume and first-time purchase.',
-    note: 'Needs body-type fit relay and wash/shape confidence before product-page copy.',
-    sampleStatus: 'Awaiting first sample', materialRisk: 'Low — standard rib knit',
-    fitRisk: 'Medium — body-type range needed', marginTarget: '68%'
-  },
-  {
-    id: 'sku-cap',
-    name: 'Signature Cap', units: 30, price: 'C$65', proof: 'Access signal',
-    image: 'assets/hero_cap.png',
-    role: 'The social signal. Low-friction purchase that spreads brand visibility.',
-    note: 'Needs real city sightings and inventory movement proof during the pop-up.',
-    sampleStatus: 'Awaiting first sample', materialRisk: 'Low',
-    fitRisk: 'Low — one size fits most', marginTarget: '72%'
+    role: 'The fitted styling anchor. Completes the women\'s look with denim and jacket.',
+    note: 'Needs decision between bodysuit, rib top, tee, or long-sleeve after fit proof.',
+    sampleStatus: 'Awaiting first sample', materialRisk: 'Medium - fabric path unconfirmed',
+    fitRisk: 'High if bodysuit; medium if top/tee', marginTarget: 'TBD'
   }
 ];
 
-const ALGORITHM_VERSION = 'VORG Drop OS score v0.3';
+const ALGORITHM_VERSION = SCORE_ENGINE.ALGORITHM_VERSION;
 
 const WORKSPACE_META = {
   command: { crumb: 'Drop desk', heading: 'Drop desk', sub: 'Bag check, blockers, this week\'s run' },
@@ -359,15 +382,7 @@ const ONBOARD_STEPS = [
   }
 ];
 
-const STRESS_LABELS = [
-  { key: 'demand', label: 'Market heat', weight: 0.15, type: 'positive' },
-  { key: 'product', label: 'SKU proof', weight: 0.16, type: 'positive' },
-  { key: 'campaign', label: 'Content heat', weight: 0.16, type: 'positive' },
-  { key: 'operations', label: 'Launch ops', weight: 0.13, type: 'positive' },
-  { key: 'margin', label: 'Margin room', weight: 0.1, type: 'positive' },
-  { key: 'evidence', label: 'Proof quality', weight: 0.2, type: 'positive' },
-  { key: 'risk', label: 'Risk pressure', weight: 0.1, type: 'negative' }
-];
+const STRESS_LABELS = SCORE_ENGINE.STRESS_LABELS;
 
 const PRODUCTION_ITEMS = [
   { label: 'Vendor quotes', note: 'Confirmed quotes from at least two suppliers', filled: false },
@@ -440,26 +455,6 @@ function formatGateLabel(gate) {
   return 'HOLD';
 }
 
-function average(values) {
-  const usable = values.map(Number).filter(Number.isFinite);
-  if (!usable.length) return 0;
-  return usable.reduce((s, v) => s + v, 0) / usable.length;
-}
-
-function statusMultiplier(s) {
-  if (s === 'done') return 1;
-  if (s === 'in progress') return 0.65;
-  if (s === 'blocked') return 0.18;
-  return 0.25;
-}
-
-function gateMultiplier(g) {
-  if (g === 'approve') return 1;
-  if (g === 'test') return 0.72;
-  if (g === 'revise') return 0.38;
-  return 0.08;
-}
-
 function getStage(id) {
   return state.stages.find(s => s.id === (id || state.activeStageId)) || state.stages[0];
 }
@@ -505,12 +500,6 @@ function getReadinessRollup() {
 function getOperationsEffective() {
   const rollup = getReadinessRollup();
   return Math.round(state.stress.operations * 0.35 + rollup.pct * 0.65);
-}
-
-function getStressValue(key) {
-  if (key === 'operations') return getOperationsEffective();
-  if (key === 'product') return getProductProofScore();
-  return state.stress[key];
 }
 
 function computeManufacturingTier(mfg) {
@@ -585,72 +574,18 @@ function toggleChecklistItem(group, key) {
 
 /* ─── Algorithm (v0.3 — manufacturing + investor tiers) ─── */
 function calculateScores() {
-  const stress = state.stress;
-  const operationsEffective = getOperationsEffective();
-  const positiveInputs = STRESS_LABELS.filter(i => i.type === 'positive');
-  const inputScore = positiveInputs.reduce((s, i) => s + getStressValue(i.key) * i.weight, 0);
-  const inputWeight = positiveInputs.reduce((s, i) => s + i.weight, 0);
-  const normalizedInputScore = inputScore / inputWeight;
-  const evidenceFloor = Math.min(stress.evidence, stress.product, operationsEffective);
-  const stageScore = average(state.stages.map(s => s.score * statusMultiplier(s.status) * gateMultiplier(s.gate)));
-  const approvedTactics = state.tactics.filter(t => t.status === 'approved').length;
-  const tacticScore = clamp(40 + approvedTactics * 12 + state.tactics.filter(t => t.status === 'ready').length * 4, 0, 100);
-  const topSignals = state.signals.slice().sort((a, b) => Number(b.strength) - Number(a.strength)).slice(0, 3);
-  const signalHeat = clamp(average(topSignals.map(s => s.strength)) + Math.min(state.signals.length, 6) * 2, 0, 100);
-  const blockedStages = state.stages.filter(s => s.status === 'blocked' || s.gate === 'kill').length;
-  const lowEvidenceDrag = Math.max(0, 58 - evidenceFloor) * 0.18;
-  const riskDrag = clamp(Math.max(0, stress.risk - 32) * 0.32 + blockedStages * 5 + lowEvidenceDrag, 0, 32);
-
-  const confidence = clamp(Math.round(
-    normalizedInputScore * 0.58 + stageScore * 0.13 + signalHeat * 0.1 +
-    tacticScore * 0.09 + evidenceFloor * 0.1 - riskDrag
-  ), 0, 100);
-
-  const campaignRate = clamp(Math.round(
-    8 + stress.campaign * 0.24 + stress.demand * 0.14 + stress.evidence * 0.16 +
-    signalHeat * 0.11 + tacticScore * 0.15 +
-    ((operationsEffective + stress.margin) / 2) * 0.1 - stress.risk * 0.12
-  ), 5, 88);
-
-  let gate = 'kill';
-  if (confidence >= 80 && evidenceFloor >= 64 && stress.risk <= 58) gate = 'approve';
-  else if (confidence >= 64 && evidenceFloor >= 50 && stress.risk <= 68) gate = 'test';
-  else if (confidence >= 46 && stress.risk <= 78) gate = 'revise';
-  if (stress.risk >= 82 || evidenceFloor < 34) gate = 'kill';
-
-  const weakness = [
-    ...positiveInputs.map(i => ({ label: i.label, value: getStressValue(i.key) })),
-    { label: 'Stage momentum', value: stageScore },
-    { label: 'Signal heat', value: signalHeat },
-    { label: 'Campaign tactics', value: tacticScore },
-    { label: 'Risk pressure', value: 100 - stress.risk }
-  ].sort((a, b) => a.value - b.value)[0];
-
-  const bottleneck = evidenceFloor < 50 ? 'Proof check' : weakness.label;
-
-  return {
-    version: ALGORITHM_VERSION, confidence, campaignRate, gate, weakness, bottleneck,
-    evidenceFloor: Math.round(evidenceFloor), stageScore: Math.round(stageScore),
-    tacticScore: Math.round(tacticScore), signalHeat: Math.round(signalHeat),
-    riskDrag: Math.round(riskDrag), operationsEffective
-  };
+  return SCORE_ENGINE.calculateScores({
+    stress: state.stress,
+    stages: state.stages,
+    tactics: state.tactics,
+    signals: state.signals,
+    operationsEffective: getOperationsEffective(),
+    productProofScore: getProductProofScore()
+  });
 }
 
 function getNextCitySignal() {
-  const byCity = state.signals.reduce((map, sig) => {
-    const city = sig.city || 'Unknown';
-    if (!map.has(city)) map.set(city, []);
-    map.get(city).push(Number(sig.strength) || 0);
-    return map;
-  }, new Map());
-  const cities = Array.from(byCity.entries()).map(([city, vals]) => ({
-    city,
-    score: clamp(Math.round(average(vals) * 0.72 + Math.max(...vals) * 0.18 + Math.min(vals.length, 5) * 2), 0, 100),
-    count: vals.length
-  }));
-  const expansion = cities.filter(c => c.city !== 'Ottawa/Gatineau');
-  return (expansion.length ? expansion : cities)
-    .sort((a, b) => b.score - a.score || b.count - a.count)[0] || { city: 'Montreal', score: 0, count: 0 };
+  return SCORE_ENGINE.getNextCitySignal(state.signals, 'Ottawa/Gatineau');
 }
 
 function decisionText(gate) {
@@ -1425,21 +1360,13 @@ function renderSignalRadar() {
 }
 
 function renderCityBar() {
-  const byCity = new Map(CITIES.map(c => [c, []]));
-  state.signals.forEach(sig => {
-    const list = byCity.get(sig.city);
-    if (list) list.push(Number(sig.strength) || 0);
-  });
+  const cityScores = SCORE_ENGINE.scoreCitySignals(state.signals, CITIES);
 
-  qs('#signalCityBar').innerHTML = CITIES.map(city => {
-    const vals = byCity.get(city);
-    const score = vals.length
-      ? clamp(Math.round(average(vals) * 0.72 + Math.max(...vals) * 0.18 + Math.min(vals.length, 5) * 2), 0, 100)
-      : 0;
+  qs('#signalCityBar').innerHTML = cityScores.map(({ city, score, count }) => {
     return `<div class="city-bar-item">
       <span class="city-bar-name">${city}</span>
       <span class="city-bar-score">${score}</span>
-      <span class="city-bar-count">${vals.length} signal${vals.length === 1 ? '' : 's'}</span>
+      <span class="city-bar-count">${count} signal${count === 1 ? '' : 's'}</span>
     </div>`;
   }).join('');
 }
@@ -1786,13 +1713,10 @@ function renderCityExpansion() {
     const list = byCity.get(sig.city);
     if (list) list.push(sig);
   });
+  const cityScores = SCORE_ENGINE.scoreCitySignals(state.signals, CITIES);
 
-  qs('#cityGrid').innerHTML = CITIES.map(city => {
+  qs('#cityGrid').innerHTML = cityScores.map(({ city, score, count }) => {
     const sigs = byCity.get(city);
-    const vals = sigs.map(s => Number(s.strength) || 0);
-    const score = vals.length
-      ? clamp(Math.round(average(vals) * 0.72 + Math.max(...vals) * 0.18 + Math.min(vals.length, 5) * 2), 0, 100)
-      : 0;
     const isHome = city === 'Ottawa/Gatineau';
 
     return `<div class="city-card">
@@ -1802,7 +1726,7 @@ function renderCityExpansion() {
         <span>/ 100</span>
       </div>
       <div class="city-card-detail">
-        <strong>${sigs.length}</strong> signal${sigs.length === 1 ? '' : 's'} tracked<br />
+        <strong>${count}</strong> signal${count === 1 ? '' : 's'} tracked<br />
         ${isHome ? 'Home wedge — Drop 001 target' : score > 50 ? 'Strong signal — potential next city' : 'Early signal — needs more data'}<br />
         ${sigs.length ? `Strongest: ${sigs.sort((a, b) => b.strength - a.strength)[0].item}` : 'No signals yet'}
       </div>
@@ -1842,7 +1766,7 @@ function renderPostmortem() {
       <div class="field-row">
         <div class="field">
           <label for="pmUnitsPlanned">Units planned</label>
-          <input id="pmUnitsPlanned" name="unitsPlanned" type="number" min="1" value="${pm.unitsPlanned || 150}" />
+          <input id="pmUnitsPlanned" name="unitsPlanned" type="number" min="1" value="${pm.unitsPlanned || ''}" />
         </div>
         <div class="field">
           <label for="pmUnitsSold">Units sold</label>
@@ -1938,7 +1862,7 @@ function savePostmortem(e) {
   state.postmortem = {
     revenueForecast: form.revenueForecast.value.trim(),
     revenueActual: form.revenueActual.value.trim(),
-    unitsPlanned: clamp(Number(unitsPlanned) || 150, 1, 999999),
+    unitsPlanned: unitsPlanned ? clamp(Number(unitsPlanned), 1, 999999) : '',
     unitsSold: unitsSold,
     marginTarget: form.marginTarget.value.trim(),
     marginActual: form.marginActual.value.trim(),
@@ -2170,7 +2094,7 @@ function renderInvestorSnapshot() {
       ${investorMetric('Revenue actual', pm.revenueActual, pm.revenueTier, pm.revenueProofUrl)}
       ${investorMetric('Margin achieved', pm.marginActual, pm.marginTier, pm.marginProofUrl)}
       ${investorMetric('Sell-through', sellThroughDisplay, pm.sellThroughTier, pm.sellThroughProofUrl)}
-      ${pm.unitsSold ? investorMetric('Units sold', `${pm.unitsSold} / ${pm.unitsPlanned || 150}`, pm.sellThroughTier, pm.sellThroughProofUrl) : ''}
+      ${pm.unitsSold ? investorMetric('Units sold', `${pm.unitsSold} / ${pm.unitsPlanned || 'TBD'}`, pm.sellThroughTier, pm.sellThroughProofUrl) : ''}
       ${pm.verifiedBy ? `<div class="investor-row"><span class="investor-row-label">Verified by</span><span class="investor-row-value">${pm.verifiedBy}${pm.verifiedAt ? ` · ${pm.verifiedAt}` : ''}</span></div>` : ''}
     </div>
   `;

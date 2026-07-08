@@ -9,6 +9,8 @@ Checked: 2026-07-01
 - `drop-os-guide.html` - full team help guide (UX flows, how-tos, limits).
 - `DROP_OS_GUIDE.md` - same guide in Markdown for repo handoff.
 - `drop-os.css` - dashboard styling.
+- `src/drop-os-algorithm.ts` - typed Drop OS scoring, gate, risk, and city-signal algorithm.
+- `drop-os-algorithm.js` - compiled browser bundle generated from `src/drop-os-algorithm.ts`.
 - `drop-os.js` - dashboard interactions, local storage, CSV import/export, snapshot copy.
 - `drop-os-supabase.js` - Supabase auth sync + Storage SKU images (when `drop-os-config.js` is present).
 - `drop-os-auth.js` - email OTP sign-in + squad invite redemption.
@@ -16,6 +18,15 @@ Checked: 2026-07-01
 - `supabase/schema-v2.sql` - auth members, invites, RPC sync, Storage bucket (current).
 - `supabase/schema.sql` - legacy pin sync (superseded by v2 for Drop 001).
 - `vercel.json` - `/drop-os` and `/guide` rewrites for deploy.
+
+## Product Truth Note
+
+Checked: 2026-07-07.
+
+- The strategic source of truth now lists the corrected founder pick: The Firm Jacket, women's low-rise denim jean, men's denim jean, scarf, and women's top / bodysuit.
+- `drop-os.js` default SKU seed has been updated to that corrected set with TBD units/prices.
+- `index.html` and `app.js` still reflect the older 3-object public lookbook prototype and need a separate creative/product refresh before they are used for launch decisions or public preview.
+- Existing Supabase/browser-saved Drop OS state may still carry the old seed until reset or imported from an updated snapshot.
 
 ## How People Access It
 
@@ -61,6 +72,7 @@ For team sharing, host the `site/` folder through a static host such as Vercel, 
 
 ### QA & screenshots
 
+- Algorithm compile + unit test: `cd site && npm run test:algorithm`
 - Smoke test: `node site/test-drop-os-flow.mjs` (with `python -m http.server 4182` in `site/`)
 - Regenerate guide screenshots: `node site/capture-guide-screenshots.mjs`
 
@@ -118,6 +130,8 @@ This is a working static prototype with Supabase v2 squad auth when deployed. Ma
 
 The dashboard uses `VORG Drop OS score v0.3`.
 
+- The canonical scoring implementation is now TypeScript in `src/drop-os-algorithm.ts`; run `npm run build:algorithm` from `site/` after changing it.
+- `drop-os.js` consumes the compiled `drop-os-algorithm.js` browser bundle and should not reimplement score math inline.
 - Launch confidence is proof-gated by evidence, product proof, operations, stage momentum, signal heat, campaign proof, and risk drag.
 - Campaign success rate remains a working forecast, not a guarantee.
 - Next-city signal aggregates signals by city instead of picking only the highest single signal.
