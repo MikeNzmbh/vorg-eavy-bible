@@ -128,11 +128,13 @@ This is a working static prototype with Supabase v2 squad auth when deployed. Ma
 
 ## Current Algorithm
 
-The dashboard uses `VORG Drop OS score v0.3`.
+The dashboard uses `VORG Drop OS score v0.4`.
 
 - The canonical scoring implementation is now TypeScript in `src/drop-os-algorithm.ts`; run `npm run build:algorithm` from `site/` after changing it.
 - `drop-os.js` consumes the compiled `drop-os-algorithm.js` browser bundle and should not reimplement score math inline.
 - Launch confidence is proof-gated by evidence, product proof, operations, stage momentum, signal heat, campaign proof, and risk drag.
+- Spend authorization is now explicit: major spend, small tests only, proof work only, or hard pause.
+- The cockpit now ranks top score levers by projected confidence delta, with proof required for each move.
 - Campaign success rate remains a working forecast, not a guarantee.
 - Next-city signal aggregates signals by city instead of picking only the highest single signal.
 - The fuller UI restructure plan lives in `../strategy/drop-os-ui-restructure.md`.

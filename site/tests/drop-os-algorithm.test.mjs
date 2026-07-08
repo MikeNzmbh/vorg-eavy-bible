@@ -15,7 +15,7 @@ vm.runInContext(source, sandbox, { filename: bundlePath });
 const algorithm = sandbox.VorgDropAlgorithm;
 
 assert.ok(algorithm, 'algorithm global exists');
-assert.equal(algorithm.ALGORITHM_VERSION, 'VORG Drop OS score v0.3');
+assert.equal(algorithm.ALGORITHM_VERSION, 'VORG Drop OS score v0.4');
 
 const strongInput = {
   stress: {
@@ -51,6 +51,9 @@ assert.equal(strongScore.gate, 'approve');
 assert.ok(strongScore.confidence >= 80);
 assert.equal(strongScore.evidenceFloor, 88);
 assert.equal(strongScore.bottleneck, 'Stage momentum');
+assert.equal(strongScore.spendAuthorization.level, 'major-spend');
+assert.ok(strongScore.gateReason.includes('GO band'));
+assert.ok(Array.isArray(strongScore.levers));
 
 const lowProofScore = algorithm.calculateScores({
   ...strongInput,
@@ -62,6 +65,10 @@ const lowProofScore = algorithm.calculateScores({
 assert.equal(lowProofScore.gate, 'kill');
 assert.equal(lowProofScore.bottleneck, 'Proof check');
 assert.equal(lowProofScore.evidenceFloor, 30);
+assert.equal(lowProofScore.spendAuthorization.level, 'paused');
+assert.ok(lowProofScore.gateReason.includes('hard floor'));
+assert.ok(lowProofScore.levers.some(lever => lever.id === 'proof-floor-64'));
+assert.ok(lowProofScore.levers[0].deltaConfidence > 0);
 
 const riskyScore = algorithm.calculateScores({
   ...strongInput,
@@ -70,6 +77,8 @@ const riskyScore = algorithm.calculateScores({
 
 assert.equal(riskyScore.gate, 'kill');
 assert.ok(riskyScore.riskDrag > strongScore.riskDrag);
+assert.equal(riskyScore.spendAuthorization.level, 'paused');
+assert.ok(riskyScore.levers.some(lever => lever.id === 'risk-32'));
 
 const cityScores = algorithm.scoreCitySignals([
   { city: 'Montreal', strength: 75 },

@@ -11,6 +11,7 @@ namespace VorgDropAlgorithm {
   export type GateDecision = "approve" | "test" | "revise" | "kill";
   export type StageStatus = "done" | "in progress" | "blocked" | "not started";
   export type StressDirection = "positive" | "negative";
+  export type SpendLevel = "major-spend" | "small-test" | "proof-only" | "paused";
 
   export interface StressLabel {
     key: StressKey;
@@ -58,7 +59,30 @@ namespace VorgDropAlgorithm {
     value: number;
   }
 
-  export interface ScoreOutput {
+  export interface SpendAuthorization {
+    level: SpendLevel;
+    label: string;
+    summary: string;
+    reason: string;
+    allowed: string[];
+    blocked: string[];
+  }
+
+  export interface ScoreLever {
+    id: string;
+    label: string;
+    owner: string;
+    input: string;
+    current: number;
+    target: number;
+    projectedConfidence: number;
+    deltaConfidence: number;
+    projectedGate: GateDecision;
+    action: string;
+    proofNeeded: string;
+  }
+
+  export interface ScoreCore {
     version: string;
     confidence: number;
     campaignRate: number;
@@ -70,7 +94,14 @@ namespace VorgDropAlgorithm {
     tacticScore: number;
     signalHeat: number;
     riskDrag: number;
+    riskPressure: number;
     operationsEffective: number;
+  }
+
+  export interface ScoreOutput extends ScoreCore {
+    gateReason: string;
+    spendAuthorization: SpendAuthorization;
+    levers: ScoreLever[];
   }
 
   export interface CitySignalScore {
@@ -79,7 +110,7 @@ namespace VorgDropAlgorithm {
     count: number;
   }
 
-  export const ALGORITHM_VERSION = "VORG Drop OS score v0.3";
+  export const ALGORITHM_VERSION = "VORG Drop OS score v0.4";
 
   export const STRESS_LABELS: StressLabel[] = [
     { key: "demand", label: "Market heat", weight: 0.15, type: "positive" },
@@ -117,6 +148,16 @@ namespace VorgDropAlgorithm {
   }
 
   export function calculateScores(input: DropScoreInput): ScoreOutput {
+    const core = calculateCore(input);
+    return {
+      ...core,
+      gateReason: gateReasonFor(core),
+      spendAuthorization: spendAuthorizationFor(core),
+      levers: buildScoreLevers(input, core)
+    };
+  }
+
+  function calculateCore(input: DropScoreInput): ScoreCore {
     const stress = normalizeStress(input.stress);
     const operationsEffective = clamp(input.operationsEffective, 0, 100);
     const productProofScore = clamp(input.productProofScore, 0, 100);
@@ -182,7 +223,263 @@ namespace VorgDropAlgorithm {
       tacticScore: Math.round(tacticScore),
       signalHeat: Math.round(signalHeat),
       riskDrag: Math.round(riskDrag),
+      riskPressure: stress.risk,
       operationsEffective
+    };
+  }
+
+  function gateReasonFor(score: ScoreCore): string {
+    if (score.evidenceFloor < 34) {
+      return `Proof floor is ${score.evidenceFloor}, below the hard floor of 34. The drop stays paused until proof, SKU truth, and launch ops recover.`;
+    }
+    if (score.riskPressure >= 82) {
+      return `Risk pressure is ${score.riskPressure}, above the hard stop of 82. Reduce risk before any spend decision.`;
+    }
+    if (score.gate === "approve") {
+      return `Confidence, proof floor, and risk are all inside the GO band. Treat this as permission to move only on evidence-backed spend.`;
+    }
+    if (score.gate === "test") {
+      return `The drop can run small tests, but proof floor or confidence is not strong enough for bulk exposure.`;
+    }
+    if (score.gate === "revise") {
+      return `${score.bottleneck} is holding the model below the test band. Fix the weakest proof surface before spending.`;
+    }
+    return `The model is below the revise band. Pause, rebuild the product/campaign proof, or kill the route.`;
+  }
+
+  function spendAuthorizationFor(score: ScoreCore): SpendAuthorization {
+    if (score.gate === "approve") {
+      return {
+        level: "major-spend",
+        label: "Major spend eligible",
+        summary: "Bag unlocked only for proof-backed sample runs, media tests, or production moves.",
+        reason: gateReasonFor(score),
+        allowed: [
+          "Sample or size-set orders with proof links",
+          "Controlled media tests tied to campaign proof",
+          "Production moves only when vendor quote and PP/sample proof exist"
+        ],
+        blocked: [
+          "Unquoted bulk PO",
+          "Claims without sample, vendor, or test evidence"
+        ]
+      };
+    }
+
+    if (score.gate === "test") {
+      return {
+        level: "small-test",
+        label: "Small tests only",
+        summary: "Bag locked for bulk. Run small proof tests before big money moves.",
+        reason: gateReasonFor(score),
+        allowed: [
+          "Content proof sprint",
+          "Small sample correction or swatch order",
+          "City signal or waitlist test"
+        ],
+        blocked: [
+          "Bulk production PO",
+          "Large paid media spend",
+          "Venue or event deposits outside the approved cap"
+        ]
+      };
+    }
+
+    if (score.gate === "revise") {
+      return {
+        level: "proof-only",
+        label: "Proof work only",
+        summary: "Bag locked. Close proof gaps before factory spend or paid media.",
+        reason: gateReasonFor(score),
+        allowed: [
+          "Vendor quote collection",
+          "Tech pack cleanup",
+          "Organic proof content and fit review"
+        ],
+        blocked: [
+          "Factory deposits",
+          "Paid launch campaign",
+          "Public production-readiness claims"
+        ]
+      };
+    }
+
+    return {
+      level: "paused",
+      label: "Hard pause",
+      summary: "Bag locked. Pause or rebuild before any major spend.",
+      reason: gateReasonFor(score),
+      allowed: [
+        "Research",
+        "Risk removal",
+        "Decision memo or kill review"
+      ],
+      blocked: [
+        "Sample deposits",
+        "Bulk production",
+        "Paid campaign spend",
+        "Public readiness claims"
+      ]
+    };
+  }
+
+  function buildScoreLevers(input: DropScoreInput, base: ScoreCore): ScoreLever[] {
+    const stress = normalizeStress(input.stress);
+    const candidates: Array<{
+      id: string;
+      label: string;
+      owner: string;
+      input: string;
+      current: number;
+      target: number;
+      action: string;
+      proofNeeded: string;
+      mutate: (draft: DropScoreInput) => void;
+    }> = [
+      {
+        id: "proof-floor-64",
+        label: "Raise proof floor",
+        owner: "Founder / production",
+        input: "Evidence + SKU proof + launch ops",
+        current: base.evidenceFloor,
+        target: 64,
+        action: "Attach the missing vendor quote, sample proof, or launch-ops evidence that is holding the floor down.",
+        proofNeeded: "Proof URLs for quote, sample/fit, checklist, or campaign evidence.",
+        mutate: draft => {
+          draft.stress.evidence = Math.max(clamp(draft.stress.evidence, 0, 100), 64);
+          draft.productProofScore = Math.max(clamp(draft.productProofScore, 0, 100), 64);
+          draft.operationsEffective = Math.max(clamp(draft.operationsEffective, 0, 100), 64);
+        }
+      },
+      {
+        id: "product-proof-72",
+        label: "Lock SKU proof",
+        owner: "Product lead",
+        input: "SKU proof",
+        current: clamp(input.productProofScore, 0, 100),
+        target: 72,
+        action: "Move the active SKUs from TBD/spec draft toward quoted sample truth.",
+        proofNeeded: "Supplier quote, sample photo, fit notes, landed COGS, or PP/sample evidence.",
+        mutate: draft => {
+          draft.productProofScore = Math.max(clamp(draft.productProofScore, 0, 100), 72);
+          draft.stress.product = Math.max(clamp(draft.stress.product, 0, 100), 72);
+        }
+      },
+      {
+        id: "launch-ops-72",
+        label: "Clear launch ops",
+        owner: "Ops / ecommerce",
+        input: "Launch ops",
+        current: base.operationsEffective,
+        target: 72,
+        action: "Clear the readiness checklist items that block a clean open online drop.",
+        proofNeeded: "Storefront, policies, size guide, analytics, email/SMS, and low-stock/sold-out proof.",
+        mutate: draft => {
+          draft.operationsEffective = Math.max(clamp(draft.operationsEffective, 0, 100), 72);
+          draft.stress.operations = Math.max(clamp(draft.stress.operations, 0, 100), 72);
+        }
+      },
+      {
+        id: "risk-32",
+        label: "Cut risk pressure",
+        owner: "Founder / ops",
+        input: "Risk pressure",
+        current: stress.risk,
+        target: 32,
+        action: "Remove the risk item that would make the spend call fragile.",
+        proofNeeded: "Documented risk owner, mitigation, compliance note, or decision to defer the risky move.",
+        mutate: draft => {
+          draft.stress.risk = Math.min(clamp(draft.stress.risk, 0, 100), 32);
+        }
+      },
+      {
+        id: "stage-momentum",
+        label: "Move the next gate",
+        owner: "Current milestone owner",
+        input: "Stage momentum",
+        current: base.stageScore,
+        target: 70,
+        action: "Advance the first unfinished milestone with an honest gate score and linked proof.",
+        proofNeeded: "Updated gate status, score, next action, and evidence link.",
+        mutate: draft => {
+          const stage = draft.stages.find(item => item.status !== "done") || draft.stages[0];
+          if (!stage) return;
+          stage.status = stage.status === "blocked" ? "in progress" : stage.status;
+          stage.gate = stage.gate === "kill" ? "revise" : stage.gate;
+          stage.score = Math.max(clamp(stage.score, 0, 100), 70);
+        }
+      },
+      {
+        id: "campaign-proof",
+        label: "Approve campaign proof",
+        owner: "Campaign lead",
+        input: "Content proof",
+        current: base.tacticScore,
+        target: Math.min(100, base.tacticScore + 24),
+        action: "Turn ready tactics into approved tactics only after the proof is real and consented.",
+        proofNeeded: "Clip links, waitlist/SMS signal, creator proof, or campaign test results.",
+        mutate: draft => {
+          let approvals = 0;
+          draft.tactics.forEach(tactic => {
+            if (approvals >= 2 || tactic.status === "approved") return;
+            tactic.status = "approved";
+            approvals += 1;
+          });
+        }
+      },
+      {
+        id: "signal-depth",
+        label: "Deepen signal heat",
+        owner: "Signal lead",
+        input: "Market heat",
+        current: base.signalHeat,
+        target: 70,
+        action: "Log qualified buy-intent or city signals instead of one loud vanity signal.",
+        proofNeeded: "DMs, waitlist clicks, saves/shares, creator pull, or city/event demand notes.",
+        mutate: draft => {
+          draft.signals = [
+            ...draft.signals,
+            { city: "Ottawa/Gatineau", strength: 72 },
+            { city: "Ottawa/Gatineau", strength: 72 },
+            { city: "Montreal", strength: 72 }
+          ];
+          draft.stress.demand = Math.max(clamp(draft.stress.demand, 0, 100), 72);
+        }
+      }
+    ];
+
+    return candidates
+      .map(candidate => {
+        const draft = cloneInput(input);
+        candidate.mutate(draft);
+        const projected = calculateCore(draft);
+        return {
+          id: candidate.id,
+          label: candidate.label,
+          owner: candidate.owner,
+          input: candidate.input,
+          current: Math.round(candidate.current),
+          target: Math.round(candidate.target),
+          projectedConfidence: projected.confidence,
+          deltaConfidence: projected.confidence - base.confidence,
+          projectedGate: projected.gate,
+          action: candidate.action,
+          proofNeeded: candidate.proofNeeded
+        };
+      })
+      .filter(lever => lever.deltaConfidence > 0 || lever.current < lever.target)
+      .sort((left, right) => right.deltaConfidence - left.deltaConfidence || left.current - right.current)
+      .slice(0, 4);
+  }
+
+  function cloneInput(input: DropScoreInput): DropScoreInput {
+    return {
+      stress: { ...input.stress },
+      stages: input.stages.map(stage => ({ ...stage })),
+      tactics: input.tactics.map(tactic => ({ ...tactic })),
+      signals: input.signals.map(signal => ({ ...signal })),
+      operationsEffective: clamp(input.operationsEffective, 0, 100),
+      productProofScore: clamp(input.productProofScore, 0, 100)
     };
   }
 

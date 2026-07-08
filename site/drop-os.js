@@ -971,8 +971,10 @@ function renderCommandCenter() {
 
   // Spend gate
   const spendEl = qs('#cmdSpend');
-  qs('#cmdSpendText').textContent = spendGateText(scores.gate);
-  spendEl.classList.toggle('unlocked', scores.gate === 'approve');
+  qs('#cmdSpendText').textContent = scores.spendAuthorization?.summary || spendGateText(scores.gate);
+  spendEl.classList.toggle('unlocked', scores.spendAuthorization?.level === 'major-spend');
+  spendEl.classList.toggle('testing', scores.spendAuthorization?.level === 'small-test');
+  spendEl.classList.toggle('paused', scores.spendAuthorization?.level === 'paused');
   renderBackupNudge();
   renderSyncConflictBanner();
 
@@ -1023,6 +1025,8 @@ function renderCommandCenter() {
 
   // Algorithm cockpit
   renderAlgorithmBreakdown(scores);
+  renderSpendAuthorization(scores);
+  renderScoreLevers(scores);
   renderStressControls();
 
   // Decision strip
@@ -1145,6 +1149,7 @@ function renderBackupNudge() {
 }
 
 function blockerExplanation(scores) {
+  if (scores.gateReason) return scores.gateReason;
   if (scores.evidenceFloor < 50) {
     return `Proof check is at ${scores.evidenceFloor}. Need 50+ to unlock small tests and 64+ for GO on major spend. Stack sample proof, vendor quotes, or stronger campaign content.`;
   }
@@ -1153,6 +1158,8 @@ function blockerExplanation(scores) {
 
 function renderAlgorithmBreakdown(scores) {
   if (!scores) scores = calculateScores();
+  const versionEl = qs('#cmdAlgorithmVersion');
+  if (versionEl) versionEl.textContent = scores.version.replace('VORG Drop OS score ', '');
   qs('#algorithmBreakdown').innerHTML = [
     { label: 'Proof check', value: scores.evidenceFloor, note: 'Lowest of proof, SKU, launch ops' },
     { label: 'Milestone pace', value: scores.stageScore, note: 'Status and gate weighted' },
@@ -1166,6 +1173,52 @@ function renderAlgorithmBreakdown(scores) {
       <small>${c.note}</small>
     </div>
   `).join('');
+}
+
+function renderSpendAuthorization(scores) {
+  const panel = qs('#spendAuthorizationPanel');
+  if (!panel) return;
+  const spend = scores.spendAuthorization;
+  panel.innerHTML = `
+    <article class="spend-auth-card">
+      <span class="model-label">Spend rule</span>
+      <strong>${spend.label}</strong>
+      <p>${spend.reason}</p>
+    </article>
+    <article class="spend-auth-card">
+      <span class="model-label">Allowed now</span>
+      <ul>${spend.allowed.map(item => `<li>${item}</li>`).join('')}</ul>
+      <span class="model-label blocked">Blocked</span>
+      <ul>${spend.blocked.map(item => `<li>${item}</li>`).join('')}</ul>
+    </article>
+  `;
+}
+
+function renderScoreLevers(scores) {
+  const panel = qs('#scoreLevers');
+  if (!panel) return;
+  const levers = scores.levers || [];
+  panel.innerHTML = `
+    <div class="score-levers-head">
+      <span class="model-label">What moves the score</span>
+      <strong>${levers.length ? 'Top proof moves' : 'No high-impact lever found'}</strong>
+    </div>
+    ${levers.length ? levers.map(lever => `
+      <article class="score-lever-card">
+        <div class="score-lever-main">
+          <span class="score-lever-owner">${lever.owner}</span>
+          <strong>${lever.label}</strong>
+          <p>${lever.action}</p>
+          <small>${lever.proofNeeded}</small>
+        </div>
+        <div class="score-lever-math">
+          <span>${lever.input}</span>
+          <strong>+${lever.deltaConfidence}</strong>
+          <small>${lever.current} â†’ ${lever.target} · ${formatGateLabel(lever.projectedGate)}</small>
+        </div>
+      </article>
+    `).join('') : '<p class="card-body">The desk needs new evidence, not slider movement. Add real proof and rerun the gate.</p>'}
+  `;
 }
 
 function renderStressControls() {
