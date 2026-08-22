@@ -1,6 +1,6 @@
 # Drop OS UI Restructure
 
-Checked: 2026-06-29
+Checked: 2026-07-10
 
 ## Decision Supported
 
@@ -38,12 +38,13 @@ The algorithm should move from a simple slider average to a proof-gated model.
 
 ### Improved Model
 
-The OS now uses `VORG Drop OS score v0.2`.
+The OS now uses `VORG Drop OS score v1.0`. The original v0.2 direction and the later v0.4 TypeScript extraction were superseded because clicks and sliders could still overstate readiness. The full current contract is in `drop-os-scoring-v1.md`.
 
 Inputs:
 
 - Demand pull
-- Product proof
+- Manufacturing truth derived from per-SKU fields
+- Financial proof from units, price, landed COGS, and the production cap
 - Campaign heat
 - Operations readiness
 - Margin room
@@ -56,7 +57,7 @@ Inputs:
 Outputs:
 
 - Launch confidence
-- Campaign success forecast
+- Directional campaign outlook and band, explicitly not a probability
 - Gate result: approve, test, revise, or kill
 - Primary bottleneck
 - Evidence floor
@@ -68,11 +69,13 @@ Outputs:
 
 Rules:
 
-- Evidence, product proof, and operations create a floor. A weak floor blocks approval even if campaign heat is high.
-- Risk above the threshold can force a kill or revise result.
-- Campaign tactics improve readiness only when they are approved or ready.
-- Stage scores are weighted by status and gate result, so blocked stages drag the score.
-- Next-city signal aggregates by city instead of picking one signal.
+- Linked/structured proof coverage is measured separately from readiness; weak coverage blocks approval even if self-rated heat is high.
+- Every active SKU needs quote, landed COGS, sample proof, and PP approval before bulk can unlock.
+- The unit plan must remain inside the active production cap; an over-cap plan forces a hard pause.
+- Campaign tactics count as verified only when approval includes a proof reference; empty campaign work starts at zero.
+- Reached stages control current momentum, while skipped stage order creates a violation.
+- Repeated signal receipts are deduplicated; unverified heat is discounted.
+- Next-city signal aggregates unique, evidence-weighted signals by city.
 
 ## Full UI Restructuring List
 
@@ -403,7 +406,7 @@ Priority changes:
 
 ## Known Facts
 
-- Drop 001 target is September 2026.
+- Drop 001 working window is November 5-12, 2026, conditional on vendor-backed production, campaign-proof, inbound, and QC gates.
 - The launch is open online, not password-gated.
 - Ottawa/Gatineau is the first wedge.
 - The intended expansion cities include Montreal, Toronto, Vancouver, and possibly Halifax.
