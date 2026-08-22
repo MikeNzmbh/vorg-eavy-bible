@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "none",
+    "strict": true,
+    "outFile": "market-positioning-prediction.js",
+    "noEmitOnError": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/market-positioning-prediction.ts"]
+}
