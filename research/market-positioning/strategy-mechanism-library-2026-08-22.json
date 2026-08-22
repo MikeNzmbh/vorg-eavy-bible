@@ -1,0 +1,354 @@
+{
+  "version": "strategy-mechanism-library-v1",
+  "checkedOn": "2026-08-22",
+  "truthNote": "Every card is EXTERNAL evidence about how a mechanism worked or failed for someone else, or an internal preparedness artifact. Nothing here is VORG demand proof. Peer revenue/scale figures are observed claims from sources, never VORG forecasts. Failure evidence is a valid input: it lowers a strategy score with reasons, it does not disqualify (motto: we don't fear failure, we fear unpreparedness).",
+  "industryTransferClasses": {
+    "same": ["fashion", "apparel", "streetwear", "luxury-fashion"],
+    "adjacent": ["beauty-dtc", "footwear-sneakers", "accessories"],
+    "distant": ["restaurant-qsr", "gaming-hardware", "music-food-collab", "events-festivals", "any-other"]
+  },
+  "cards": [
+    {
+      "id": "ev-corteiz-city-exchange",
+      "mechanism": "city-participation",
+      "reference": "Corteiz",
+      "industry": "streetwear",
+      "sourceUrl": "https://www.gq.com/story/corteiz-brooklyn-denim-exchange-scene-report",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "worked",
+      "why": "GQ reported a Brooklyn denim-exchange event with intense city participation and cultural energy; city-specific product moments created identity-level engagement, not just reach.",
+      "transferabilityConditions": [
+        "Requires an existing culturally dense metro scene (Brooklyn-class).",
+        "Must be RSVP-gated and capacity-capped; unsafe queues and scarcity theatre are disallowed copies.",
+        "Only valid after online metro receipts exist; not a cold-start tactic."
+      ],
+      "tweakNote": "For VORG: a booked, capacity-capped fit/try event after online proof — not a street mob.",
+      "sourceClass": "reputable-editorial",
+      "confidence": 0.7
+    },
+    {
+      "id": "ev-madhappy-world",
+      "mechanism": "world-coherence",
+      "reference": "Madhappy",
+      "industry": "streetwear",
+      "sourceUrl": "https://www.madhappy.com/en-ph/pages/about",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "worked",
+      "why": "Brand positions products, editorial, community language, and physical experience as one coherent world; coherence is the observed mechanism (brand self-statement, mechanism only).",
+      "transferabilityConditions": [
+        "SKUs, content, and any later pop-up must share one visual/language system.",
+        "Community slogans do not convert by themselves; do not copy scale or store footprint."
+      ],
+      "tweakNote": "Firm Jacket + denim + scarf + top share one visual/language system across TikTok, YouTube, and Shopify.",
+      "sourceClass": "brand-primary",
+      "confidence": 0.45
+    },
+    {
+      "id": "ev-beis-founder-commerce",
+      "mechanism": "founder-content-commerce",
+      "reference": "BÉIS",
+      "industry": "accessories",
+      "sourceUrl": "https://www.shopify.com/case-studies/beis",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "worked",
+      "why": "Shopify case study reports founder-led trust content feeding a connected Shopify checkout/POS path at mature scale; founder credibility lowered acquisition friction.",
+      "transferabilityConditions": [
+        "Founder must actually appear and carry product truth; mature revenue is not a VORG benchmark.",
+        "Pop-up POS claims only apply after venue proof."
+      ],
+      "tweakNote": "Founder YouTube as a durable fit/fabric truth library; short cuts feed TikTok; Shopify owns measurement.",
+      "sourceClass": "vendor-case-study",
+      "confidence": 0.55
+    },
+    {
+      "id": "ev-goodfair-native-shorts",
+      "mechanism": "native-short-form",
+      "reference": "Goodfair",
+      "industry": "fashion",
+      "sourceUrl": "https://ads.tiktok.com/business/en-US/inspiration/goodfair-466",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "worked",
+      "why": "TikTok case material describes native employee/creator content connected to Shopify with measured experimentation outperforming polished ads for a small brand.",
+      "transferabilityConditions": [
+        "Platform-reported ROAS is not expected VORG ROAS.",
+        "Measure qualified actions (product/size/city), never views.",
+        "No fake UGC."
+      ],
+      "tweakNote": "Founder/employee-native clips with kill rules on qualified actions.",
+      "sourceClass": "vendor-case-study",
+      "confidence": 0.5
+    },
+    {
+      "id": "ev-fashionzone-governed-ugc",
+      "mechanism": "governed-ugc",
+      "reference": "FashionZone",
+      "industry": "fashion",
+      "sourceUrl": "https://ads.tiktok.com/business/en-US/inspiration/fashionzone-tiktok-success-story",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "worked",
+      "why": "TikTok case material emphasizes creator format freedom inside a defined brief producing better native performance than scripted brand copy.",
+      "transferabilityConditions": [
+        "Creator freedom must sit inside a signed brief with FTC disclosure, claim guardrails, and commercial-music clearance.",
+        "One governed creator test beats ten vague seeding DMs."
+      ],
+      "tweakNote": "Signed brief + disclosure checklist + outcome receipt before any scale.",
+      "sourceClass": "vendor-case-study",
+      "confidence": 0.5
+    },
+    {
+      "id": "ev-jacquemus-world-founder",
+      "mechanism": "world-building-founder-channel",
+      "reference": "Jacquemus",
+      "industry": "luxury-fashion",
+      "sourceUrl": "https://www.gq.com/story/how-jacquemus-became-the-main-character-of-french-fashion",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "worked",
+      "why": "Editorial sources (GQ, Forbes, The Drum) describe founder-as-channel storytelling, one irreducible visual world, and shows designed for social shareability compounding into independent scale.",
+      "transferabilityConditions": [
+        "Needs image discipline: every asset reinforces the same place/story/product grammar.",
+        "Lavender-field budgets and peer revenue are not transferable; craft proof must precede luxury adjacency claims."
+      ],
+      "tweakNote": "Make the VORG Firm/Originals world recognizable as a code (3 must / 3 never image rules), not a Provence copy.",
+      "sourceClass": "reputable-editorial",
+      "confidence": 0.8
+    },
+    {
+      "id": "ev-nude-project-community",
+      "mechanism": "community-media-events",
+      "reference": "Nude Project",
+      "industry": "streetwear",
+      "sourceUrl": "https://www.forbes.com/profile/nude-project/",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "worked",
+      "why": "Forbes/FashionNetwork/Numéro report a founder-duo brand built from small capital where podcast/community/events sit beside product; retail followed online demand data.",
+      "transferabilityConditions": [
+        "Community media must tie to product questions (fit, fabric), not empty content.",
+        "Stores/events follow data; reported multi-million revenue is not a VORG baseline."
+      ],
+      "tweakNote": "Founder long-form episodes tied to SKU fit questions; measure waitlist/size captures, not downloads.",
+      "sourceClass": "editorial",
+      "confidence": 0.75
+    },
+    {
+      "id": "ev-hermes-craft-integrity",
+      "mechanism": "craft-scarcity-integrity",
+      "reference": "Hermès",
+      "industry": "luxury-fashion",
+      "sourceUrl": "https://finance.hermes.com/fr/strategie/",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "worked",
+      "why": "Official strategy page and secondary profiles describe scarcity as a byproduct of real craft capacity and QC with full-price discipline — not promotional scarcity theatre.",
+      "transferabilityConditions": [
+        "At micro scale this means price integrity and claim restraint, not vertical integration fantasy.",
+        "Artificial sold-out with leftover stock is a disallowed copy."
+      ],
+      "tweakNote": "Every fibre/finish claim maps to a quote or sample photo; scarcity only from real capacity.",
+      "sourceClass": "official-company",
+      "confidence": 0.9
+    },
+    {
+      "id": "ev-jaded-hero-silhouette",
+      "mechanism": "hero-silhouette-dtc",
+      "reference": "Jaded London",
+      "industry": "fashion",
+      "sourceUrl": "https://www.vogue.com/article/inside-jaded-londons-plan-to-hit-pound100m-with-dtc-drops-and-viral-trends",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "worked",
+      "why": "Vogue Business reports DTC-led growth around a requestable hero silhouette (parachute pant) with organic stylist/celebrity demand; US retail followed proven territory demand.",
+      "transferabilityConditions": [
+        "Requires one hero product with proven fit truth; wholesale before DTC proof is the documented anti-pattern.",
+        "Do not chase every microtrend or spray celebrity gifting."
+      ],
+      "tweakNote": "Firm Jacket or women's low-rise as the requestable hero once fit is proven; denim compounds after.",
+      "sourceClass": "trade-press",
+      "confidence": 0.85
+    },
+    {
+      "id": "ev-scuffers-named-community",
+      "mechanism": "named-community-drops",
+      "reference": "Scuffers",
+      "industry": "streetwear",
+      "sourceUrl": "https://fashionunited.com/news/fashion/scuffers-how-to-build-a-cult-brand/2025041765475",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "worked",
+      "why": "FashionUnited/Shopify case material describe a named community tribe, limited drops, organic/direct traffic emphasis, and geographic expansion only after online data.",
+      "transferabilityConditions": [
+        "Community needs a name and real obligations (early access with feedback duties).",
+        "No paid scale until the circle produces qualified actions; billion-view organic outcomes are not expected."
+      ],
+      "tweakNote": "A 15-20 person VORG seed circle with disclosure and outcome fields before any paid.",
+      "sourceClass": "trade-press",
+      "confidence": 0.8
+    },
+    {
+      "id": "ev-eme-drop-event",
+      "mechanism": "drop-as-event-temporary-retail",
+      "reference": "EME Studios",
+      "industry": "streetwear",
+      "sourceUrl": "https://fashionunited.com/news/business/eme-studios-expansion-new-womenswear-collection-and-international-stores-in-2026/2026013070319",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "worked",
+      "why": "FashionUnited/FashionNetwork report digital-first growth, drop/pop-up culture, and a temporary NYC base to test internationalization before permanent leaps; founders slowed cadence for quality.",
+      "transferabilityConditions": [
+        "Temporary market tests precede permanent retail; drop cadence bends to quality.",
+        "Peer turnover (€33M reported) is not a VORG plan; no early permanent lease."
+      ],
+      "tweakNote": "Brooklyn online proof → time-boxed pop-up → only then discuss permanence.",
+      "sourceClass": "trade-press",
+      "confidence": 0.8
+    },
+    {
+      "id": "ev-vorg-blindspot-preparedness",
+      "mechanism": "cross-border-preparedness",
+      "reference": "VORG internal blindspot ledger (US+Canada)",
+      "industry": "fashion",
+      "sourceUrl": "research/market-positioning/blindspot-ledger-us-canada-2026-08-22.md",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "failed",
+      "why": "Internal audit of the US-first route found unresolved hard stops (IOR, DDP-vs-3PL, HS/origin, USD contribution, nexus, labels, flammability, trademark, privacy/SMS): the documented way cross-border micro-brands break is selling before these clear.",
+      "transferabilityConditions": [
+        "Applies to any Canadian brand selling into the US; each open gate is a named break-first point.",
+        "Failure mode is unpreparedness, not demand absence — clears with evidence, not optimism."
+      ],
+      "tweakNote": "Plan branches touching US checkout/paid stay frozen until hard stops clear with evidence.",
+      "sourceClass": "internal-decision-artifact",
+      "confidence": 0.75
+    },
+    {
+      "id": "ev-vorg-creator-metro-map",
+      "mechanism": "creator-metro-efficiency",
+      "reference": "VORG internal creator efficiency + weather map",
+      "industry": "fashion",
+      "sourceUrl": "research/market-positioning/creator-efficiency-weather-map-2026-08-22.md",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "worked",
+      "why": "Internal synthesis of public priors: nano/micro fashion creators in dense metros (NYC/LA/Miami tiers) offer reachable, disclosure-compliant seeding paths; creator density is documented, conversion is not.",
+      "transferabilityConditions": [
+        "Density is not conversion; requires signed briefs and outcome receipts.",
+        "Metro choice should follow the positioning engine's ranked metros."
+      ],
+      "tweakNote": "Seed in the winning metro only; one governed test per creator tier.",
+      "sourceClass": "internal-decision-artifact",
+      "confidence": 0.7
+    },
+    {
+      "id": "ev-cx-nike-snkrs-raffle",
+      "mechanism": "managed-scarcity-raffle",
+      "reference": "Nike SNKRS",
+      "industry": "footwear-sneakers",
+      "sourceUrl": "https://www.nike.com/launch/t/inside-snkrs-fairness",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "worked",
+      "why": "Nike replaced first-come-first-served drops with raffle-style draws plus bot filtration (also reported by Sneaker Freaker, 2022) because raw FCFS scarcity was being gamed; draws preserved demand energy while restoring fairness for real members.",
+      "transferabilityConditions": [
+        "Only meaningful when demand demonstrably exceeds supply; a raffle with no oversubscription is theatre.",
+        "Requires honest communication of odds/limits; one entry per person."
+      ],
+      "tweakNote": "Cross-industry tweak for VORG: use a draw only if a wave's waitlist oversubscribes a SKU's real units; never simulate oversubscription.",
+      "sourceClass": "official-company",
+      "confidence": 0.85
+    },
+    {
+      "id": "ev-cx-popeyes-scarcity",
+      "mechanism": "viral-scarcity-stockout",
+      "reference": "Popeyes chicken sandwich (2019)",
+      "industry": "restaurant-qsr",
+      "sourceUrl": "https://www.cnbc.com/2019/09/09/popeyes-sold-an-estimated-1000-chicken-sandwiches-a-day-doubling-store-traffic.html",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "mixed",
+      "why": "A social rivalry moment doubled store traffic and drove ~1,000 sandwiches/store/day (KeyBanc via CNBC) — but the chain sold out its ~10-week supply in about two weeks (QSR Magazine), stranding intent: 51% of would-be buyers arrived during the stockout and left empty-handed. Scarcity created the moment; unprepared supply broke it.",
+      "transferabilityConditions": [
+        "Viral demand spikes are not schedulable; the transferable part is supply honesty and a relaunch path.",
+        "Stockouts strand real intent — capture it (waitlist/notify) instead of losing it."
+      ],
+      "tweakNote": "Cross-industry tweak for VORG: publish real unit counts per SKU, and route sold-out demand into size-tagged waitlists that count as receipts.",
+      "sourceClass": "reputable-editorial",
+      "confidence": 0.75
+    },
+    {
+      "id": "ev-cx-glossier-community",
+      "mechanism": "community-first-content",
+      "reference": "Glossier / Into The Gloss",
+      "industry": "beauty-dtc",
+      "sourceUrl": "https://digiday.com/marketing/glossier-instagram-born-beauty-brand-launches-new-products/",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "worked",
+      "why": "Glossier built products directly from community questions (Milky Jelly Cleanser came from a 'what's your dream face wash' post with 400+ blog comments); community co-creation made customers the marketing department with ~80% of sales peer-referred per later case studies.",
+      "transferabilityConditions": [
+        "The content must ask real product questions and visibly use the answers.",
+        "Later Glossier stumbles show community love does not guarantee financial durability — keep economics separate."
+      ],
+      "tweakNote": "Cross-industry tweak for VORG: run fit/sizing/fabric question loops on the five SKUs and show the answers changing the product pages.",
+      "sourceClass": "reputable-editorial",
+      "confidence": 0.75
+    },
+    {
+      "id": "ev-cx-glossier-play",
+      "mechanism": "off-brand-extension",
+      "reference": "Glossier Play (2019)",
+      "industry": "beauty-dtc",
+      "sourceUrl": "https://www.youngurbanproject.com/glossier-case-study/",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "failed",
+      "why": "The glitter/bold sub-brand contradicted the parent brand's 'natural, effortless' equity; roughly two-thirds of Play buyers were existing customers, it attracted no new audience, drew environmental backlash, and was dissolved within a year (also analyzed in an Aalborg University thesis on the community backlash).",
+      "transferabilityConditions": [
+        "Brand equity has a shape; extensions outside it fail even with competent products.",
+        "For a five-SKU micro-label, everything ships inside one brand world or not at all."
+      ],
+      "tweakNote": "Cross-industry tweak for VORG: no sub-lines or off-world drops in year one; scarf and top live inside the same world as the jacket and denim.",
+      "sourceClass": "secondary-analysis",
+      "confidence": 0.65
+    },
+    {
+      "id": "ev-cx-travis-scott-meal",
+      "mechanism": "artist-collab-drop",
+      "reference": "Travis Scott x McDonald's (2020)",
+      "industry": "music-food-collab",
+      "sourceUrl": "https://www.businessinsider.com/mcdonalds-travis-scott-meal-sparks-burger-shortages-2020-9",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "worked",
+      "why": "An artist's community rituals (ordering codes, memes, merch tie-in) turned ordinary menu items into a demand event strong enough to cause ingredient shortages and lift US comparable sales 4.6% that quarter (per McDonald's via NME/WSJ); the mechanism is borrowed community ritual, not the product.",
+      "transferabilityConditions": [
+        "Requires a partner whose audience has native rituals; a paid mega-celebrity is out of reach for a micro-label.",
+        "Supply strain is the documented cost of underestimating ritual-driven demand."
+      ],
+      "tweakNote": "Cross-industry tweak for VORG: replicate at nano scale — a governed creator whose community has its own codes, with real unit counts and waitlist capture.",
+      "sourceClass": "reputable-editorial",
+      "confidence": 0.7
+    },
+    {
+      "id": "ev-cx-nes-classic",
+      "mechanism": "under-supplied-drop",
+      "reference": "Nintendo NES Classic (2016-2018)",
+      "industry": "gaming-hardware",
+      "sourceUrl": "https://en.wikipedia.org/wiki/NES_Classic_Edition",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "mixed",
+      "why": "2.3M units sold with shipments selling out nearly immediately — but chronic undersupply left demand unserved, fed scalper markup, and the 2017 discontinuation caused consumer confusion; Nintendo relaunched in 2018 and 'dramatically increased' Super NES Classic production to avoid repeating it (Polygon, Ars Technica).",
+      "transferabilityConditions": [
+        "Scarcity you did not choose is a supply failure, not a strategy; unserved demand migrates to resellers or dies.",
+        "The recovery pattern is honest relaunch with sized supply, which worked."
+      ],
+      "tweakNote": "Cross-industry tweak for VORG: size the drop to the production ceiling honestly, state limits upfront, and pre-plan a restock path fed by waitlist receipts.",
+      "sourceClass": "reference-encyclopedic",
+      "confidence": 0.75
+    },
+    {
+      "id": "ev-cx-fyre-festival",
+      "mechanism": "hype-before-ops",
+      "reference": "Fyre Festival (2017)",
+      "industry": "events-festivals",
+      "sourceUrl": "https://startupik.com/the-fyre-festival-fiasco-a-case-study-in-startup-hype-gone-wrong/",
+      "dateChecked": "2026-08-22",
+      "workedOrFailed": "failed",
+      "why": "Influencer-driven demand generation massively outran operational capacity: tickets sold on an aspirational vision with no housing, catering, safety, or vendor contracts secured; undisclosed paid influencer posts also violated FTC guidance and fed a class action. Hype was allowed to become the operating plan.",
+      "transferabilityConditions": [
+        "Universal: every public promise is a liability until fulfillment capacity exists.",
+        "Marketing momentum with open operational gates is the definition of unpreparedness."
+      ],
+      "tweakNote": "Cross-industry tweak for VORG: no campaign wave escalates while its gate dependencies are open; disclosure on every seeded post; this card is the motto card — failure we fear is unpreparedness.",
+      "sourceClass": "secondary-analysis",
+      "confidence": 0.7
+    }
+  ]
+}

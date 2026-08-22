@@ -21,7 +21,10 @@
     "test:public-priors": "node tests/public-commerce-priors.test.mjs",
     "test:ads-practice": "node tests/ads-public-priors-practice.test.mjs",
     "test:unit": "npm run test:library && npm run test:algorithm && npm run test:suppliers && npm run test:negotiation && npm run test:public-priors && npm run test:ads-practice && npm run test:forecast && npm run test:positioning && npm run test:growth-path",
-    "test:flow": "node test-drop-os-flow.mjs"
+    "test:flow": "node test-drop-os-flow.mjs",
+    "build:strategy": "tsc -p tsconfig.strategy-generator.json",
+    "test:strategy": "npm run build:strategy && node tests/strategy-generator.test.mjs",
+    "generate:strategy": "npm run build:strategy && node run-strategy-generator.mjs"
   },
   "devDependencies": {
     "playwright": "^1.60.0",
