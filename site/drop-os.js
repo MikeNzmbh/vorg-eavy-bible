@@ -2,32 +2,103 @@
 
 /* ═══════════════════════════════════════════════════════════════
    VORG-EAVY Drop OS v2 — Drop desk architecture
-   Algorithm: VORG Drop OS score v0.3
+   Algorithm: VORG Drop OS score v1.3
    Preserves: localStorage, CSV import/export, snapshot, all state
    ═══════════════════════════════════════════════════════════════ */
 
 const STORAGE_KEY = 'vorgDropOS.v1';
 const MAX_IMAGE_BYTES = 900000;
 const SCORE_ENGINE = window.VorgDropAlgorithm;
+const SOURCE_LIBRARY = window.VorgCommerceLibrary;
+const EDGE_LIBRARY = window.VorgEdgeCommerce;
+const FORECAST_ENGINE = window.VorgSalesForecast;
+const PUBLIC_COMMERCE_PRIORS = window.VorgPublicCommercePriors;
+const SYNTHETIC_FORECAST_FIXTURE = window.VorgSyntheticForecastFixture;
 
 if (!SCORE_ENGINE) {
   throw new Error('Drop OS algorithm bundle is missing. Run npm run build:algorithm in site/.');
 }
+if (!EDGE_LIBRARY) {
+  throw new Error('Edge Commerce catalog is missing. Load edge-commerce-catalog.js before drop-os.js.');
+}
+if (!SOURCE_LIBRARY) {
+  throw new Error('Free commerce library is missing. Run npm run build:library and load edge-commerce-library.js before drop-os.js.');
+}
+if (!FORECAST_ENGINE) {
+  throw new Error('Sales forecast bundle is missing. Run npm run build:forecast in site/.');
+}
+if (!PUBLIC_COMMERCE_PRIORS) {
+  throw new Error('Public commerce prior artifact is missing. Run npm run train:public-priors in site/.');
+}
+if (!SYNTHETIC_FORECAST_FIXTURE) {
+  throw new Error('Synthetic forecast fixture is missing. Load forecast-synthetic-fixture.js before drop-os.js.');
+}
 
 /* ─── Default State ─── */
+const DEFAULT_FORECAST_STATE = {
+  scenario: {
+    version: 'drop-001-proof-buy-2026-08-19',
+    label: 'Drop 001 · 126-unit proof-buy working scenario',
+    source: '../launch/drop-001-sales-forecast-inputs.md',
+    truth: 'working-assumption'
+  },
+  inputs: {
+    asOf: '',
+    horizonDays: 30,
+    plannedOnlineSessions: '2160',
+    plannedPopupVisitors: '135',
+    plannedOnlineConversionRate: '3.06',
+    priorProfile: 'public-transfer-v1',
+    unitsPerOrderAssumption: '1.25',
+    committedNonInventorySpend: '4700',
+    reservations: '0',
+    reservationConversionRate: 60,
+    trafficEvidenceUrl: '../launch/drop-001-traffic-channel-plan.md',
+    trafficEvidenceClass: 'plan',
+    funnelEvidenceUrl: '',
+    reservationEvidenceUrl: '',
+    simulations: 3000,
+    seed: 260722,
+    observed: {
+      sessions: '',
+      productViews: '',
+      addsToCart: '',
+      checkouts: '',
+      purchases: '',
+      unitsPurchased: '',
+      refunds: '',
+      popupVisitors: '',
+      popupPurchases: ''
+    },
+    productOverrides: {
+      'sku-jacket': { inventory: '12', price: '249', landedCogs: '85', weight: '12', sizeInventory: '' },
+      'sku-womens-denim': { inventory: '24', price: '128', landedCogs: '38', weight: '24', sizeInventory: '' },
+      'sku-mens-denim': { inventory: '20', price: '128', landedCogs: '38', weight: '20', sizeInventory: '' },
+      'sku-scarf': { inventory: '40', price: '35', landedCogs: '12', weight: '40', sizeInventory: '' },
+      'sku-womens-top-bodysuit': { inventory: '30', price: '68', landedCogs: '18', weight: '30', sizeInventory: '' }
+    }
+  },
+  snapshots: []
+};
+
 const DEFAULT_STATE = {
   activeWorkspace: 'command',
   activeStageId: 'campaign-proof',
   activeProductId: 'sku-jacket',
   activeProduct: 0,
   eventsTab: 'popup',
+  campaignView: 'experiments',
+  libraryMode: 'claims',
+  edgeFilters: { search: '', lane: 'all', risk: 'all' },
+  libraryFilters: { search: '', lens: 'all', sourceType: 'all', tier: 'all', risk: 'all' },
   helpSeen: false,
   drop: {
     id: '001',
     label: 'Drop 001',
     city: 'Ottawa/Gatineau',
     season: 'FW26',
-    target: 'September 2026'
+    target: 'November 5-12, 2026 · conditional',
+    productionSpendCap: 6000
   },
   productImages: {},
   productImageMeta: {},
@@ -63,6 +134,7 @@ const DEFAULT_STATE = {
     verifiedBy: '',
     verifiedAt: ''
   },
+  forecast: clone(DEFAULT_FORECAST_STATE),
   stress: {
     demand: 64,
     product: 52,
@@ -165,16 +237,17 @@ const DEFAULT_STATE = {
     }
   ],
   signals: [
-    { id: 'sig-1', item: 'Founder table breakdown questions', city: 'Ottawa/Gatineau', source: 'Comments, saves, and DMs', strength: 62, action: 'Turn top questions into product-page sections.' },
-    { id: 'sig-2', item: 'Montreal next-city pull', city: 'Montreal', source: 'VORG After QR votes', strength: 58, action: 'Capture city rank after pop-up.' },
-    { id: 'sig-3', item: 'Structured fit anxiety', city: 'Ottawa/Gatineau', source: 'Fit proof relay', strength: 46, action: 'Shoot 5 body types before final production.' }
+    { id: 'sig-1', item: 'Founder table breakdown questions', city: 'Ottawa/Gatineau', source: 'Comments, saves, and DMs', strength: 62, evidenceUrl: '', action: 'Turn top questions into product-page sections.' },
+    { id: 'sig-2', item: 'Montreal next-city pull', city: 'Montreal', source: 'VORG After QR votes', strength: 58, evidenceUrl: '', action: 'Capture city rank after pop-up.' },
+    { id: 'sig-3', item: 'Structured fit anxiety', city: 'Ottawa/Gatineau', source: 'Fit proof relay', strength: 46, evidenceUrl: '', action: 'Shoot 5 body types before final production.' }
   ],
+  edgeExperiments: clone(EDGE_LIBRARY.EXPERIMENT_TEMPLATES),
   tactics: [
-    { id: 'founder-table', name: 'Founder Table', risk: 'Green', status: 'ready', proof: 'Trust comments, saves, product questions', body: 'Founder explains fit, fabric, construction, corrections, and honest tradeoffs on a table.' },
-    { id: 'firm-sightings', name: 'The Firm Sightings', risk: 'Green', status: 'ready', proof: 'Tagged sightings, DMs, consented street photos', body: 'Seed real samples to local connectors who actually wear the product in the city.' },
-    { id: 'city-clue-trail', name: 'City Clue Trail', risk: 'Yellow', status: 'draft', proof: 'QR scans by location and city waitlist growth', body: 'Permissioned clue cards or displays at partner locations, with no unsafe rush mechanics.' },
-    { id: 'exchange', name: 'The Exchange', risk: 'Yellow', status: 'draft', proof: 'RSVP fill, attendance, exchange receipt, content quality', body: 'Capacity-controlled exchange tied to donation, repair, alteration credit, or priority fitting.' },
-    { id: 'hanger-wall', name: 'Empty Hanger Wall', risk: 'Green', status: 'ready', proof: 'Real inventory movement and size-level sell-through', body: 'Hangers leave the wall only when real units are sold, claimed, or picked up.' }
+    { id: 'founder-table', name: 'Founder Table', risk: 'Green', status: 'ready', evidenceUrl: '', proof: 'Trust comments, saves, product questions', body: 'Founder explains fit, fabric, construction, corrections, and honest tradeoffs on a table.' },
+    { id: 'firm-sightings', name: 'The Firm Sightings', risk: 'Green', status: 'ready', evidenceUrl: '', proof: 'Tagged sightings, DMs, consented street photos', body: 'Seed real samples to local connectors who actually wear the product in the city.' },
+    { id: 'city-clue-trail', name: 'City Clue Trail', risk: 'Yellow', status: 'draft', evidenceUrl: '', proof: 'QR scans by location and city waitlist growth', body: 'Permissioned clue cards or displays at partner locations, with no unsafe rush mechanics.' },
+    { id: 'exchange', name: 'The Exchange', risk: 'Yellow', status: 'draft', evidenceUrl: '', proof: 'RSVP fill, attendance, exchange receipt, content quality', body: 'Capacity-controlled exchange tied to donation, repair, alteration credit, or priority fitting.' },
+    { id: 'hanger-wall', name: 'Empty Hanger Wall', risk: 'Green', status: 'ready', evidenceUrl: '', proof: 'Real inventory movement and size-level sell-through', body: 'Hangers leave the wall only when real units are sold, claimed, or picked up.' }
   ],
   tasks: [
     { id: 'task-1', stageId: 'signal', title: 'Rebuild founder SKU thesis into unit/price model.', owner: 'Founder', done: false },
@@ -204,8 +277,34 @@ const MANUFACTURING_TEMPLATE = {
   evidenceTier: 'unresolved'
 };
 
+const MARKET_ENTRY_TEMPLATE = {
+  primaryMarket: '',
+  operatingMarket: '',
+  salesCurrency: '',
+  fulfillmentModel: '',
+  primaryMarketEvidenceUrl: '',
+  marketEconomicsEvidenceUrl: '',
+  fulfillmentEvidenceUrl: '',
+  crossBorderEvidenceUrl: '',
+  dutiesAndTaxEvidenceUrl: '',
+  shippingEvidenceUrl: '',
+  returnsEvidenceUrl: '',
+  productComplianceEvidenceUrl: '',
+  privacyAndConsentEvidenceUrl: '',
+  creatorRightsEvidenceUrl: '',
+  popupEnabled: false,
+  popupCity: '',
+  popupMarket: '',
+  popupEvidenceUrl: '',
+  channels: [
+    { platform: 'Shopify', active: false, owner: '', commerceRoute: '', measurementEvidenceUrl: '', policyEvidenceUrl: '' },
+    { platform: 'TikTok', active: false, owner: '', commerceRoute: '', measurementEvidenceUrl: '', policyEvidenceUrl: '' }
+  ]
+};
+
 const PRODUCT_TEMPLATE = {
   image: 'assets/hero_top.png',
+  priceEvidenceUrl: '',
   sampleStatus: 'Not started',
   materialRisk: 'TBD',
   fitRisk: 'TBD',
@@ -268,7 +367,8 @@ const WORKSPACE_META = {
   command: { crumb: 'Drop desk', heading: 'Drop desk', sub: 'Bag check, blockers, this week\'s run' },
   signals: { crumb: 'Heat radar', heading: 'Heat radar', sub: 'Who\'s talking, saving, waiting' },
   product: { crumb: 'SKU room', heading: 'SKU room', sub: 'Samples, fit drama, hero pics' },
-  campaign: { crumb: 'Campaign proof', heading: 'Campaign proof', sub: 'Content before bulk — no cap' },
+  campaign: { crumb: 'Edge Commerce Lab', heading: 'Edge Commerce Lab', sub: `${SOURCE_LIBRARY.sources.length} free sources · ${SOURCE_LIBRARY.claims.length} claims · 30 plays · evidence before scale` },
+  forecast: { crumb: 'Forecast Lab', heading: 'Sales Forecast Lab', sub: 'Demand ranges, stockout risk, frozen calls, calibration' },
   production: { crumb: 'Factory gate', heading: 'Factory gate', sub: 'Quotes, MOQ, COGS, PP sample' },
   launch: { crumb: 'Online drop', heading: 'Online drop', sub: 'Shopify live — open drop, no password' },
   events: { crumb: 'Pop-up & after', heading: 'Pop-up & VORG After', sub: 'The room by day, the party by night' },
@@ -305,11 +405,23 @@ const WORKSPACE_PLAYBOOKS = {
     ]
   },
   campaign: {
-    title: 'Prove it before bulk',
+    title: 'Turn tactics into owned proof',
     steps: [
-      'Approve a tactic only when it\'s real: consented sightings, founder table clips, hanger movement.',
-      '<strong>No bulk production</strong> until Campaign Proof clears — content earns the bag first.',
-      'Content score ≠ drop energy on the desk. Both matter, different math.'
+      'Start in <strong>Experiments</strong>: clear prerequisites, name the owner, cap spend, and define the receipt before launch.',
+      `Search <strong>Free library</strong> across ${SOURCE_LIBRARY.sources.length} lawful source routes and ${SOURCE_LIBRARY.claims.length} deduplicated claims; AI and guru repetition never count as proof.`,
+      'Use the <strong>30-play ledger</strong> as an idea bank; a guru claim contributes zero proof until VORG-EAVY tests it.',
+      'Complete every test with evidence and an adopt, adapt, reject, or retest decision. Yellow and Orange plays require action-time approval.',
+      '<strong>No bulk production</strong> until the wider Campaign Proof gate clears — edge learning strengthens the call but cannot override factory truth.'
+    ]
+  },
+  forecast: {
+    title: 'Forecast without pretending certainty',
+    steps: [
+      'Enter a traffic plan, event footfall, reservations, inventory, price, and landed COGS. Blank truth stays blank.',
+      'Read <strong>P10 / P50 / P90</strong> as a downside, middle, and upside range — never as a promise.',
+      'Link analytics or planning receipts to narrow uncertainty, then freeze the call before launch.',
+      'After the drop, attach actual revenue and units. Calibration learns across independent drops; repeat snapshots do not manufacture confidence.',
+      '<strong>Forecast optimism never unlocks production spend.</strong> The readiness gate remains separate and controls authorization.'
     ]
   },
   production: {
@@ -374,7 +486,7 @@ const ONBOARD_STEPS = [
   },
   {
     title: 'Pick your lane',
-    body: 'You don\'t need every tab. Campaign lives in Campaign proof. Fit + samples in SKU room. Factory quotes in Factory gate. Open your lane — the playbook strip tells you what to do.'
+    body: 'You don\'t need every tab. Growth experiments live in Edge Commerce Lab. Fit + samples live in SKU room. Factory quotes live in Factory gate. Open your lane — the playbook strip tells you what to do.'
   },
   {
     title: 'Lives on this device + squad sync',
@@ -447,6 +559,11 @@ function qs(s) { return document.querySelector(s); }
 function qsa(s) { return Array.from(document.querySelectorAll(s)); }
 function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 function formatStatus(v) { return v.replace(/-/g, ' '); }
+function escapeAttr(v) {
+  return String(v ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[char]);
+}
 
 function formatGateLabel(gate) {
   if (gate === 'approve') return 'GO';
@@ -510,20 +627,7 @@ function computeManufacturingTier(mfg) {
 }
 
 function getManufacturingScore() {
-  const products = getProducts();
-  if (!products.length) return 0;
-  const scores = products.map(p => {
-    const tier = p.manufacturing?.evidenceTier || computeManufacturingTier(p.manufacturing);
-    if (tier === 'known') return 100;
-    if (tier === 'assumed') return 58;
-    return 22;
-  });
-  return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
-}
-
-function getProductProofScore() {
-  const rollup = getManufacturingScore();
-  return Math.round(state.stress.product * 0.35 + rollup * 0.65);
+  return SCORE_ENGINE.calculateManufacturingScore(getProducts());
 }
 
 function formatEvidenceBadge(tier) {
@@ -572,7 +676,7 @@ function toggleChecklistItem(group, key) {
   refreshIcons();
 }
 
-/* ─── Algorithm (v0.3 — manufacturing + investor tiers) ─── */
+/* ─── Algorithm (Drop OS score v1.3 — proof coverage + market-entry + Edge Lab + hard spend gates) ─── */
 function calculateScores() {
   return SCORE_ENGINE.calculateScores({
     stress: state.stress,
@@ -580,12 +684,28 @@ function calculateScores() {
     tactics: state.tactics,
     signals: state.signals,
     operationsEffective: getOperationsEffective(),
-    productProofScore: getProductProofScore()
+    products: getProducts(),
+    edgeExperiments: state.edgeExperiments || [],
+    marketEntry: state.marketEntry || undefined,
+    productionSpendCap: Number(getDrop().productionSpendCap) || SCORE_ENGINE.DEFAULT_PRODUCTION_SPEND_CAP
   });
 }
 
 function getNextCitySignal() {
   return SCORE_ENGINE.getNextCitySignal(state.signals, 'Ottawa/Gatineau');
+}
+
+function getMarketEntry() {
+  const saved = state.marketEntry || {};
+  const savedChannels = Array.isArray(saved.channels) ? saved.channels : [];
+  return {
+    ...clone(MARKET_ENTRY_TEMPLATE),
+    ...saved,
+    channels: MARKET_ENTRY_TEMPLATE.channels.map(template => ({
+      ...template,
+      ...(savedChannels.find(channel => String(channel.platform || '').toLowerCase() === template.platform.toLowerCase()) || {})
+    }))
+  };
 }
 
 function decisionText(gate) {
@@ -617,6 +737,55 @@ function normalizeProducts(saved) {
     },
     id: p.id || `sku-${i}-${Date.now()}`
   }));
+}
+
+function getEdgeCatalogTactic(tacticId) {
+  return EDGE_LIBRARY.TACTICS.find(tactic => tactic.id === tacticId);
+}
+
+function normalizeEdgeExperiment(saved, template = {}) {
+  const merged = { ...clone(template), ...(saved || {}) };
+  const catalog = getEdgeCatalogTactic(merged.tacticId);
+  const templatePrerequisites = Array.isArray(template.prerequisites) ? template.prerequisites : [];
+  const savedPrerequisites = Array.isArray(saved?.prerequisites) ? saved.prerequisites : [];
+  const prerequisites = templatePrerequisites.map(item => ({
+    ...item,
+    ...(savedPrerequisites.find(savedItem => savedItem.id === item.id) || {})
+  }));
+  savedPrerequisites.forEach(item => {
+    if (!prerequisites.some(existing => existing.id === item.id)) prerequisites.push({ ...item });
+  });
+
+  return {
+    ...merged,
+    name: catalog?.name || merged.name || 'Untitled experiment',
+    sourceEvidenceTier: catalog?.evidenceTier || 'F',
+    sourceProvenanceVerified: Boolean(catalog),
+    risk: catalog?.risk || 'Orange',
+    status: merged.status || 'planned',
+    decision: merged.decision || 'pending',
+    approvalStatus: catalog?.risk === 'Green'
+      ? 'not-required'
+      : (merged.approvalStatus || 'pending'),
+    prerequisites,
+    sevenDayPlan: Array.isArray(merged.sevenDayPlan) ? merged.sevenDayPlan : [],
+    createdAt: merged.createdAt || '',
+    updatedAt: merged.updatedAt || ''
+  };
+}
+
+function normalizeEdgeExperiments(saved) {
+  const existing = Array.isArray(saved) ? saved : [];
+  const normalized = EDGE_LIBRARY.EXPERIMENT_TEMPLATES.map(template => {
+    const prior = existing.find(item => item.id === template.id);
+    return normalizeEdgeExperiment(prior, template);
+  });
+  existing.forEach(item => {
+    if (!normalized.some(existingItem => existingItem.id === item.id)) {
+      normalized.push(normalizeEdgeExperiment(item));
+    }
+  });
+  return normalized;
 }
 
 function migrateProductImages(images, products, legacyIndex) {
@@ -651,12 +820,56 @@ function getProducts() {
   return state.products?.length ? state.products : DEFAULT_PRODUCTS;
 }
 
+function getForecastProductCatalog(inputs = state.forecast?.inputs) {
+  if (inputs?.evidenceMode === 'synthetic') {
+    return SYNTHETIC_FORECAST_FIXTURE.input.products.map(product => ({
+      id: product.id,
+      name: product.name,
+      units: product.inventory,
+      price: product.price,
+      manufacturing: { landedCogs: product.landedCogs }
+    }));
+  }
+  return getProducts();
+}
+
 function getProduct(id) {
   return getProducts().find(p => p.id === id) || getProducts()[0];
 }
 
 function getActiveProduct() {
   return getProduct(state.activeProductId);
+}
+
+function normalizeForecastState(saved) {
+  const base = clone(DEFAULT_FORECAST_STATE);
+  const savedInput = saved?.inputs || {};
+  const hasSavedDemandPlan = ['plannedOnlineSessions', 'plannedPopupVisitors', 'reservations']
+    .some(key => String(savedInput[key] ?? '').trim() !== '');
+  const hasSavedMerchandise = Object.values(savedInput.productOverrides || {}).some(override => {
+    return ['inventory', 'price', 'landedCogs'].some(key => String(override?.[key] ?? '').trim() !== '');
+  });
+  const input = hasSavedDemandPlan || hasSavedMerchandise ? savedInput : {};
+  const productOverrides = { ...base.inputs.productOverrides, ...(input.productOverrides || {}) };
+  Object.keys(base.inputs.productOverrides).forEach(productId => {
+    productOverrides[productId] = {
+      ...base.inputs.productOverrides[productId],
+      ...(input.productOverrides?.[productId] || {})
+    };
+  });
+  const snapshots = Array.isArray(saved?.snapshots)
+    ? saved.snapshots.filter(snapshot => snapshot?.forecast?.summary?.revenue && snapshot?.forecast?.summary?.soldUnits)
+    : [];
+  return {
+    scenario: { ...base.scenario, ...(saved?.scenario || {}) },
+    inputs: {
+      ...base.inputs,
+      ...input,
+      observed: { ...base.inputs.observed, ...(input.observed || {}) },
+      productOverrides
+    },
+    snapshots
+  };
 }
 
 function loadState() {
@@ -673,12 +886,16 @@ function loadState() {
     return {
       ...clone(DEFAULT_STATE), ...parsed,
       products,
+      edgeExperiments: normalizeEdgeExperiments(parsed.edgeExperiments),
       drop: { ...clone(DEFAULT_STATE).drop, ...(parsed.drop || {}) },
+      edgeFilters: { ...clone(DEFAULT_STATE).edgeFilters, ...(parsed.edgeFilters || {}) },
+      libraryFilters: { ...clone(DEFAULT_STATE).libraryFilters, ...(parsed.libraryFilters || {}) },
       activeProductId: resolveActiveProductId(parsed, products),
       readinessChecks: { ...(parsed.readinessChecks || {}) },
       backup: { ...clone(DEFAULT_STATE).backup, ...(parsed.backup || {}) },
       syncMeta: { ...clone(DEFAULT_STATE).syncMeta, ...(parsed.syncMeta || {}) },
       postmortem: { ...clone(DEFAULT_STATE).postmortem, ...(parsed.postmortem || {}) },
+      forecast: normalizeForecastState(parsed.forecast),
       productImageMeta: { ...(parsed.productImageMeta || {}) },
       productImages: migrateProductImages(parsed.productImages, products, parsed.activeProduct),
       stress: { ...clone(DEFAULT_STATE).stress, ...(parsed.stress || {}) }
@@ -832,6 +1049,7 @@ function saveProductEdit(e, productId) {
   product.name = name;
   product.units = clamp(Number(form.querySelector('[name="units"]')?.value) || product.units, 1, 99999);
   product.price = (form.querySelector('[name="price"]')?.value || product.price).trim();
+  product.priceEvidenceUrl = (form.querySelector('[name="priceEvidenceUrl"]')?.value || '').trim();
   product.proof = (form.querySelector('[name="proof"]')?.value || product.proof).trim();
   product.role = (form.querySelector('[name="role"]')?.value || product.role).trim();
   product.sampleStatus = (form.querySelector('[name="sampleStatus"]')?.value || product.sampleStatus).trim();
@@ -941,6 +1159,7 @@ function renderActiveWorkspace() {
   else if (ws === 'signals') renderSignalRadar();
   else if (ws === 'product') renderProductLab();
   else if (ws === 'campaign') renderCampaignProof();
+  else if (ws === 'forecast') renderForecastLab();
   else if (ws === 'production') renderProductionReadiness();
   else if (ws === 'launch') renderLaunchReadiness();
   else if (ws === 'events') renderEvents();
@@ -967,7 +1186,9 @@ function renderCommandCenter() {
   qs('#cmdGateText').textContent = decisionText(scores.gate);
   applyGateVisuals(scores.gate);
   qs('#cmdConfidence').textContent = scores.confidence;
-  qs('#cmdCampaignRate').textContent = scores.campaignRate;
+  qs('#cmdCampaignRate').textContent = scores.campaignIndex;
+  qs('#cmdConfidenceNote').textContent = `Evidence band ${scores.confidenceBand.low}-${scores.confidenceBand.high} · coverage ${scores.evidenceCoverage}/100`;
+  qs('#cmdCampaignNote').textContent = `${formatStatus(scores.campaignBand)} · directional index, not a probability`;
 
   // Spend gate
   const spendEl = qs('#cmdSpend');
@@ -1150,8 +1371,8 @@ function renderBackupNudge() {
 
 function blockerExplanation(scores) {
   if (scores.gateReason) return scores.gateReason;
-  if (scores.evidenceFloor < 50) {
-    return `Proof check is at ${scores.evidenceFloor}. Need 50+ to unlock small tests and 64+ for GO on major spend. Stack sample proof, vendor quotes, or stronger campaign content.`;
+  if (scores.evidenceCoverage < 75) {
+    return `Evidence coverage is ${scores.evidenceCoverage}/100. Linked manufacturing, financial, stage, campaign, and signal proof controls the gate.`;
   }
   return `${scores.bottleneck} is the weakest link at ${scores.weakness.value}. Level it up to move the bag check forward.`;
 }
@@ -1161,10 +1382,14 @@ function renderAlgorithmBreakdown(scores) {
   const versionEl = qs('#cmdAlgorithmVersion');
   if (versionEl) versionEl.textContent = scores.version.replace('VORG Drop OS score ', '');
   qs('#algorithmBreakdown').innerHTML = [
-    { label: 'Proof check', value: scores.evidenceFloor, note: 'Lowest of proof, SKU, launch ops' },
-    { label: 'Milestone pace', value: scores.stageScore, note: 'Status and gate weighted' },
-    { label: 'Market heat', value: scores.signalHeat, note: 'Logged pull + depth' },
-    { label: 'Content proof', value: scores.tacticScore, note: 'Approved tactics & readiness' },
+    { label: 'Evidence coverage', value: scores.evidenceCoverage, note: 'Linked/structured proof only' },
+    { label: 'Manufacturing truth', value: scores.manufacturingScore, note: 'Quote + COGS + sample + PP' },
+    { label: 'Financial proof', value: scores.financialProofScore, note: `${formatStatus(scores.budgetStatus)} · cap C$${scores.productionSpendCap.toLocaleString('en-CA')}` },
+    ...(scores.marketEntryRequired ? [{ label: 'Primary-market entry', value: scores.marketEntryScore, note: `${scores.marketEntryEvidenceCoverage}% linked · ${scores.marketEntryViolations.length} controls open` }] : []),
+    { label: 'Milestone integrity', value: scores.stageScore, note: `${scores.sequenceViolations} sequence violation${scores.sequenceViolations === 1 ? '' : 's'}` },
+    { label: 'Verified demand', value: scores.signalHeat, note: `${scores.verifiedSignals} linked signal${scores.verifiedSignals === 1 ? '' : 's'}` },
+    { label: 'Campaign proof', value: scores.tacticScore, note: `${scores.verifiedTactics} approved with evidence` },
+    { label: 'Edge experiment proof', value: scores.edgeScore, note: `${scores.edgeValidatedExperiments}/${scores.edgeCompletedExperiments} validated · ${scores.edgeLearningScore} learning` },
     { label: 'Risk tax', value: scores.riskDrag, note: 'Drag on spend call', danger: true }
   ].map(c => `
     <div class="algo-card${c.danger ? ' danger' : ''}">
@@ -1213,8 +1438,8 @@ function renderScoreLevers(scores) {
         </div>
         <div class="score-lever-math">
           <span>${lever.input}</span>
-          <strong>+${lever.deltaConfidence}</strong>
-          <small>${lever.current} â†’ ${lever.target} · ${formatGateLabel(lever.projectedGate)}</small>
+          <strong>up to +${lever.deltaConfidence}</strong>
+          <small>${lever.current} &rarr; ${lever.target} · ${formatGateLabel(lever.projectedGate)}</small>
         </div>
       </article>
     `).join('') : '<p class="card-body">The desk needs new evidence, not slider movement. Add real proof and rerun the gate.</p>'}
@@ -1225,15 +1450,22 @@ function renderStressControls() {
   const wrap = qs('#stressControls');
   const rollup = getReadinessRollup();
   wrap.innerHTML = STRESS_LABELS.map(item => {
-    const effective = item.key === 'operations' ? getOperationsEffective() : state.stress[item.key];
+    const derivedProduct = item.key === 'product';
+    const effective = item.key === 'operations'
+      ? getOperationsEffective()
+      : derivedProduct ? getManufacturingScore() : state.stress[item.key];
     const hint = item.key === 'operations'
       ? `<small class="slider-hint">Effective ${effective} — 65% checklists (${rollup.pct}%) + 35% slider</small>`
-      : '';
+      : derivedProduct
+        ? `<small class="slider-hint">Derived from SKU quote, COGS, sample, and PP fields — slider locked</small>`
+        : item.key === 'evidence'
+          ? `<small class="slider-hint">Context only — linked proof coverage controls approval</small>`
+          : '';
     return `
     <div class="slider-row">
       <label for="stress-${item.key}">${item.label}</label>
-      <input id="stress-${item.key}" type="range" min="0" max="100" value="${state.stress[item.key]}" data-stress-key="${item.key}" />
-      <output>${item.key === 'operations' ? effective : state.stress[item.key]}</output>
+      <input id="stress-${item.key}" type="range" min="0" max="100" value="${derivedProduct ? effective : state.stress[item.key]}" data-stress-key="${item.key}" ${derivedProduct ? 'disabled' : ''} />
+      <output>${effective}</output>
       ${hint}
     </div>
   `;
@@ -1415,11 +1647,11 @@ function renderSignalRadar() {
 function renderCityBar() {
   const cityScores = SCORE_ENGINE.scoreCitySignals(state.signals, CITIES);
 
-  qs('#signalCityBar').innerHTML = cityScores.map(({ city, score, count }) => {
+  qs('#signalCityBar').innerHTML = cityScores.map(({ city, score, count, verifiedCount }) => {
     return `<div class="city-bar-item">
       <span class="city-bar-name">${city}</span>
       <span class="city-bar-score">${score}</span>
-      <span class="city-bar-count">${count} signal${count === 1 ? '' : 's'}</span>
+      <span class="city-bar-count">${verifiedCount}/${count} verified</span>
     </div>`;
   }).join('');
 }
@@ -1440,6 +1672,7 @@ function renderSignalList() {
       </div>
       <div class="signal-meta">
         <span class="pill">${sig.city}</span>
+        <span class="pill">${SCORE_ENGINE.hasEvidenceReference(sig.evidenceUrl) ? 'Verified proof' : 'Unverified — discounted'}</span>
         <span class="pill">${sig.action}</span>
       </div>
     </article>
@@ -1475,6 +1708,7 @@ function renderProductLab() {
         <div class="field"><label>Price</label><input name="price" type="text" value="${product.price}" /></div>
         <div class="field"><label>Margin target</label><input name="marginTarget" type="text" value="${product.marginTarget}" /></div>
       </div>
+      <div class="field"><label>Price-test / approval proof URL</label><input name="priceEvidenceUrl" type="text" value="${product.priceEvidenceUrl || ''}" placeholder="Demand test, approved price table, or receipt" /></div>
       <div class="field"><label>Proof lane</label><input name="proof" type="text" value="${product.proof}" /></div>
       <div class="field"><label>Role</label><textarea name="role" rows="2">${product.role}</textarea></div>
       <div class="field-row">
@@ -1572,6 +1806,640 @@ function renderProductLab() {
 /* ═══════════════════════════════════════════════════
    Campaign Proof
    ═══════════════════════════════════════════════════ */
+function formatMoney(value) {
+  const amount = Number(value);
+  return Number.isFinite(amount) ? `C$${amount.toLocaleString('en-CA', { maximumFractionDigits: 2 })}` : 'C$0';
+}
+
+function getEdgeExperiment(id) {
+  return (state.edgeExperiments || []).find(experiment => experiment.id === id);
+}
+
+function getEdgePrerequisiteProgress(experiment) {
+  const prerequisites = experiment.prerequisites || [];
+  const cleared = prerequisites.filter(item => item.cleared).length;
+  return {
+    cleared,
+    total: prerequisites.length,
+    pct: prerequisites.length ? Math.round((cleared / prerequisites.length) * 100) : 100
+  };
+}
+
+function edgeRiskBadge(risk) {
+  return `<span class="edge-badge ${String(risk || 'Green').toLowerCase()}">${escapeAttr(risk || 'Green')} risk</span>`;
+}
+
+function renderEdgeSummary(scores) {
+  const summary = qs('#edgeLabSummary');
+  if (!summary) return;
+  const violations = scores.edgeViolations || [];
+  summary.innerHTML = `
+    <article class="edge-summary-card">
+      <span>Experiment proof</span>
+      <strong>${scores.edgeScore}/100</strong>
+      <small>Positive, linked VORG outcomes only</small>
+    </article>
+    <article class="edge-summary-card">
+      <span>Learning score</span>
+      <strong>${scores.edgeLearningScore}/100</strong>
+      <small>Verified wins and losses</small>
+    </article>
+    <article class="edge-summary-card">
+      <span>Validated</span>
+      <strong>${scores.edgeValidatedExperiments}</strong>
+      <small>${scores.edgeCompletedExperiments} completed · ${scores.edgeRunningExperiments} running</small>
+    </article>
+    <article class="edge-summary-card">
+      <span>Cash used</span>
+      <strong>${formatMoney(scores.edgeExperimentSpend)}</strong>
+      <small>of ${formatMoney(scores.edgeExperimentBudgetCap)} queued caps</small>
+    </article>
+    <article class="edge-summary-card${violations.length ? ' alert' : ''}">
+      <span>Control check</span>
+      <strong>${violations.length ? `${violations.length} issue${violations.length === 1 ? '' : 's'}` : 'Clean'}</strong>
+      <small>${scores.edgeFrontierSpendShare}% of actual test spend is frontier</small>
+    </article>
+  `;
+}
+
+function renderEdgeExperimentQueue() {
+  const panel = qs('#edgeLabPanel');
+  if (!panel) return;
+  const experiments = (state.edgeExperiments || []).slice().sort((left, right) => {
+    const statusOrder = { running: 0, ready: 1, planned: 2, blocked: 3, completed: 4 };
+    return (statusOrder[left.status] ?? 5) - (statusOrder[right.status] ?? 5) || left.id.localeCompare(right.id);
+  });
+  const metrics = SCORE_ENGINE.calculateEdgeExperimentMetrics(experiments);
+  const violations = metrics.violations.length
+    ? `<ul class="edge-violation-list">${metrics.violations.map(item => `<li>${escapeAttr(item)}</li>`).join('')}</ul>`
+    : '';
+  panel.innerHTML = `${violations}
+    <div class="edge-experiment-grid">
+      ${experiments.map(experiment => {
+        const tactic = getEdgeCatalogTactic(experiment.tacticId);
+        const progress = getEdgePrerequisiteProgress(experiment);
+        const decision = experiment.decision && experiment.decision !== 'pending'
+          ? `<span class="edge-badge ${experiment.decision}">${escapeAttr(experiment.decision)}</span>`
+          : '';
+        const result = experiment.resultSummary
+          ? `<p class="edge-card-summary"><strong>Result:</strong> ${escapeAttr(experiment.resultSummary)}</p>`
+          : `<p class="edge-card-summary">${escapeAttr(tactic?.mutation || 'Define the smallest controlled VORG mutation.')}</p>`;
+        return `
+          <article class="edge-experiment-card ${escapeAttr(experiment.status)}" data-edge-experiment-card="${escapeAttr(experiment.id)}">
+            <div class="edge-card-head">
+              <div>
+                <p class="edge-card-kicker">${escapeAttr(experiment.id)} · ${escapeAttr(experiment.tacticId)} · Tier ${escapeAttr(experiment.sourceEvidenceTier)}</p>
+                <h4>${escapeAttr(experiment.name)}</h4>
+              </div>
+              <span class="edge-badge">${escapeAttr(experiment.status)}</span>
+            </div>
+            <div class="edge-badge-row">
+              ${edgeRiskBadge(experiment.risk)}
+              ${decision}
+              <span class="edge-badge">${escapeAttr(experiment.budgetSource || 'Budget TBD')}</span>
+            </div>
+            ${result}
+            <div class="edge-progress">
+              <div class="edge-progress-label"><span>Prerequisites</span><strong>${progress.cleared}/${progress.total}</strong></div>
+              <div class="edge-progress-track"><div class="edge-progress-fill" style="width:${progress.pct}%"></div></div>
+            </div>
+            <div class="edge-card-metrics">
+              <span><strong>${Number(experiment.qualifiedActions) || 0}</strong> qualified</span>
+              <span><strong>${Number(experiment.assetsEarned) || 0}</strong> assets</span>
+              <span><strong>${formatMoney(experiment.actualSpend)}</strong> / ${formatMoney(experiment.budgetCap)}</span>
+            </div>
+            <div class="edge-card-actions">
+              ${tactic?.sourceUrl ? `<a href="${escapeAttr(tactic.sourceUrl)}" target="_blank" rel="noopener">Source mechanism</a>` : '<span></span>'}
+              <button class="edge-action-btn" type="button" data-edge-open="${escapeAttr(experiment.id)}">Open control card</button>
+            </div>
+          </article>
+        `;
+      }).join('')}
+    </div>
+  `;
+  qsa('[data-edge-open]').forEach(button => {
+    button.addEventListener('click', () => openEdgeExperimentDialog(button.dataset.edgeOpen));
+  });
+}
+
+function formatLibraryLabel(value) {
+  return String(value || '')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\b\w/g, char => char.toUpperCase());
+}
+
+function getCommerceSource(id) {
+  return SOURCE_LIBRARY.sources.find(source => source.id === id);
+}
+
+function renderFreeSourceLibrary() {
+  const panel = qs('#edgeLabPanel');
+  if (!panel) return;
+  const filters = { ...clone(DEFAULT_STATE).libraryFilters, ...(state.libraryFilters || {}) };
+  const mode = state.libraryMode === 'sources' ? 'sources' : 'claims';
+  const publicDomainCount = SOURCE_LIBRARY.sources.filter(source => source.rightsBasis === 'public-domain').length;
+  const openLicenseCount = SOURCE_LIBRARY.sources.filter(source => source.rightsBasis === 'open-license').length;
+  const lensCount = new Set(SOURCE_LIBRARY.sources.map(source => source.lens)).size;
+  const lenses = Array.from(new Set(SOURCE_LIBRARY.sources.map(source => source.lens))).sort();
+  const sourceTypes = Array.from(new Set(SOURCE_LIBRARY.sources.map(source => source.sourceType))).sort();
+
+  const claimCards = SOURCE_LIBRARY.claims.map(claim => {
+    const sources = claim.sourceIds.map(getCommerceSource).filter(Boolean);
+    const searchText = [claim.id, claim.title, claim.claim, claim.mechanism, claim.conditions, claim.vorgMutation, claim.metric, ...sources.map(source => `${source.name} ${source.publisher}`)].join(' ').toLowerCase();
+    return `
+      <article class="edge-claim-card" data-library-card data-search="${escapeAttr(searchText)}" data-tier="${escapeAttr(claim.evidenceTier)}" data-risk="${escapeAttr(claim.risk)}">
+        <div class="edge-library-card-head">
+          <div>
+            <p class="edge-card-kicker">${escapeAttr(claim.id)} · ${escapeAttr(claim.funnelStage)} · Tier ${escapeAttr(claim.evidenceTier)}</p>
+            <h4>${escapeAttr(claim.title)}</h4>
+          </div>
+          ${edgeRiskBadge(claim.risk)}
+        </div>
+        <p class="edge-library-claim">${escapeAttr(claim.claim)}</p>
+        <div class="edge-badge-row">
+          <span class="edge-badge">${Number(claim.confidence) || 0}% source confidence</span>
+          ${(claim.feedsTactics || []).map(id => `<span class="edge-badge">${escapeAttr(id)}</span>`).join('')}
+        </div>
+        <details>
+          <summary>Mechanism, VORG mutation, and decision rule</summary>
+          <div class="edge-ledger-detail">
+            <p><strong>Mechanism:</strong> ${escapeAttr(claim.mechanism)}</p>
+            <p><strong>Conditions:</strong> ${escapeAttr(claim.conditions)}</p>
+            <p><strong>VORG mutation:</strong> ${escapeAttr(claim.vorgMutation)}</p>
+            <p><strong>Metric:</strong> ${escapeAttr(claim.metric)}</p>
+            <p><strong>Win:</strong> ${escapeAttr(claim.successThreshold)}</p>
+            <p><strong>Kill:</strong> ${escapeAttr(claim.killCondition)}</p>
+          </div>
+        </details>
+        <div class="edge-source-links">
+          ${sources.map(source => `<a href="${escapeAttr(source.url)}" target="_blank" rel="noopener">${escapeAttr(source.id)} · ${escapeAttr(source.name)}</a>`).join('')}
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  const sourceCards = SOURCE_LIBRARY.sources.map(source => {
+    const relatedClaims = SOURCE_LIBRARY.claims.filter(claim => claim.sourceIds.includes(source.id));
+    const searchText = [source.id, source.name, source.publisher, source.lens, source.sourceType, source.note, ...source.feedsTactics].join(' ').toLowerCase();
+    return `
+      <article class="edge-source-card" data-library-card data-search="${escapeAttr(searchText)}" data-lens="${escapeAttr(source.lens)}" data-source-type="${escapeAttr(source.sourceType)}" data-tier="${escapeAttr(source.defaultTier)}">
+        <div class="edge-library-card-head">
+          <div>
+            <p class="edge-card-kicker">${escapeAttr(source.id)} · ${escapeAttr(source.lens)} · Tier ${escapeAttr(source.defaultTier)}</p>
+            <h4>${escapeAttr(source.name)}</h4>
+            <small>${escapeAttr(source.publisher)}</small>
+          </div>
+          <span class="edge-badge">${escapeAttr(source.access)}</span>
+        </div>
+        <p>${escapeAttr(source.note)}</p>
+        <div class="edge-badge-row">
+          <span class="edge-badge">${escapeAttr(source.rightsBasis)}</span>
+          <span class="edge-badge">${escapeAttr(formatLibraryLabel(source.sourceType))}</span>
+          <span class="edge-badge">${escapeAttr(source.refresh)}</span>
+          <span class="edge-badge">${relatedClaims.length} claim${relatedClaims.length === 1 ? '' : 's'}</span>
+        </div>
+        <div class="edge-library-ingestion"><strong>Ingest:</strong> ${escapeAttr(formatLibraryLabel(source.ingestionMode))}</div>
+        <div class="edge-card-actions">
+          <span>${(source.feedsTactics || []).map(id => `<span class="edge-badge">${escapeAttr(id)}</span>`).join('')}</span>
+          <a class="edge-source-open" href="${escapeAttr(source.url)}" target="_blank" rel="noopener">Open source</a>
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  panel.innerHTML = `
+    <section class="edge-library-overview" aria-label="Free commerce library summary">
+      <div><span>Free sources</span><strong>${SOURCE_LIBRARY.sources.length}</strong><small>lawful routes registered</small></div>
+      <div><span>Atomic claims</span><strong>${SOURCE_LIBRARY.claims.length}</strong><small>deduplicated mechanisms</small></div>
+      <div><span>Public-domain books</span><strong>${publicDomainCount}</strong><small>full text permitted</small></div>
+      <div><span>Open-licensed books</span><strong>${openLicenseCount}</strong><small>item licence controls reuse</small></div>
+      <div><span>Coverage</span><strong>${lensCount}</strong><small>commerce lenses</small></div>
+    </section>
+    <aside class="edge-library-truth">
+      <strong>AI rule: fluency is not evidence.</strong>
+      <span>Repeated guru or AI-assisted advice collapses into one atomic mechanism. Source count never inflates proof; only a VORG result can move the algorithm.</span>
+    </aside>
+    <div class="edge-library-controls">
+      <div class="edge-library-mode" role="group" aria-label="Free library mode">
+        <button type="button" data-library-mode="claims" class="${mode === 'claims' ? 'active' : ''}">Atomic claims · ${SOURCE_LIBRARY.claims.length}</button>
+        <button type="button" data-library-mode="sources" class="${mode === 'sources' ? 'active' : ''}">Sources · ${SOURCE_LIBRARY.sources.length}</button>
+      </div>
+      <span id="edgeLibraryVisibleCount"></span>
+    </div>
+    <div class="edge-ledger-toolbar edge-library-toolbar ${mode}">
+      <input id="edgeLibrarySearch" type="search" value="${escapeAttr(filters.search)}" placeholder="Search ${mode === 'claims' ? 'claims, mechanisms, metrics, or sources' : 'sources, publishers, lenses, or tactics'}…" aria-label="Search free commerce library" />
+      ${mode === 'sources' ? `
+        <select id="edgeLibraryLens" aria-label="Filter source library by lens">
+          <option value="all">All lenses</option>
+          ${lenses.map(lens => `<option value="${escapeAttr(lens)}"${filters.lens === lens ? ' selected' : ''}>${escapeAttr(lens)}</option>`).join('')}
+        </select>
+        <select id="edgeLibraryType" aria-label="Filter source library by type">
+          <option value="all">All source types</option>
+          ${sourceTypes.map(type => `<option value="${escapeAttr(type)}"${filters.sourceType === type ? ' selected' : ''}>${escapeAttr(formatLibraryLabel(type))}</option>`).join('')}
+        </select>
+      ` : `
+        <select id="edgeLibraryRisk" aria-label="Filter atomic claims by risk">
+          <option value="all">All risk</option>
+          ${['Green', 'Yellow', 'Orange', 'Red'].map(risk => `<option value="${risk}"${filters.risk === risk ? ' selected' : ''}>${risk}</option>`).join('')}
+        </select>
+      `}
+      <select id="edgeLibraryTier" aria-label="Filter free library by evidence tier">
+        <option value="all">All evidence tiers</option>
+        ${['A', 'B', 'C', 'F'].map(tier => `<option value="${tier}"${filters.tier === tier ? ' selected' : ''}>Tier ${tier}</option>`).join('')}
+      </select>
+    </div>
+    <div class="edge-library-grid" id="edgeLibraryGrid">
+      ${mode === 'claims' ? claimCards : sourceCards}
+    </div>
+    <div class="edge-empty" id="edgeLibraryEmpty" hidden><strong>No library records match.</strong><br />Clear a filter or search a broader mechanism.</div>
+  `;
+
+  const updateFilters = () => {
+    state.libraryFilters = {
+      search: qs('#edgeLibrarySearch')?.value.trim() || '',
+      lens: qs('#edgeLibraryLens')?.value || 'all',
+      sourceType: qs('#edgeLibraryType')?.value || 'all',
+      tier: qs('#edgeLibraryTier')?.value || 'all',
+      risk: qs('#edgeLibraryRisk')?.value || 'all'
+    };
+    const needle = state.libraryFilters.search.toLowerCase();
+    let visible = 0;
+    qsa('[data-library-card]').forEach(card => {
+      const searchMatch = !needle || card.dataset.search.includes(needle);
+      const tierMatch = state.libraryFilters.tier === 'all' || card.dataset.tier === state.libraryFilters.tier;
+      const lensMatch = mode !== 'sources' || state.libraryFilters.lens === 'all' || card.dataset.lens === state.libraryFilters.lens;
+      const typeMatch = mode !== 'sources' || state.libraryFilters.sourceType === 'all' || card.dataset.sourceType === state.libraryFilters.sourceType;
+      const riskMatch = mode !== 'claims' || state.libraryFilters.risk === 'all' || card.dataset.risk === state.libraryFilters.risk;
+      card.hidden = !(searchMatch && tierMatch && lensMatch && typeMatch && riskMatch);
+      if (!card.hidden) visible += 1;
+    });
+    const total = mode === 'claims' ? SOURCE_LIBRARY.claims.length : SOURCE_LIBRARY.sources.length;
+    const visibleCount = qs('#edgeLibraryVisibleCount');
+    if (visibleCount) visibleCount.textContent = `${visible} of ${total} visible`;
+    const empty = qs('#edgeLibraryEmpty');
+    if (empty) empty.hidden = visible > 0;
+  };
+
+  qsa('[data-library-mode]').forEach(button => {
+    button.onclick = () => {
+      state.libraryMode = button.dataset.libraryMode;
+      state.libraryFilters.search = '';
+      saveState();
+      renderFreeSourceLibrary();
+    };
+  });
+  ['#edgeLibrarySearch', '#edgeLibraryLens', '#edgeLibraryType', '#edgeLibraryTier', '#edgeLibraryRisk'].forEach(selector => {
+    const input = qs(selector);
+    if (!input) return;
+    input.addEventListener(input.tagName === 'INPUT' ? 'input' : 'change', updateFilters);
+  });
+  updateFilters();
+}
+
+function renderEdgeLedger() {
+  const panel = qs('#edgeLabPanel');
+  if (!panel) return;
+  const filters = { ...clone(DEFAULT_STATE).edgeFilters, ...(state.edgeFilters || {}) };
+  const lanes = Array.from(new Set(EDGE_LIBRARY.TACTICS.map(tactic => tactic.lane))).sort();
+  panel.innerHTML = `
+    <div class="edge-ledger-toolbar">
+      <input id="edgeLedgerSearch" type="search" value="${escapeAttr(filters.search)}" placeholder="Search tactic, mechanism, or proof…" aria-label="Search edge tactic ledger" />
+      <select id="edgeLedgerLane" aria-label="Filter tactics by lane">
+        <option value="all">All lanes</option>
+        ${lanes.map(lane => `<option value="${escapeAttr(lane)}"${filters.lane === lane ? ' selected' : ''}>${escapeAttr(lane)}</option>`).join('')}
+      </select>
+      <select id="edgeLedgerRisk" aria-label="Filter tactics by risk">
+        <option value="all">All risk</option>
+        ${['Green', 'Yellow', 'Orange', 'Red'].map(risk => `<option value="${risk}"${filters.risk === risk ? ' selected' : ''}>${risk}</option>`).join('')}
+      </select>
+    </div>
+    <div class="edge-ledger-grid" id="edgeLedgerGrid">
+      ${EDGE_LIBRARY.TACTICS.map(tactic => {
+        const activeQueued = (state.edgeExperiments || []).some(experiment =>
+          experiment.tacticId === tactic.id && experiment.status !== 'completed'
+        );
+        const searchText = [tactic.id, tactic.name, tactic.lane, tactic.mechanism, tactic.mutation, tactic.proof].join(' ').toLowerCase();
+        return `
+          <article class="edge-ledger-card" data-edge-ledger-card data-search="${escapeAttr(searchText)}" data-lane="${escapeAttr(tactic.lane)}" data-risk="${escapeAttr(tactic.risk)}">
+            <div class="edge-ledger-head">
+              <div>
+                <p class="edge-card-kicker">${tactic.id} · ${escapeAttr(tactic.lane)} · Tier ${escapeAttr(tactic.evidenceTier)}</p>
+                <h4>${escapeAttr(tactic.name)}</h4>
+              </div>
+              ${edgeRiskBadge(tactic.risk)}
+            </div>
+            <p>${escapeAttr(tactic.mechanism)}</p>
+            <details>
+              <summary>VORG mutation and test rule</summary>
+              <div class="edge-ledger-detail">
+                <p><strong>Mutation:</strong> ${escapeAttr(tactic.mutation)}</p>
+                <p><strong>Proof:</strong> ${escapeAttr(tactic.proof)}</p>
+                <p><strong>Win:</strong> ${escapeAttr(tactic.successThreshold)}</p>
+                <p><strong>Kill:</strong> ${escapeAttr(tactic.killCondition)}</p>
+                <p><a href="${escapeAttr(tactic.sourceUrl)}" target="_blank" rel="noopener">${escapeAttr(tactic.sourceLabel)}</a></p>
+              </div>
+            </details>
+            <div class="edge-card-actions">
+              <span class="edge-badge">${escapeAttr(tactic.priority)}</span>
+              <button class="edge-add-btn" type="button" data-edge-add="${tactic.id}"${activeQueued ? ' disabled' : ''}>${activeQueued ? 'In queue' : 'Forge experiment'}</button>
+            </div>
+          </article>
+        `;
+      }).join('')}
+    </div>
+  `;
+
+  const updateFilters = () => {
+    state.edgeFilters = {
+      search: qs('#edgeLedgerSearch')?.value.trim() || '',
+      lane: qs('#edgeLedgerLane')?.value || 'all',
+      risk: qs('#edgeLedgerRisk')?.value || 'all'
+    };
+    const needle = state.edgeFilters.search.toLowerCase();
+    qsa('[data-edge-ledger-card]').forEach(card => {
+      const searchMatch = !needle || card.dataset.search.includes(needle);
+      const laneMatch = state.edgeFilters.lane === 'all' || card.dataset.lane === state.edgeFilters.lane;
+      const riskMatch = state.edgeFilters.risk === 'all' || card.dataset.risk === state.edgeFilters.risk;
+      card.hidden = !(searchMatch && laneMatch && riskMatch);
+    });
+  };
+  qs('#edgeLedgerSearch')?.addEventListener('input', updateFilters);
+  qs('#edgeLedgerLane')?.addEventListener('change', updateFilters);
+  qs('#edgeLedgerRisk')?.addEventListener('change', updateFilters);
+  updateFilters();
+
+  qsa('[data-edge-add]').forEach(button => {
+    button.addEventListener('click', () => addEdgeExperiment(button.dataset.edgeAdd));
+  });
+}
+
+function renderEdgeDecisionMemory() {
+  const panel = qs('#edgeLabPanel');
+  if (!panel) return;
+  const decisions = (state.edgeExperiments || [])
+    .filter(experiment => experiment.decision && experiment.decision !== 'pending')
+    .sort((left, right) => String(right.updatedAt || '').localeCompare(String(left.updatedAt || '')));
+  panel.innerHTML = decisions.length ? `
+    <div class="edge-memory-list">
+      ${decisions.map(experiment => `
+        <article class="edge-memory-card ${escapeAttr(experiment.decision)}">
+          <div class="edge-memory-head">
+            <div>
+              <p class="edge-card-kicker">${escapeAttr(experiment.id)} · ${escapeAttr(experiment.tacticId)} · ${escapeAttr(experiment.updatedAt ? new Date(experiment.updatedAt).toLocaleDateString('en-CA') : 'date unresolved')}</p>
+              <h4>${escapeAttr(experiment.name)}</h4>
+            </div>
+            <span class="edge-badge ${escapeAttr(experiment.decision)}">${escapeAttr(experiment.decision)}</span>
+          </div>
+          <p>${escapeAttr(experiment.resultSummary || 'No result summary recorded.')}</p>
+          <div class="edge-card-metrics">
+            <span><strong>${Number(experiment.qualifiedActions) || 0}</strong> qualified</span>
+            <span><strong>${Number(experiment.assetsEarned) || 0}</strong> assets</span>
+            <span><strong>${formatMoney(experiment.actualSpend)}</strong> spent</span>
+          </div>
+          <div class="edge-card-actions">
+            ${SCORE_ENGINE.hasEvidenceReference(experiment.evidenceUrl) ? `<a href="${escapeAttr(experiment.evidenceUrl)}" target="_blank" rel="noopener">Open result evidence</a>` : '<span>No evidence link</span>'}
+            <button class="edge-action-btn" type="button" data-edge-open="${escapeAttr(experiment.id)}">Inspect decision</button>
+          </div>
+        </article>
+      `).join('')}
+    </div>
+  ` : '<div class="edge-empty"><strong>No decisions yet.</strong><br />Complete an experiment with a result receipt before the memory can teach the next drop.</div>';
+  qsa('[data-edge-open]').forEach(button => {
+    button.addEventListener('click', () => openEdgeExperimentDialog(button.dataset.edgeOpen));
+  });
+}
+
+function renderEdgeLab(scores) {
+  renderEdgeSummary(scores);
+  const view = state.campaignView || 'experiments';
+  qsa('[data-edge-view]').forEach(button => {
+    button.classList.toggle('active', button.dataset.edgeView === view);
+    button.onclick = () => {
+      state.campaignView = button.dataset.edgeView;
+      saveState();
+      renderCampaignProof();
+      refreshIcons();
+    };
+  });
+  if (view === 'library') renderFreeSourceLibrary();
+  else if (view === 'ledger') renderEdgeLedger();
+  else if (view === 'memory') renderEdgeDecisionMemory();
+  else renderEdgeExperimentQueue();
+}
+
+function addEdgeExperiment(tacticId) {
+  const experiment = EDGE_LIBRARY.createExperimentFromTactic(tacticId, Date.now());
+  if (!experiment) return;
+  experiment.createdAt = new Date().toISOString();
+  experiment.updatedAt = experiment.createdAt;
+  if (!Array.isArray(state.edgeExperiments)) state.edgeExperiments = [];
+  state.edgeExperiments.push(normalizeEdgeExperiment(experiment));
+  state.campaignView = 'experiments';
+  saveState();
+  renderCampaignProof();
+  refreshIcons();
+  openEdgeExperimentDialog(experiment.id);
+}
+
+function edgeOption(value, current, label = value) {
+  return `<option value="${escapeAttr(value)}"${current === value ? ' selected' : ''}>${escapeAttr(label)}</option>`;
+}
+
+function openEdgeExperimentDialog(id) {
+  const experiment = getEdgeExperiment(id);
+  const body = qs('#edgeExperimentDialogBody');
+  const dialog = qs('#edgeExperimentDialog');
+  if (!experiment || !body || !dialog) return;
+  const tactic = getEdgeCatalogTactic(experiment.tacticId);
+  const approvalRequired = experiment.risk === 'Yellow' || experiment.risk === 'Orange';
+  body.innerHTML = `
+    <div class="dialog-header">
+      <div>
+        <p class="edge-card-kicker">${escapeAttr(experiment.id)} · ${escapeAttr(experiment.tacticId)} · Tier ${escapeAttr(experiment.sourceEvidenceTier)}</p>
+        <h2>${escapeAttr(experiment.name)}</h2>
+      </div>
+      <button class="btn-icon" type="button" data-edge-close aria-label="Close"><i data-lucide="x"></i></button>
+    </div>
+    <p class="dialog-lead">${escapeAttr(tactic?.mutation || 'Define the smallest controlled VORG mutation.')}</p>
+    <div class="edge-badge-row">${edgeRiskBadge(experiment.risk)}<span class="edge-badge">Source tier ${escapeAttr(experiment.sourceEvidenceTier)}</span><span class="edge-badge">${escapeAttr(experiment.budgetSource)}</span></div>
+    <form id="edgeExperimentForm" data-edge-form="${escapeAttr(experiment.id)}">
+      <div class="edge-form-grid">
+        <div class="field"><label>Owner</label><input name="owner" value="${escapeAttr(experiment.owner)}" placeholder="Named accountable owner" /></div>
+        <div class="field"><label>Status</label><select name="status">
+          ${edgeOption('planned', experiment.status)}${edgeOption('ready', experiment.status)}${edgeOption('running', experiment.status)}${edgeOption('completed', experiment.status)}${edgeOption('blocked', experiment.status)}
+        </select></div>
+        <div class="field"><label>Start date</label><input name="startDate" type="date" value="${escapeAttr(experiment.startDate)}" /></div>
+        <div class="field"><label>End date</label><input name="endDate" type="date" value="${escapeAttr(experiment.endDate)}" /></div>
+        <div class="field"><label>Approved cash cap (C$)</label><input name="budgetCap" type="number" min="0" step="0.01" value="${Number(experiment.budgetCap) || 0}" /></div>
+        <div class="field"><label>Actual spend (C$)</label><input name="actualSpend" type="number" min="0" step="0.01" value="${Number(experiment.actualSpend) || 0}" /></div>
+        <div class="field"><label>Target qualified actions</label><input name="targetQualifiedActions" type="number" min="0" value="${Number(experiment.targetQualifiedActions) || 0}" /></div>
+        <div class="field"><label>Qualified actions</label><input name="qualifiedActions" type="number" min="0" value="${Number(experiment.qualifiedActions) || 0}" /></div>
+        <div class="field"><label>Target reusable assets</label><input name="assetsTarget" type="number" min="2" value="${Math.max(2, Number(experiment.assetsTarget) || 2)}" /></div>
+        <div class="field"><label>Reusable assets earned</label><input name="assetsEarned" type="number" min="0" value="${Number(experiment.assetsEarned) || 0}" /></div>
+        <div class="field"><label>Approval status${approvalRequired ? ' · required before run' : ''}</label><select name="approvalStatus"${approvalRequired ? '' : ' disabled'}>
+          ${edgeOption('not-required', experiment.approvalStatus, 'Not required')}${edgeOption('pending', experiment.approvalStatus, 'Pending')}${edgeOption('approved', experiment.approvalStatus, 'Approved')}${edgeOption('rejected', experiment.approvalStatus, 'Rejected')}
+        </select></div>
+        <div class="field"><label>Approved by</label><input name="approvedBy" value="${escapeAttr(experiment.approvedBy)}" placeholder="Required for Yellow / Orange" /></div>
+        <div class="field field-wide"><label><input name="counselReviewed" type="checkbox"${experiment.counselReviewed ? ' checked' : ''} /> Counsel review recorded (required for Orange)</label></div>
+        <div class="field field-wide"><label>Primary metric</label><textarea name="primaryMetric">${escapeAttr(experiment.primaryMetric)}</textarea></div>
+        <div class="field field-wide"><label>Baseline or comparison</label><textarea name="baseline" placeholder="Record the pre-test baseline or state that this test establishes it.">${escapeAttr(experiment.baseline)}</textarea></div>
+        <div class="field field-wide"><label>Success threshold · lock before run</label><textarea name="successThreshold">${escapeAttr(experiment.successThreshold)}</textarea></div>
+        <div class="field field-wide"><label>Kill condition · lock before run</label><textarea name="killCondition">${escapeAttr(experiment.killCondition)}</textarea></div>
+      </div>
+      <section class="edge-subsection">
+        <h4>Prerequisite gate</h4>
+        <div class="edge-prerequisite-list">
+          ${(experiment.prerequisites || []).map(item => `<label class="edge-prerequisite"><input type="checkbox" data-edge-prerequisite="${escapeAttr(item.id)}"${item.cleared ? ' checked' : ''} /> <span>${escapeAttr(item.label)}</span></label>`).join('')}
+        </div>
+      </section>
+      <section class="edge-subsection">
+        <h4>Seven-day run</h4>
+        <ol class="edge-day-plan">${(experiment.sevenDayPlan || []).map(item => `<li>${escapeAttr(item)}</li>`).join('')}</ol>
+      </section>
+      <div class="edge-form-grid">
+        <div class="field"><label>Decision</label><select name="decision">
+          ${edgeOption('pending', experiment.decision)}${edgeOption('adopt', experiment.decision)}${edgeOption('adapt', experiment.decision)}${edgeOption('retest', experiment.decision)}${edgeOption('reject', experiment.decision)}
+        </select></div>
+        <div class="field"><label>Result evidence URL or repo path</label><input name="evidenceUrl" value="${escapeAttr(experiment.evidenceUrl)}" placeholder="Required to complete" /></div>
+        <div class="field field-wide"><label>Result summary</label><textarea name="resultSummary" placeholder="What happened, against which unchanged threshold, under what conditions?">${escapeAttr(experiment.resultSummary)}</textarea></div>
+      </div>
+      <p class="edge-dialog-note"><strong>Control rule:</strong> planned catalog items score zero. Adopt/adapt requires linked evidence, qualified action, at least two reusable assets, cleared prerequisites, approval where required, and spend inside cap. Reject/retest still enters learning memory when the receipt is linked.</p>
+      <div class="edge-dialog-actions">
+        <button class="top-btn outline" type="button" data-edge-close>Cancel</button>
+        <button class="btn-primary" type="submit">Save control card</button>
+      </div>
+    </form>
+  `;
+  qsa('[data-edge-close]').forEach(button => button.addEventListener('click', () => dialog.close()));
+  qs('#edgeExperimentForm')?.addEventListener('submit', saveEdgeExperiment);
+  dialog.showModal();
+  refreshIcons();
+}
+
+function numericFormValue(formData, name) {
+  const value = Number(formData.get(name));
+  return Number.isFinite(value) && value >= 0 ? value : 0;
+}
+
+function saveEdgeExperiment(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const experiment = getEdgeExperiment(form.dataset.edgeForm);
+  if (!experiment) return;
+  const data = new FormData(form);
+  const status = String(data.get('status') || 'planned');
+  const decision = String(data.get('decision') || 'pending');
+  const owner = String(data.get('owner') || '').trim();
+  const startDate = String(data.get('startDate') || '');
+  const endDate = String(data.get('endDate') || '');
+  const budgetCap = numericFormValue(data, 'budgetCap');
+  const actualSpend = numericFormValue(data, 'actualSpend');
+  const qualifiedActions = numericFormValue(data, 'qualifiedActions');
+  const assetsEarned = numericFormValue(data, 'assetsEarned');
+  const assetsTarget = Math.max(2, numericFormValue(data, 'assetsTarget'));
+  const resultSummary = String(data.get('resultSummary') || '').trim();
+  const evidenceUrl = String(data.get('evidenceUrl') || '').trim();
+  const approvalStatus = experiment.risk === 'Green'
+    ? 'not-required'
+    : String(data.get('approvalStatus') || 'pending');
+  const approvedBy = String(data.get('approvedBy') || '').trim();
+  const counselReviewed = data.get('counselReviewed') === 'on';
+  const prerequisites = (experiment.prerequisites || []).map(item => ({
+    ...item,
+    cleared: Boolean(form.querySelector(`[data-edge-prerequisite="${CSS.escape(item.id)}"]`)?.checked)
+  }));
+  const prerequisitesCleared = prerequisites.every(item => item.cleared);
+  const runningOrComplete = status === 'running' || status === 'completed';
+  const approvalRequired = experiment.risk === 'Yellow' || experiment.risk === 'Orange';
+  const priorApprovalRecorded = experiment.approvalStatus === 'approved' &&
+    Boolean(String(experiment.approvedBy || '').trim()) &&
+    Number.isFinite(Date.parse(String(experiment.approvedAt || '')));
+  const priorCounselRecorded = experiment.counselReviewed === true &&
+    Number.isFinite(Date.parse(String(experiment.counselReviewedAt || '')));
+
+  if ((status === 'ready' || runningOrComplete) && !prerequisitesCleared) {
+    window.alert('Clear every prerequisite before this experiment can be ready, running, or completed.');
+    return;
+  }
+  if (runningOrComplete && (!owner || !startDate || !endDate)) {
+    window.alert('Assign a named owner plus start and end dates before running the experiment.');
+    return;
+  }
+  if (startDate && endDate && endDate < startDate) {
+    window.alert('The experiment end date cannot be earlier than its start date.');
+    return;
+  }
+  if (runningOrComplete && experiment.risk === 'Red') {
+    window.alert('Red-risk tactics cannot run. Forge a defensible alternative.');
+    return;
+  }
+  if (runningOrComplete && approvalRequired && (approvalStatus !== 'approved' || !approvedBy)) {
+    window.alert('Yellow and Orange experiments require action-time approval and the approver name before they run.');
+    return;
+  }
+  if (runningOrComplete && approvalRequired && !priorApprovalRecorded) {
+    window.alert('Record and save approval while the experiment is planned or ready. Then move it to running or completed in a later save.');
+    return;
+  }
+  if (runningOrComplete && experiment.risk === 'Orange' && !counselReviewed) {
+    window.alert('Orange experiments require recorded counsel review before they run.');
+    return;
+  }
+  if (runningOrComplete && experiment.risk === 'Orange' && !priorCounselRecorded) {
+    window.alert('Record and save counsel review before moving an Orange experiment to running or completed.');
+    return;
+  }
+  if (actualSpend > 0 && (budgetCap <= 0 || actualSpend > budgetCap)) {
+    window.alert('Actual spend cannot exceed—or exist without—the founder-approved experiment cap.');
+    return;
+  }
+  if (status === 'completed' && (decision === 'pending' || !resultSummary || !SCORE_ENGINE.hasEvidenceReference(evidenceUrl))) {
+    window.alert('Completion requires a decision, result summary, and valid evidence URL or repo path.');
+    return;
+  }
+  if ((decision === 'adopt' || decision === 'adapt') && (status !== 'completed' || qualifiedActions < 1 || assetsEarned < 2)) {
+    window.alert('Adopt/adapt requires completed status, at least one qualified action, and at least two reusable assets.');
+    return;
+  }
+  if (status !== 'completed' && decision !== 'pending') {
+    window.alert('Record adopt, adapt, retest, or reject only when status is completed.');
+    return;
+  }
+
+  const now = new Date().toISOString();
+  Object.assign(experiment, {
+    owner,
+    status,
+    decision,
+    startDate,
+    endDate,
+    budgetCap,
+    actualSpend,
+    targetQualifiedActions: numericFormValue(data, 'targetQualifiedActions'),
+    qualifiedActions,
+    assetsTarget,
+    assetsEarned,
+    primaryMetric: String(data.get('primaryMetric') || '').trim(),
+    baseline: String(data.get('baseline') || '').trim(),
+    successThreshold: String(data.get('successThreshold') || '').trim(),
+    killCondition: String(data.get('killCondition') || '').trim(),
+    resultSummary,
+    evidenceUrl,
+    approvalStatus,
+    approvedBy,
+    approvedAt: approvalStatus === 'approved' ? (experiment.approvedAt || now) : '',
+    counselReviewed,
+    counselReviewedAt: counselReviewed ? (experiment.counselReviewedAt || now) : '',
+    prerequisites,
+    createdAt: experiment.createdAt || now,
+    updatedAt: now
+  });
+  saveState();
+  qs('#edgeExperimentDialog')?.close();
+  renderCampaignProof();
+  refreshIcons();
+}
+
 function renderCampaignProof() {
   const scores = calculateScores();
 
@@ -1579,8 +2447,10 @@ function renderCampaignProof() {
 
   qs('#campaignGate').innerHTML = `
     <i data-lucide="alert-triangle"></i>
-    <span>Hold bulk units until campaign proof clears. Current content score: ${scores.tacticScore}/100 — not a sell-through guarantee.</span>
+    <span>Hold bulk until campaign proof clears. ${scores.verifiedTactics} linked campaign win${scores.verifiedTactics === 1 ? '' : 's'}; Edge Lab ${scores.edgeValidatedExperiments} validated / ${scores.edgeCompletedExperiments} completed; combined score ${scores.tacticScore}/100.</span>
   `;
+
+  renderEdgeLab(scores);
 
   qs('#tacticList').innerHTML = state.tactics.map(tactic => `
     <article class="tactic-card">
@@ -1591,6 +2461,7 @@ function renderCampaignProof() {
           <span class="pill">${tactic.risk} risk</span>
           <span class="pill">${tactic.proof}</span>
         </div>
+        <input class="tactic-proof-input" type="text" value="${escapeAttr(tactic.evidenceUrl)}" data-tactic-proof="${tactic.id}" placeholder="Proof URL or repo path required for approval" aria-label="${escapeAttr(tactic.name)} proof reference" />
       </div>
       <button class="tactic-action${tactic.status === 'approved' ? ' active' : ''}" type="button" data-tactic-id="${tactic.id}">
         ${tactic.status === 'approved' ? 'Approved' : 'Approve'}
@@ -1601,12 +2472,456 @@ function renderCampaignProof() {
   qsa('[data-tactic-id]').forEach(btn => {
     btn.addEventListener('click', () => {
       const tactic = state.tactics.find(t => t.id === btn.dataset.tacticId);
+      if (tactic.status !== 'approved' && !SCORE_ENGINE.hasEvidenceReference(tactic.evidenceUrl)) {
+        window.alert('Attach a proof URL or repo path before approving this tactic.');
+        qs(`[data-tactic-proof="${tactic.id}"]`)?.focus();
+        return;
+      }
       tactic.status = tactic.status === 'approved' ? 'draft' : 'approved';
       saveState();
       renderCampaignProof();
       refreshIcons();
     });
   });
+
+  qsa('[data-tactic-proof]').forEach(input => {
+    input.addEventListener('change', () => {
+      const tactic = state.tactics.find(t => t.id === input.dataset.tacticProof);
+      if (!tactic) return;
+      tactic.evidenceUrl = input.value.trim();
+      if (tactic.status === 'approved' && !SCORE_ENGINE.hasEvidenceReference(tactic.evidenceUrl)) tactic.status = 'ready';
+      saveState();
+      renderCampaignProof();
+      refreshIcons();
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   Sales Forecast Lab
+   Separate from readiness: predicts ranges; never authorizes spend.
+   ═══════════════════════════════════════════════════ */
+function parseForecastVariants(raw, productName) {
+  const text = String(raw || '').trim();
+  if (!text) return { variants: [], errors: [] };
+  const errors = [];
+  const variants = text.split(/[\n,]+/).map((part, index) => {
+    const [labelRaw, inventoryRaw, weightRaw] = part.split(':').map(value => value.trim());
+    const inventory = Number(inventoryRaw);
+    const weight = weightRaw ? Number(weightRaw) : undefined;
+    if (!labelRaw || !Number.isInteger(inventory) || inventory < 0 || (weightRaw && (!Number.isFinite(weight) || weight <= 0))) {
+      errors.push(`${productName}: size entry ${index + 1} must use Label:units or Label:units:weight.`);
+    }
+    return { label: labelRaw, inventory: inventoryRaw, weight };
+  });
+  return { variants, errors };
+}
+
+function forecastField(override, key, fallback = '') {
+  const value = override?.[key];
+  return value !== undefined && value !== null && String(value).trim() !== '' ? value : fallback;
+}
+
+function buildForecastInput() {
+  state.forecast = normalizeForecastState(state.forecast);
+  const inputs = state.forecast.inputs;
+  const externalPrior = inputs.priorProfile === PUBLIC_COMMERCE_PRIORS.profileId
+    ? {
+        id: PUBLIC_COMMERCE_PRIORS.profileId,
+        modelVersion: PUBLIC_COMMERCE_PRIORS.modelVersion,
+        checkedOn: PUBLIC_COMMERCE_PRIORS.checkedOn,
+        directConversionStrength: PUBLIC_COMMERCE_PRIORS.engineProfile.directConversionStrength,
+        refundStrength: PUBLIC_COMMERCE_PRIORS.engineProfile.refundStrength,
+        sourceUrls: PUBLIC_COMMERCE_PRIORS.sources.map(source => source.url)
+      }
+    : undefined;
+  const parseErrors = [];
+  const products = getForecastProductCatalog(inputs).map(product => {
+    const override = inputs.productOverrides?.[product.id] || {};
+    const parsedVariants = parseForecastVariants(override.sizeInventory, product.name);
+    parseErrors.push(...parsedVariants.errors);
+    return {
+      id: product.id,
+      name: product.name,
+      active: true,
+      inventory: forecastField(override, 'inventory', product.units),
+      price: forecastField(override, 'price', product.price),
+      landedCogs: forecastField(override, 'landedCogs', product.manufacturing?.landedCogs),
+      weight: forecastField(override, 'weight', 1),
+      variants: parsedVariants.variants
+    };
+  });
+  return {
+    input: {
+      ...inputs,
+      externalPrior,
+      asOf: inputs.asOf || new Date().toISOString(),
+      dropId: inputs.evidenceMode === 'synthetic' ? String(inputs.dropId || 'SYNTHETIC') : String(getDrop().id || 'unrecorded'),
+      productionSpendCap: getDrop().productionSpendCap,
+      products
+    },
+    parseErrors
+  };
+}
+
+function getCurrentForecast() {
+  const { input, parseErrors } = buildForecastInput();
+  const output = FORECAST_ENGINE.calculateForecast(input);
+  if (parseErrors.length) {
+    output.status = 'blocked';
+    output.errors.push(...parseErrors);
+  }
+  return { input, output };
+}
+
+function forecastMoney(value) {
+  const amount = Number(value || 0);
+  return `${amount < 0 ? '-' : ''}C$${Math.abs(amount).toLocaleString('en-CA', { maximumFractionDigits: 0 })}`;
+}
+
+function forecastRange(range, formatter = value => Number(value || 0).toLocaleString('en-CA')) {
+  return `${formatter(range.p10)} / ${formatter(range.p50)} / ${formatter(range.p90)}`;
+}
+
+function forecastMetric(value) {
+  return value === null || value === undefined ? '—' : `${Math.round(Number(value) * 100)}%`;
+}
+
+function renderForecastSnapshot(snapshot) {
+  const actual = snapshot.actual || {};
+  const output = snapshot.forecast;
+  const linked = FORECAST_ENGINE.hasEvidenceReference(actual.evidenceUrl);
+  const synthetic = output?.status === 'synthetic-test' || output?.evidenceMode === 'synthetic' || FORECAST_ENGINE.isSyntheticEvidenceReference(actual.evidenceUrl);
+  return `
+    <article class="forecast-snapshot-card">
+      <div class="forecast-snapshot-head">
+        <div>
+          <strong>${escapeAttr(snapshot.label || snapshot.dropId || 'Frozen forecast')}</strong>
+          <span>${escapeAttr(new Date(snapshot.frozenAt).toLocaleString('en-CA'))} · ${escapeAttr(output?.status || 'unknown')}</span>
+        </div>
+        <span class="forecast-status-pill ${synthetic ? 'synthetic-test' : linked ? 'evidence-anchored' : 'scenario'}">${synthetic ? linked ? 'Synthetic outcome linked' : 'Synthetic test' : linked ? 'Outcome linked' : 'Awaiting actual'}</span>
+      </div>
+      <div class="forecast-frozen-call">
+        <span>Revenue P10 / P50 / P90</span>
+        <strong>${forecastRange(output.summary.revenue, forecastMoney)}</strong>
+        <span>Units P10 / P50 / P90</span>
+        <strong>${forecastRange(output.summary.soldUnits)}</strong>
+      </div>
+      <form class="forecast-actual-form" data-forecast-actual="${escapeAttr(snapshot.id)}">
+        <div class="field"><label>Actual net revenue (C$)</label><input name="revenue" type="number" min="0" step="0.01" value="${escapeAttr(actual.revenue ?? '')}" required /></div>
+        <div class="field"><label>Actual net units sold</label><input name="unitsSold" type="number" min="0" step="1" value="${escapeAttr(actual.unitsSold ?? '')}" required /></div>
+        <div class="field"><label>Actual sell-through (%)</label><input name="sellThroughPct" type="number" min="0" max="100" step="0.1" value="${escapeAttr(actual.sellThroughPct ?? '')}" /></div>
+        <div class="field field-wide"><label>Outcome evidence URL or repo path</label><input name="evidenceUrl" value="${escapeAttr(actual.evidenceUrl || '')}" placeholder="Shopify/GA4 export or reports/drop-001-actuals.csv" required /></div>
+        <button class="top-btn outline" type="submit">Save linked outcome</button>
+      </form>
+    </article>
+  `;
+}
+
+function renderForecastLab() {
+  state.forecast = normalizeForecastState(state.forecast);
+  const inputs = state.forecast.inputs;
+  const { input, output } = getCurrentForecast();
+  const stressScenarios = output.status === 'blocked' ? [] : FORECAST_ENGINE.calculateStressSuite(input);
+  const calibration = FORECAST_ENGINE.calculateCalibration(state.forecast.snapshots, 'live');
+  const syntheticCalibration = FORECAST_ENGINE.calculateCalibration(state.forecast.snapshots, 'synthetic');
+  const banner = qs('#forecastTruthBanner');
+  const summary = qs('#forecastSummary');
+  const workbench = qs('#forecastWorkbench');
+  const calibrationPanel = qs('#forecastCalibration');
+  if (!banner || !summary || !workbench || !calibrationPanel) return;
+
+  const truth = output.status === 'blocked'
+    ? ['Forecast blocked', 'Complete the missing inventory, price, and demand-driver inputs. No number is safer than a fabricated number.']
+    : output.status === 'synthetic-test'
+      ? ['Synthetic evidence test', 'Generated receipts are exercising the engine. These numbers contribute zero launch proof, readiness, or live calibration.']
+    : output.status === 'evidence-anchored'
+      ? ['Evidence-anchored range', 'The range uses linked first-party funnel and traffic receipts. It is still uncertain and cannot authorize production.']
+      : output.priorProfile === 'public-transfer-v1'
+        ? ['Public-transfer scenario', 'Licensed external company data widens cold-start uncertainty around the entered VORG mean rate. It contributes zero VORG proof and never supplies that mean; P50 can still move as the distribution becomes more skewed.']
+        : ['Scenario range', 'This is a planning scenario driven partly by internal cold-start priors. Link first-party receipts before treating it as evidence-anchored.'];
+  banner.className = `forecast-truth-banner ${output.status}`;
+  const scenario = state.forecast.scenario || DEFAULT_FORECAST_STATE.scenario;
+  banner.innerHTML = `<i data-lucide="${output.status === 'blocked' ? 'octagon-x' : output.status === 'scenario' ? 'triangle-alert' : output.status === 'synthetic-test' ? 'flask-conical' : 'shield-check'}"></i><div><strong>${truth[0]}</strong><span>${truth[1]}</span><small>Loaded input set: ${escapeAttr(scenario.label)} · ${escapeAttr(scenario.source)} · ${escapeAttr(scenario.truth)}</small></div>`;
+
+  summary.innerHTML = `
+    <article class="forecast-kpi"><span>Revenue · P10 / P50 / P90</span><strong>${output.status === 'blocked' ? 'Blocked' : forecastRange(output.summary.revenue, forecastMoney)}</strong></article>
+    <article class="forecast-kpi"><span>Net units · P10 / P50 / P90</span><strong>${output.status === 'blocked' ? 'Blocked' : forecastRange(output.summary.soldUnits)}</strong></article>
+    <article class="forecast-kpi"><span>Sell-through · P10 / P50 / P90</span><strong>${output.status === 'blocked' ? 'Blocked' : forecastRange(output.summary.sellThrough, value => `${value}%`)}</strong></article>
+    <article class="forecast-kpi"><span>Chance of ≥70% sell-through</span><strong>${output.status === 'blocked' ? 'Blocked' : `${output.summary.sellThrough70Probability}%`}</strong></article>
+    <article class="forecast-kpi"><span>Chance of ≥85% sell-through</span><strong>${output.status === 'blocked' ? 'Blocked' : `${output.summary.sellThrough85Probability}%`}</strong></article>
+    <article class="forecast-kpi"><span>Any SKU stockout risk</span><strong>${output.status === 'blocked' ? 'Blocked' : `${output.summary.anyStockoutProbability}%`}</strong></article>
+    <article class="forecast-kpi"><span>Data completeness</span><strong>${output.dataCompleteness}/100</strong></article>
+    <article class="forecast-kpi"><span>Full inventory buy · landed COGS</span><strong>${output.summary.inventoryCost === null ? 'Missing COGS' : forecastMoney(output.summary.inventoryCost)}</strong></article>
+    <article class="forecast-kpi"><span>Revenue less inventory buy · P10 / P50 / P90</span><strong>${output.status === 'blocked' ? 'Blocked' : output.summary.merchandiseCashRecovery === null ? 'Missing COGS' : forecastRange(output.summary.merchandiseCashRecovery, forecastMoney)}</strong></article>
+    <article class="forecast-kpi"><span>Chance revenue recovers inventory buy</span><strong>${output.status === 'blocked' ? 'Blocked' : output.summary.inventoryCashRecoveryProbability === null ? 'Missing COGS' : `${output.summary.inventoryCashRecoveryProbability}%`}</strong></article>
+    <article class="forecast-kpi"><span>Revenue less full committed plan · P10 / P50 / P90</span><strong>${output.status === 'blocked' ? 'Blocked' : output.summary.committedLaunchCash === null ? 'Missing COGS' : forecastRange(output.summary.committedLaunchCash, forecastMoney)}</strong></article>
+    <article class="forecast-kpi"><span>Chance revenue recovers full committed plan</span><strong>${output.status === 'blocked' ? 'Blocked' : output.summary.launchCashRecoveryProbability === null ? 'Missing COGS' : `${output.summary.launchCashRecoveryProbability}%`}</strong></article>
+    <article class="forecast-kpi"><span>Online order model</span><strong>${output.status === 'synthetic-test' ? 'Synthetic funnel' : output.onlineConversionMode === 'planning-prior' ? 'Planning prior' : 'Observed funnel'} · ${output.unitsPerOrder} units/order</strong></article>
+    <article class="forecast-kpi"><span>Cold-start profile</span><strong>${output.priorProfile === 'public-transfer-v1' ? 'Public transfer uncertainty' : 'Internal weak priors'}</strong></article>
+  `;
+
+  const observed = inputs.observed;
+  const productRows = getForecastProductCatalog(inputs).map(product => {
+    const override = inputs.productOverrides?.[product.id] || {};
+    return `
+      <tr>
+        <th scope="row">${escapeAttr(product.name)}</th>
+        <td><input name="inventory__${escapeAttr(product.id)}" type="number" min="0" step="1" value="${escapeAttr(override.inventory ?? product.units ?? '')}" aria-label="${escapeAttr(product.name)} inventory" /></td>
+        <td><input name="price__${escapeAttr(product.id)}" type="text" value="${escapeAttr(override.price ?? product.price ?? '')}" aria-label="${escapeAttr(product.name)} price" /></td>
+        <td><input name="landedCogs__${escapeAttr(product.id)}" type="number" min="0" step="0.01" value="${escapeAttr(override.landedCogs ?? product.manufacturing?.landedCogs ?? '')}" aria-label="${escapeAttr(product.name)} landed COGS" /></td>
+        <td><input name="weight__${escapeAttr(product.id)}" type="number" min="0.1" step="0.1" value="${escapeAttr(override.weight ?? 1)}" aria-label="${escapeAttr(product.name)} demand weight" /></td>
+        <td><input name="sizeInventory__${escapeAttr(product.id)}" type="text" value="${escapeAttr(override.sizeInventory ?? '')}" placeholder="S:4, M:8, L:4" aria-label="${escapeAttr(product.name)} size inventory" /></td>
+      </tr>`;
+  }).join('');
+
+  const issueHtml = [...output.errors.map(message => `<li class="forecast-error">${escapeAttr(message)}</li>`), ...output.warnings.map(message => `<li>${escapeAttr(message)}</li>`)].join('');
+  const rateRows = output.rates.map(rate => `<tr><td>${escapeAttr(rate.label)}</td><td>${rate.mean}%</td><td><span class="forecast-rate-source ${rate.evidence}">${rate.evidence}</span></td><td>${rate.trials ? `${rate.successes} / ${rate.trials}` : rate.evidence === 'external' ? 'Public transfer · zero VORG counts' : 'Internal weak prior'}</td></tr>`).join('');
+  const productOutputs = output.products.length ? output.products.map(product => `
+    <tr>
+      <th scope="row">${escapeAttr(product.name)}</th>
+      <td>${product.inventory}</td><td>${forecastRange(product.demand)}</td><td>${forecastRange(product.sold)}</td>
+      <td>${forecastRange(product.sellThrough, value => `${value}%`)}</td><td>${product.stockoutProbability}%</td>
+      <td>${forecastRange(product.revenue, forecastMoney)}</td>
+    </tr>`).join('') : '<tr><td colspan="7">Complete inputs to unlock SKU ranges.</td></tr>';
+  const stressRows = output.status === 'blocked' ? '<tr><td colspan="8">Resolve blockers to run launch stresses.</td></tr>' : [
+    { key: 'base', label: 'Current plan', description: 'The saved live scenario.', forecast: output },
+    ...stressScenarios
+  ].map(item => {
+    const result = item.forecast;
+    return `<tr class="forecast-stress-row ${escapeAttr(item.key)}">
+      <th scope="row"><strong>${escapeAttr(item.label)}</strong><small>${escapeAttr(item.description)}</small></th>
+      <td>${forecastMoney(result.summary.revenue.p50)}</td>
+      <td>${result.summary.soldUnits.p50}</td>
+      <td>${result.summary.sellThrough.p50}%</td>
+      <td>${result.summary.sellThrough85Probability}%</td>
+      <td>${result.summary.excessInventory.p50}</td>
+      <td>${result.summary.committedLaunchCash === null ? '—' : forecastMoney(result.summary.committedLaunchCash.p10)}</td>
+      <td>${result.summary.launchCashRecoveryProbability === null ? '—' : `${result.summary.launchCashRecoveryProbability}%`}</td>
+    </tr>`;
+  }).join('');
+
+  workbench.innerHTML = `
+    <form id="forecastAssumptionsForm" class="forecast-form">
+      <section class="forecast-section">
+        <div class="forecast-section-head"><div><p class="eyebrow">Demand plan</p><h3>Traffic, reservations, event footfall</h3></div><span>${output.simulations.toLocaleString()} deterministic simulations</span></div>
+        <div class="forecast-input-grid">
+          <div class="field"><label>Forecast horizon (days)</label><input name="horizonDays" type="number" min="1" max="90" value="${escapeAttr(inputs.horizonDays)}" /></div>
+          <div class="field"><label>Planned online sessions</label><input name="plannedOnlineSessions" type="number" min="0" step="1" value="${escapeAttr(inputs.plannedOnlineSessions)}" /></div>
+          <div class="field"><label>Planned pop-up visitors</label><input name="plannedPopupVisitors" type="number" min="0" step="1" value="${escapeAttr(inputs.plannedPopupVisitors)}" /></div>
+          <div class="field"><label>Online conversion planning prior (%)</label><input name="plannedOnlineConversionRate" type="number" min="0.01" max="100" step="0.01" value="${escapeAttr(inputs.plannedOnlineConversionRate)}" /></div>
+          <div class="field"><label>Cold-start uncertainty profile</label><select name="priorProfile"><option value="public-transfer-v1"${inputs.priorProfile === 'public-transfer-v1' ? ' selected' : ''}>Licensed public data · transfer stress</option><option value="internal-weak"${inputs.priorProfile === 'internal-weak' ? ' selected' : ''}>Internal weak priors</option></select></div>
+          <div class="field"><label>Units per order assumption</label><input name="unitsPerOrderAssumption" type="number" min="1" max="4" step="0.01" value="${escapeAttr(inputs.unitsPerOrderAssumption)}" /></div>
+          <div class="field"><label>Committed non-inventory spend (C$)</label><input name="committedNonInventorySpend" type="number" min="0" step="0.01" value="${escapeAttr(inputs.committedNonInventorySpend)}" /></div>
+          <div class="field"><label>Qualified reservations</label><input name="reservations" type="number" min="0" step="1" value="${escapeAttr(inputs.reservations)}" /></div>
+          <div class="field"><label>Reservation conversion assumption (%)</label><input name="reservationConversionRate" type="number" min="0" max="100" step="0.1" value="${escapeAttr(inputs.reservationConversionRate)}" /></div>
+          <div class="field"><label>Traffic plan / receipt</label><input name="trafficEvidenceUrl" value="${escapeAttr(inputs.trafficEvidenceUrl)}" placeholder="URL or repo path" /></div>
+          <div class="field"><label>Traffic proof type</label><select name="trafficEvidenceClass"><option value="plan"${inputs.trafficEvidenceClass === 'plan' ? ' selected' : ''}>Plan only</option><option value="historical"${inputs.trafficEvidenceClass === 'historical' ? ' selected' : ''}>Historical receipt</option></select></div>
+          <div class="field"><label>Funnel export / receipt</label><input name="funnelEvidenceUrl" value="${escapeAttr(inputs.funnelEvidenceUrl)}" placeholder="URL or repo path" /></div>
+          <div class="field"><label>Reservation receipt</label><input name="reservationEvidenceUrl" value="${escapeAttr(inputs.reservationEvidenceUrl)}" placeholder="URL or repo path" /></div>
+        </div>
+      </section>
+      <details class="forecast-section" open>
+        <summary><span><span class="eyebrow">${output.status === 'synthetic-test' ? 'Generated test evidence' : 'First-party evidence'}</span><strong>${output.status === 'synthetic-test' ? 'Synthetic funnel-count fixture' : 'Observed funnel counts'}</strong></span><small>Aggregate only · never paste customer PII</small></summary>
+        <div class="forecast-input-grid compact">
+          ${[
+            ['sessions', 'Sessions'], ['productViews', 'Product views'], ['addsToCart', 'Adds to cart'],
+            ['checkouts', 'Checkouts'], ['purchases', 'Purchase orders'], ['unitsPurchased', 'Purchased units'],
+            ['refunds', 'Refunded units'], ['popupVisitors', 'Pop-up visitors'], ['popupPurchases', 'Pop-up purchases']
+          ].map(([key, label]) => `<div class="field"><label>${label}</label><input name="observed__${key}" type="number" min="0" step="1" value="${escapeAttr(observed[key])}" /></div>`).join('')}
+        </div>
+        <p class="forecast-calibration-note">Session + purchase orders update the planning prior without a full funnel. That does not make the call evidence-anchored or authorize spend.</p>
+      </details>
+      <section class="forecast-section">
+        <div class="forecast-section-head"><div><p class="eyebrow">Merchandise model</p><h3>Inventory, price, unit cost, mix</h3></div><span>Size totals override SKU inventory; blank size weights use equal weak priors</span></div>
+        <div class="forecast-table-wrap"><table class="forecast-input-table"><thead><tr><th>SKU</th><th>Inventory</th><th>Price C$</th><th>Landed COGS</th><th>Demand weight</th><th>Size inventory · Label:units[:demand weight]</th></tr></thead><tbody>${productRows}</tbody></table></div>
+      </section>
+      <div class="forecast-form-actions">
+        <p><strong>Control:</strong> saving assumptions recalculates the current ${output.status === 'synthetic-test' ? 'synthetic test' : 'live scenario'}. Freezing creates an audit copy that later edits cannot rewrite.</p>
+        <button class="btn-primary" type="submit"><i data-lucide="calculator"></i><span>Save + recalculate</span></button>
+        <button class="top-btn outline" type="button" id="freezeForecastBtn"${output.status === 'blocked' ? ' disabled' : ''}><i data-lucide="snowflake"></i><span>${output.status === 'synthetic-test' ? 'Freeze synthetic call' : 'Freeze pre-launch call'}</span></button>
+        <button class="top-btn outline synthetic" type="button" id="loadSyntheticForecastBtn"><i data-lucide="flask-conical"></i><span>Run synthetic evidence test</span></button>
+        <button class="top-btn outline" type="button" id="loadProofBuyScenarioBtn"><i data-lucide="rotate-ccw"></i><span>Reload 126-unit scenario</span></button>
+      </div>
+    </form>
+    <section class="forecast-section forecast-diagnostics">
+      <div><p class="eyebrow">Model diagnostics</p><h3>What the range is using</h3><ul class="forecast-issues">${issueHtml || '<li>No active model warnings.</li>'}</ul></div>
+      <div><div class="forecast-table-wrap"><table><thead><tr><th>Rate</th><th>Posterior mean</th><th>Source</th><th>Counts</th></tr></thead><tbody>${rateRows}</tbody></table></div>${output.priorProfile === 'public-transfer-v1' ? `<p class="forecast-calibration-note"><strong>${escapeAttr(PUBLIC_COMMERCE_PRIORS.modelVersion)}</strong> · 12,330 labeled sessions, 541,909 transaction rows, 165,474 clothing clicks. Random holdout AUC ${PUBLIC_COMMERCE_PRIORS.sessionPurchaseModel.randomHoldout.auc}; blocked-month AUC ${PUBLIC_COMMERCE_PRIORS.sessionPurchaseModel.blockedMonthHoldout.auc}. These are within-source diagnostics, not VORG accuracy.</p>` : ''}</div>
+    </section>
+    <section class="forecast-section">
+      <div class="forecast-section-head"><div><p class="eyebrow">SKU risk</p><h3>Product-level forecast</h3></div><span>P10 / P50 / P90</span></div>
+      <div class="forecast-table-wrap"><table><thead><tr><th>SKU</th><th>Stock</th><th>Demand</th><th>Net sold</th><th>Sell-through</th><th>Stockout</th><th>Revenue</th></tr></thead><tbody>${productOutputs}</tbody></table></div>
+    </section>
+    <section class="forecast-section">
+      <div class="forecast-section-head"><div><p class="eyebrow">Launch stress matrix</p><h3>What breaks the current call?</h3></div><span>Base uses saved simulations · challengers use 700-1,200 deterministic runs</span></div>
+      <div class="forecast-table-wrap"><table class="forecast-stress-table"><thead><tr><th>Scenario</th><th>P50 revenue</th><th>P50 units</th><th>P50 sell-through</th><th>Chance ≥85%</th><th>P50 excess</th><th>P10 cash vs full plan</th><th>Chance full-plan recovery</th></tr></thead><tbody>${stressRows}</tbody></table></div>
+      <p class="forecast-calibration-note">Stress cases are controlled counterfactuals, not predictions. They expose sensitivity to traffic, conversion, event dependence, and cost drift while inventory remains fixed.</p>
+    </section>
+  `;
+
+  calibrationPanel.innerHTML = `
+    <div class="forecast-section-head"><div><p class="eyebrow">Learning loop</p><h3>Frozen calls + actual outcomes</h3></div><span class="forecast-status-pill ${escapeAttr(calibration.status)}">${escapeAttr(calibration.status)}</span></div>
+    <div class="forecast-calibration-grid">
+      <article><span>Independent drops</span><strong>${calibration.uniqueDrops}</strong></article>
+      <article><span>Linked forecasts</span><strong>${calibration.completedForecasts}</strong></article>
+      <article><span>Revenue WAPE</span><strong>${forecastMetric(calibration.revenueWape)}</strong></article>
+      <article><span>Units WAPE</span><strong>${forecastMetric(calibration.unitsWape)}</strong></article>
+      <article><span>Revenue P10–P90 coverage</span><strong>${forecastMetric(calibration.revenueCoverage80)}</strong></article>
+      <article><span>Revenue median bias</span><strong>${forecastMetric(calibration.revenueMedianBias)}</strong></article>
+    </div>
+    <p class="forecast-calibration-note">${escapeAttr(calibration.warnings.join(' '))}</p>
+    ${syntheticCalibration.completedForecasts ? `
+      <div class="forecast-synthetic-calibration">
+        <div><span class="eyebrow">Synthetic harness · isolated</span><strong>${escapeAttr(syntheticCalibration.status)}</strong></div>
+        <span>${syntheticCalibration.uniqueDrops} test outcome${syntheticCalibration.uniqueDrops === 1 ? '' : 's'} · revenue WAPE ${forecastMetric(syntheticCalibration.revenueWape)} · P10–P90 coverage ${forecastMetric(syntheticCalibration.revenueCoverage80)}</span>
+        <small>${escapeAttr(syntheticCalibration.warnings.join(' '))}</small>
+      </div>` : ''}
+    <div class="forecast-snapshot-list">${state.forecast.snapshots.length ? state.forecast.snapshots.slice().reverse().map(renderForecastSnapshot).join('') : '<div class="edge-empty"><strong>No frozen call yet.</strong><br />Set the scenario, freeze it before launch, then link real outcomes after the drop.</div>'}</div>
+  `;
+
+  qs('#forecastAssumptionsForm')?.addEventListener('submit', saveForecastInputs);
+  qs('#freezeForecastBtn')?.addEventListener('click', freezeCurrentForecast);
+  qs('#loadSyntheticForecastBtn')?.addEventListener('click', loadSyntheticForecastScenario);
+  qs('#loadProofBuyScenarioBtn')?.addEventListener('click', loadProofBuyForecastScenario);
+  qsa('.forecast-actual-form').forEach(form => form.addEventListener('submit', saveForecastActual));
+}
+
+function saveForecastInputs(event) {
+  event.preventDefault();
+  const data = new FormData(event.currentTarget);
+  const inputs = state.forecast.inputs;
+  ['horizonDays', 'plannedOnlineSessions', 'plannedPopupVisitors', 'plannedOnlineConversionRate', 'priorProfile', 'unitsPerOrderAssumption', 'committedNonInventorySpend', 'reservations', 'reservationConversionRate', 'trafficEvidenceUrl', 'trafficEvidenceClass', 'funnelEvidenceUrl', 'reservationEvidenceUrl'].forEach(key => {
+    inputs[key] = String(data.get(key) ?? '').trim();
+  });
+  Object.keys(inputs.observed).forEach(key => {
+    inputs.observed[key] = String(data.get(`observed__${key}`) ?? '').trim();
+  });
+  const overrides = {};
+  getForecastProductCatalog(inputs).forEach(product => {
+    overrides[product.id] = {};
+    ['inventory', 'price', 'landedCogs', 'weight', 'sizeInventory'].forEach(key => {
+      overrides[product.id][key] = String(data.get(`${key}__${product.id}`) ?? '').trim();
+    });
+  });
+  inputs.productOverrides = overrides;
+  inputs.asOf = new Date().toISOString();
+  saveState();
+  renderForecastLab();
+  refreshIcons();
+}
+
+function loadProofBuyForecastScenario() {
+  if (!window.confirm('Replace the current live forecast inputs with the source-linked 126-unit working scenario? Frozen forecasts will be preserved.')) return;
+  const snapshots = Array.isArray(state.forecast?.snapshots) ? state.forecast.snapshots : [];
+  state.forecast = clone(DEFAULT_FORECAST_STATE);
+  state.forecast.snapshots = snapshots;
+  state.forecast.inputs.asOf = new Date().toISOString();
+  saveState();
+  renderForecastLab();
+  refreshIcons();
+}
+
+function loadSyntheticForecastScenario() {
+  if (!window.confirm('Load clearly marked synthetic receipts, run the forecast, and add one linked synthetic outcome? Live calibration and readiness will remain untouched.')) return;
+  const fixture = clone(SYNTHETIC_FORECAST_FIXTURE);
+  const preservedSnapshots = (Array.isArray(state.forecast?.snapshots) ? state.forecast.snapshots : [])
+    .filter(snapshot => snapshot.fixtureId !== fixture.scenario.version);
+  const { products, ...fixtureInputs } = fixture.input;
+  const productOverrides = {};
+  products.forEach(product => {
+    productOverrides[product.id] = {
+      inventory: String(product.inventory),
+      price: String(product.price),
+      landedCogs: String(product.landedCogs),
+      weight: String(product.weight),
+      sizeInventory: (product.variants || []).map(variant => `${variant.label}:${variant.inventory}:${variant.weight}`).join(', ')
+    };
+  });
+  state.forecast = {
+    scenario: fixture.scenario,
+    inputs: {
+      ...clone(DEFAULT_FORECAST_STATE.inputs),
+      ...fixtureInputs,
+      asOf: new Date().toISOString(),
+      observed: { ...clone(DEFAULT_FORECAST_STATE.inputs.observed), ...(fixtureInputs.observed || {}) },
+      productOverrides
+    },
+    snapshots: preservedSnapshots
+  };
+  const { input, output } = getCurrentForecast();
+  const frozenAt = new Date().toISOString();
+  state.forecast.snapshots.push({
+    id: `forecast-${fixture.scenario.version}`,
+    fixtureId: fixture.scenario.version,
+    dropId: fixture.input.dropId,
+    label: fixture.scenario.label,
+    frozenAt,
+    input: clone(input),
+    forecast: clone(output),
+    actual: { ...fixture.actual, recordedAt: frozenAt }
+  });
+  saveState();
+  renderForecastLab();
+  refreshIcons();
+}
+
+function freezeCurrentForecast() {
+  const { input, output } = getCurrentForecast();
+  if (output.status === 'blocked') {
+    window.alert('Resolve the forecast blockers before freezing a call.');
+    return;
+  }
+  const frozenAt = new Date().toISOString();
+  const synthetic = output.status === 'synthetic-test' || output.evidenceMode === 'synthetic';
+  state.forecast.snapshots.push({
+    id: `forecast-${Date.now()}`,
+    dropId: synthetic ? String(input.dropId || 'SYNTHETIC') : String(getDrop().id || 'unrecorded'),
+    label: `${synthetic ? 'SYNTHETIC · Engine test' : getDrop().label || `Drop ${getDrop().id}`} · ${new Date(frozenAt).toLocaleDateString('en-CA')}`,
+    frozenAt,
+    input: clone(input),
+    forecast: clone(output),
+    actual: {}
+  });
+  saveState();
+  renderForecastLab();
+  refreshIcons();
+}
+
+function saveForecastActual(event) {
+  event.preventDefault();
+  const snapshot = state.forecast.snapshots.find(item => item.id === event.currentTarget.dataset.forecastActual);
+  if (!snapshot) return;
+  const data = new FormData(event.currentTarget);
+  const revenue = String(data.get('revenue') ?? '').trim();
+  const unitsSold = String(data.get('unitsSold') ?? '').trim();
+  const sellThroughPct = String(data.get('sellThroughPct') ?? '').trim();
+  const evidenceUrl = String(data.get('evidenceUrl') ?? '').trim();
+  if (revenue === '' || unitsSold === '' || Number(revenue) < 0 || !Number.isInteger(Number(unitsSold)) || Number(unitsSold) < 0) {
+    window.alert('Actual revenue and whole net units sold must be non-negative.');
+    return;
+  }
+  if (sellThroughPct !== '' && (Number(sellThroughPct) < 0 || Number(sellThroughPct) > 100)) {
+    window.alert('Actual sell-through must be between 0% and 100%.');
+    return;
+  }
+  if (!FORECAST_ENGINE.hasEvidenceReference(evidenceUrl)) {
+    window.alert('Link an outcome receipt before this result can enter calibration.');
+    return;
+  }
+  if (snapshot.actual?.recordedAt) {
+    if (!Array.isArray(snapshot.actualHistory)) snapshot.actualHistory = [];
+    snapshot.actualHistory.push(clone(snapshot.actual));
+  }
+  snapshot.actual = {
+    revenue: Number(revenue),
+    unitsSold: Number(unitsSold),
+    sellThroughPct: sellThroughPct === '' ? '' : Number(sellThroughPct),
+    evidenceUrl,
+    recordedAt: new Date().toISOString()
+  };
+  saveState();
+  renderForecastLab();
+  refreshIcons();
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1760,7 +3075,127 @@ function renderEvents() {
 /* ═══════════════════════════════════════════════════
    City Expansion
    ═══════════════════════════════════════════════════ */
+function renderMarketEntryGate() {
+  const el = qs('#marketEntryGate');
+  if (!el) return;
+  const market = getMarketEntry();
+  const shopify = market.channels.find(channel => channel.platform === 'Shopify') || {};
+  const tiktok = market.channels.find(channel => channel.platform === 'TikTok') || {};
+  const metrics = SCORE_ENGINE.calculateMarketEntryMetrics(state.marketEntry || undefined);
+  const status = metrics.required
+    ? `${metrics.score}/100 · ${metrics.goReady ? 'all market controls linked' : `${metrics.violations.length} controls open`}`
+    : 'Not configured · existing domestic plan remains unchanged';
+
+  const proofField = (label, name, value, placeholder) => `
+    <div class="field"><label>${label}</label><input name="${name}" value="${escapeAttr(value || '')}" placeholder="${placeholder}" /></div>`;
+
+  el.innerHTML = `
+    <div class="manufacturing-head">
+      <div>
+        <span class="eyebrow">Primary-market gate</span>
+        <h3>Route-to-market proof — ${status}</h3>
+        <p>Only complete this when a drop changes its primary market. A country name, a platform name, or a creator list alone earns no readiness credit.</p>
+      </div>
+    </div>
+    <form id="marketEntryForm" class="manufacturing-form stack-form">
+      <div class="field-row">
+        <div class="field"><label>Primary market</label><input name="primaryMarket" value="${escapeAttr(market.primaryMarket)}" placeholder="United States" /></div>
+        <div class="field"><label>Operating market</label><input name="operatingMarket" value="${escapeAttr(market.operatingMarket)}" placeholder="Canada" /></div>
+        <div class="field"><label>Checkout currency</label><input name="salesCurrency" value="${escapeAttr(market.salesCurrency)}" placeholder="USD" /></div>
+      </div>
+      <div class="field"><label>Fulfilment model</label><input name="fulfillmentModel" value="${escapeAttr(market.fulfillmentModel)}" placeholder="US 3PL or Canada-to-US DDP carrier" /></div>
+      <div class="field-row">
+        <label class="check-inline"><input name="popupEnabled" type="checkbox" ${market.popupEnabled ? 'checked' : ''} /> Physical pop-up is part of this plan</label>
+        <div class="field"><label>Pop-up city</label><input name="popupCity" value="${escapeAttr(market.popupCity)}" placeholder="Named U.S. city" /></div>
+        <div class="field"><label>Pop-up market</label><input name="popupMarket" value="${escapeAttr(market.popupMarket)}" placeholder="United States" /></div>
+      </div>
+      <details${metrics.required ? ' open' : ''}>
+        <summary>Evidence links, channel ownership, and commercial route</summary>
+        <div class="field-row">
+          ${proofField('Primary-market demand receipt', 'primaryMarketEvidenceUrl', market.primaryMarketEvidenceUrl, 'Dated U.S. demand / selection receipt')}
+          ${proofField('USD economics proof', 'marketEconomicsEvidenceUrl', market.marketEconomicsEvidenceUrl, 'Price, fees, FX, and contribution sheet')}
+        </div>
+        <div class="field-row">
+          ${proofField('Fulfilment proof', 'fulfillmentEvidenceUrl', market.fulfillmentEvidenceUrl, 'Carrier / 3PL quote or operating SOP')}
+          ${proofField('Cross-border treatment', 'crossBorderEvidenceUrl', market.crossBorderEvidenceUrl, 'Importer, broker, carrier, and Incoterm decision')}
+        </div>
+        <div class="field-row">
+          ${proofField('Duties and tax treatment', 'dutiesAndTaxEvidenceUrl', market.dutiesAndTaxEvidenceUrl, 'Market configuration / specialist review')}
+          ${proofField('Shipping promise', 'shippingEvidenceUrl', market.shippingEvidenceUrl, 'Published U.S. shipping policy / test')}
+          ${proofField('Returns path', 'returnsEvidenceUrl', market.returnsEvidenceUrl, 'Published U.S. returns policy / operator')}
+        </div>
+        <div class="field-row">
+          ${proofField('Product label + care review', 'productComplianceEvidenceUrl', market.productComplianceEvidenceUrl, 'SKU-level compliance preflight')}
+          ${proofField('Privacy + SMS consent review', 'privacyAndConsentEvidenceUrl', market.privacyAndConsentEvidenceUrl, 'US consent and privacy decision')}
+          ${proofField('Creator rights + disclosure', 'creatorRightsEvidenceUrl', market.creatorRightsEvidenceUrl, 'UGC release and disclosure control')}
+        </div>
+        <div class="field-row">
+          ${proofField('Pop-up permission plan', 'popupEvidenceUrl', market.popupEvidenceUrl, 'Venue / city permission and run-of-show')}
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Shopify owner</label><input name="shopifyOwner" value="${escapeAttr(shopify.owner || '')}" placeholder="Ecommerce lead" /></div>
+          <div class="field"><label>Shopify commercial route</label><input name="shopifyCommerceRoute" value="${escapeAttr(shopify.commerceRoute || '')}" placeholder="Shopify checkout" /></div>
+          ${proofField('Shopify attribution evidence', 'shopifyMeasurementEvidenceUrl', shopify.measurementEvidenceUrl, 'Event map / tagged test')}
+          ${proofField('Shopify policy evidence', 'shopifyPolicyEvidenceUrl', shopify.policyEvidenceUrl, 'Checkout / policy review')}
+        </div>
+        <label class="check-inline"><input name="shopifyActive" type="checkbox" ${shopify.active ? 'checked' : ''} /> Shopify is an active commercial channel</label>
+        <div class="field-row">
+          <div class="field"><label>TikTok owner</label><input name="tiktokOwner" value="${escapeAttr(tiktok.owner || '')}" placeholder="Campaign lead" /></div>
+          <div class="field"><label>TikTok commercial route</label><input name="tiktokCommerceRoute" value="${escapeAttr(tiktok.commerceRoute || '')}" placeholder="TikTok to Shopify checkout or TikTok Shop" /></div>
+          ${proofField('TikTok attribution evidence', 'tiktokMeasurementEvidenceUrl', tiktok.measurementEvidenceUrl, 'Tagged landing / source map')}
+          ${proofField('TikTok policy evidence', 'tiktokPolicyEvidenceUrl', tiktok.policyEvidenceUrl, 'Commercial-content / music review')}
+        </div>
+        <label class="check-inline"><input name="tiktokActive" type="checkbox" ${tiktok.active ? 'checked' : ''} /> TikTok is an active commercial channel</label>
+      </details>
+      <button class="btn-primary compact" type="submit">Save market-entry gate</button>
+    </form>
+  `;
+  qs('#marketEntryForm')?.addEventListener('submit', saveMarketEntry);
+}
+
+function saveMarketEntry(e) {
+  e.preventDefault();
+  const form = e.target;
+  state.marketEntry = {
+    primaryMarket: form.primaryMarket.value.trim(),
+    operatingMarket: form.operatingMarket.value.trim(),
+    salesCurrency: form.salesCurrency.value.trim(),
+    fulfillmentModel: form.fulfillmentModel.value.trim(),
+    primaryMarketEvidenceUrl: form.primaryMarketEvidenceUrl.value.trim(),
+    marketEconomicsEvidenceUrl: form.marketEconomicsEvidenceUrl.value.trim(),
+    fulfillmentEvidenceUrl: form.fulfillmentEvidenceUrl.value.trim(),
+    crossBorderEvidenceUrl: form.crossBorderEvidenceUrl.value.trim(),
+    dutiesAndTaxEvidenceUrl: form.dutiesAndTaxEvidenceUrl.value.trim(),
+    shippingEvidenceUrl: form.shippingEvidenceUrl.value.trim(),
+    returnsEvidenceUrl: form.returnsEvidenceUrl.value.trim(),
+    productComplianceEvidenceUrl: form.productComplianceEvidenceUrl.value.trim(),
+    privacyAndConsentEvidenceUrl: form.privacyAndConsentEvidenceUrl.value.trim(),
+    creatorRightsEvidenceUrl: form.creatorRightsEvidenceUrl.value.trim(),
+    popupEnabled: Boolean(form.popupEnabled.checked),
+    popupCity: form.popupCity.value.trim(),
+    popupMarket: form.popupMarket.value.trim(),
+    popupEvidenceUrl: form.popupEvidenceUrl.value.trim(),
+    channels: [
+      {
+        platform: 'Shopify', active: Boolean(form.shopifyActive.checked), owner: form.shopifyOwner.value.trim(),
+        commerceRoute: form.shopifyCommerceRoute.value.trim(), measurementEvidenceUrl: form.shopifyMeasurementEvidenceUrl.value.trim(),
+        policyEvidenceUrl: form.shopifyPolicyEvidenceUrl.value.trim()
+      },
+      {
+        platform: 'TikTok', active: Boolean(form.tiktokActive.checked), owner: form.tiktokOwner.value.trim(),
+        commerceRoute: form.tiktokCommerceRoute.value.trim(), measurementEvidenceUrl: form.tiktokMeasurementEvidenceUrl.value.trim(),
+        policyEvidenceUrl: form.tiktokPolicyEvidenceUrl.value.trim()
+      }
+    ]
+  };
+  saveState();
+  renderMarketEntryGate();
+  if (state.activeWorkspace === 'command') renderCommandCenter();
+  refreshIcons();
+}
+
 function renderCityExpansion() {
+  renderMarketEntryGate();
   const byCity = new Map(CITIES.map(c => [c, []]));
   state.signals.forEach(sig => {
     const list = byCity.get(sig.city);
@@ -2130,7 +3565,9 @@ function renderInvestorSnapshot() {
       <span class="eyebrow">Working desk scores</span>
       <div class="investor-row"><span class="investor-row-label">Bag check</span><span class="investor-row-value">${formatGateLabel(scores.gate)}</span></div>
       <div class="investor-row"><span class="investor-row-label">Drop energy</span><span class="investor-row-value">${scores.confidence}% ${formatEvidenceBadge('assumed')}</span></div>
-      <div class="investor-row"><span class="investor-row-label">Sell-through vibe</span><span class="investor-row-value">${scores.campaignRate}% ${formatEvidenceBadge('assumed')}</span></div>
+      <div class="investor-row"><span class="investor-row-label">Campaign outlook</span><span class="investor-row-value">${scores.campaignIndex}/100 (${formatStatus(scores.campaignBand)}) ${formatEvidenceBadge('assumed')}</span></div>
+      <div class="investor-row"><span class="investor-row-label">Edge experiment proof</span><span class="investor-row-value">${scores.edgeScore}/100 · ${scores.edgeValidatedExperiments}/${scores.edgeCompletedExperiments} validated ${formatEvidenceBadge(scores.edgeValidatedExperiments ? 'known' : 'unresolved')}</span></div>
+      <div class="investor-row"><span class="investor-row-label">Edge experiment spend</span><span class="investor-row-value">${formatMoney(scores.edgeExperimentSpend)} / ${formatMoney(scores.edgeExperimentBudgetCap)} (${formatStatus(scores.edgeBudgetStatus)})</span></div>
       <div class="investor-row"><span class="investor-row-label">Manufacturing proof</span><span class="investor-row-value">${mfgScore}/100 ${formatEvidenceBadge(mfgScore >= 80 ? 'known' : mfgScore >= 45 ? 'assumed' : 'unresolved')}</span></div>
       <div class="investor-row"><span class="investor-row-label">Checklists</span><span class="investor-row-value">${rollup.pct}% (${rollup.done}/${rollup.total})</span></div>
       <div class="investor-row"><span class="investor-row-label">Launch ops (eff.)</span><span class="investor-row-value">${scores.operationsEffective ?? getOperationsEffective()}</span></div>
@@ -2229,26 +3666,79 @@ function importCSV(file) {
 function buildSnapshotPayload() {
   const scores = calculateScores();
   const drop = getDrop();
+  const currentForecast = getCurrentForecast();
+  const forecastCalibration = FORECAST_ENGINE.calculateCalibration(state.forecast?.snapshots || [], 'live');
+  const syntheticForecastCalibration = FORECAST_ENGINE.calculateCalibration(state.forecast?.snapshots || [], 'synthetic');
   return {
+    snapshotSchemaVersion: 4,
     checked: new Date().toISOString(),
     drop,
     city: drop.city,
     season: drop.season,
     algorithmVersion: scores.version,
-    confidence: scores.confidence,
-    campaignSuccessRate: scores.campaignRate,
+    readinessIndex: scores.confidence,
+    readinessBand: scores.confidenceBand,
+    campaignOutlook: { index: scores.campaignIndex, band: scores.campaignBand, calibratedProbability: false },
     gate: scores.gate,
     scoreBreakdown: {
       evidenceFloor: scores.evidenceFloor,
-      stageMomentum: scores.stageScore,
-      signalHeat: scores.signalHeat,
+      evidenceCoverage: scores.evidenceCoverage,
+      manufacturingTruth: scores.manufacturingScore,
+      financialProof: scores.financialProofScore,
+      stageIntegrity: scores.stageScore,
+      verifiedDemand: scores.signalHeat,
       campaignProof: scores.tacticScore,
+      edgeExperimentProof: scores.edgeScore,
+      edgeExperimentLearning: scores.edgeLearningScore,
       riskDrag: scores.riskDrag,
       bottleneck: scores.bottleneck
     },
+    spendGate: {
+      level: scores.spendAuthorization.level,
+      budgetStatus: scores.budgetStatus,
+      plannedProductionSpend: scores.plannedProductionSpend,
+      productionSpendCap: scores.productionSpendCap,
+      bulkReady: scores.bulkReady,
+      productionPrerequisitesCleared: scores.productionPrerequisitesCleared,
+      hardStops: scores.hardStops,
+      approvalCaps: scores.gateCaps
+    },
+    edgeCommerce: {
+      catalogVersion: EDGE_LIBRARY.CATALOG_VERSION,
+      sourceCheckDate: EDGE_LIBRARY.CHECKED_ON,
+      libraryVersion: SOURCE_LIBRARY.libraryVersion,
+      libraryCheckedOn: SOURCE_LIBRARY.checkedOn,
+      freeSourceCount: SOURCE_LIBRARY.sources.length,
+      atomicClaimCount: SOURCE_LIBRARY.claims.length,
+      libraryTruthBoundary: SOURCE_LIBRARY.truthBoundary,
+      score: scores.edgeScore,
+      learningScore: scores.edgeLearningScore,
+      evidenceCoverage: scores.edgeEvidenceCoverage,
+      validatedExperiments: scores.edgeValidatedExperiments,
+      completedExperiments: scores.edgeCompletedExperiments,
+      runningExperiments: scores.edgeRunningExperiments,
+      actualSpend: scores.edgeExperimentSpend,
+      budgetCap: scores.edgeExperimentBudgetCap,
+      budgetStatus: scores.edgeBudgetStatus,
+      frontierSpendShare: scores.edgeFrontierSpendShare,
+      violations: scores.edgeViolations
+    },
+    salesForecast: {
+      engineVersion: FORECAST_ENGINE.FORECAST_VERSION,
+      priorVersion: FORECAST_ENGINE.PRIOR_VERSION,
+      readinessIndependent: true,
+      currentInput: currentForecast.input,
+      current: currentForecast.output,
+      calibration: forecastCalibration,
+      syntheticTestCalibration: syntheticForecastCalibration,
+      frozenForecasts: state.forecast?.snapshots || []
+    },
+    forecast: state.forecast || clone(DEFAULT_FORECAST_STATE),
     stages: state.stages,
     signals: state.signals,
     tactics: state.tactics,
+    edgeExperiments: state.edgeExperiments,
+    marketEntry: state.marketEntry || {},
     tasks: state.tasks,
     products: getProducts(),
     activeProductId: state.activeProductId,
@@ -2305,10 +3795,11 @@ function addSignal(e) {
   const source = qs('#signalSource')?.value.trim() || 'Team input';
   const city = qs('#signalCity').value;
   const strength = clamp(Number(qs('#signalStrength').value), 0, 100);
+  const evidenceUrl = qs('#signalEvidence')?.value.trim() || '';
   if (!item) return;
   state.signals.push({
     id: `sig-${Date.now()}`, item, city, strength,
-    source, action: 'Flag for next founder table / heat review.'
+    source, evidenceUrl, action: 'Flag for next founder table / heat review.'
   });
   qs('#signalForm').reset();
   qs('#signalStrength').value = 55;
@@ -2349,9 +3840,14 @@ function startNewDrop(e) {
   const label = qs('#newDropLabel').value.trim();
   const city = qs('#newDropCity').value.trim();
   const season = qs('#newDropSeason').value.trim();
+  const productionSpendCap = clamp(
+    Number(qs('#newDropSpendCap')?.value) || SCORE_ENGINE.DEFAULT_PRODUCTION_SPEND_CAP,
+    1,
+    SCORE_ENGINE.DEFAULT_PRODUCTION_SPEND_CAP
+  );
   const id = label.replace(/\D/g, '') || String(Date.now()).slice(-3);
   const fresh = clone(DEFAULT_STATE);
-  fresh.drop = { id, label, city, season, target: '' };
+  fresh.drop = { id, label, city, season, target: '', productionSpendCap };
   fresh.helpSeen = true;
   fresh.productImages = {};
   fresh.products = clone(DEFAULT_PRODUCTS);
@@ -2383,7 +3879,10 @@ function importJsonSnapshot(file) {
         ...clone(DEFAULT_STATE),
         ...parsed,
         products,
+        edgeExperiments: normalizeEdgeExperiments(parsed.edgeExperiments),
         drop: { ...clone(DEFAULT_STATE).drop, ...parsedDrop },
+        edgeFilters: { ...clone(DEFAULT_STATE).edgeFilters, ...(parsed.edgeFilters || {}) },
+        libraryFilters: { ...clone(DEFAULT_STATE).libraryFilters, ...(parsed.libraryFilters || {}) },
         productImageMeta: { ...(parsed.productImageMeta || {}) },
         productImages: migrateProductImages(parsed.productImages, products, parsed.activeProduct),
         activeProductId: resolveActiveProductId(parsed, products),
@@ -2391,6 +3890,7 @@ function importJsonSnapshot(file) {
         backup: { ...clone(DEFAULT_STATE).backup, ...(parsed.backup || {}) },
         syncMeta: { ...clone(DEFAULT_STATE).syncMeta, ...(parsed.syncMeta || {}) },
         postmortem: { ...clone(DEFAULT_STATE).postmortem, ...(parsed.postmortem || {}) },
+        forecast: normalizeForecastState(parsed.forecast || (parsed.salesForecast ? { snapshots: parsed.salesForecast.frozenForecasts } : null)),
         stress: { ...clone(DEFAULT_STATE).stress, ...(parsed.stress || {}) },
         helpSeen: true
       };
@@ -2444,14 +3944,17 @@ function renderHelpQuick() {
       <ul>
         <li><strong>Log heat</strong> — Heat radar → DMs, saves, waitlist, city pull</li>
         <li><strong>SKU pic</strong> — SKU room → sample / hanger / table still</li>
-        <li><strong>Approve tactic</strong> — Campaign proof → only when proof is real</li>
+        <li><strong>Search commerce knowledge</strong> — Edge Commerce Lab → Free library → ${SOURCE_LIBRARY.claims.length} claims / ${SOURCE_LIBRARY.sources.length} sources</li>
+        <li><strong>Run an edge test</strong> — Edge Commerce Lab → prerequisites, spend cap, receipt, decision</li>
+        <li><strong>Range sales</strong> — Forecast Lab → set traffic + SKU assumptions → freeze the pre-launch call → link actuals</li>
+        <li><strong>Approve tactic</strong> — Campaign receipts → only when linked proof is real</li>
         <li><strong>Next drop</strong> — Handoff → snapshot first → Start next drop</li>
         <li><strong>Sync squad</strong> — Handoff → CSV or snapshot</li>
       </ul>
     </section>
     <section class="help-block limits">
       <h3>Real talk</h3>
-      <p>Local-first by default — export snapshots daily. Add <code>drop-os-config.js</code> for Supabase squad sync. Working scores, not factory guarantees.</p>
+      <p>Local-first by default — export snapshots daily. Add <code>drop-os-config.js</code> for Supabase squad sync. Guru ideas contribute zero proof until tested; working scores are not factory guarantees.</p>
     </section>
   `;
 }

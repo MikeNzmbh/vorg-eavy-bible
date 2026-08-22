@@ -1,0 +1,2 @@
+synthetic,window_start,window_end,sessions,product_views,adds_to_cart,checkouts,purchases,units_purchased,refunded_units,popup_visitors,popup_purchases
+true,2026-06-01,2026-06-30,5000,3150,520,300,165,203,12,420,65

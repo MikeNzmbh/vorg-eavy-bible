@@ -1,0 +1,233 @@
+{
+  "schemaVersion": "vorg-supplier-queue-v1",
+  "checkedAt": "2026-08-01",
+  "truthStatus": "public-page evidence linked; no supplier has passed identity, sample, payment or production gates",
+  "suppliers": [
+    {
+      "id": "dongguan-topshow",
+      "name": "Dongguan City Topshow Garment Co., Ltd.",
+      "platform": "Alibaba.com",
+      "profileUrl": "https://topshowfashion.en.alibaba.com/index.html?from=detail&productId=1600407726200",
+      "styleIds": ["VE-FJ-001", "VE-WT-001"],
+      "evidence": [
+        {
+          "id": "topshow-platform-identity-20260801",
+          "requirement": "legal-identity",
+          "status": "linked",
+          "authority": "platform-report",
+          "sourceUrl": "https://topshowfashion.en.alibaba.com/index.html?from=detail&productId=1600407726200",
+          "capturedAt": "2026-08-01T20:00:00Z",
+          "styleIds": ["VE-FJ-001", "VE-WT-001"],
+          "details": "Public page displays Dongguan City Topshow Garment Co., Ltd.; business licence not yet reconciled."
+        },
+        {
+          "id": "topshow-assessment-claims-20260801",
+          "requirement": "assessment-report",
+          "status": "linked",
+          "authority": "platform-report",
+          "sourceUrl": "https://topshowfashion.en.alibaba.com/index.html?from=detail&productId=1600407726200",
+          "capturedAt": "2026-08-01T20:00:00Z",
+          "styleIds": ["VE-FJ-001", "VE-WT-001"],
+          "details": "Page identifies SGS Group and displays assessment-derived claims; full report not yet downloaded or reviewed."
+        }
+      ],
+      "claims": [
+        {
+          "id": "topshow-role-20260801",
+          "key": "factory-role",
+          "value": "Custom Manufacturer",
+          "capturedAt": "2026-08-01T20:00:00Z",
+          "sourceUrl": "https://topshowfashion.en.alibaba.com/index.html?from=detail&productId=1600407726200"
+        },
+        {
+          "id": "topshow-public-moq-20260801",
+          "key": "listing-moq",
+          "value": "50 pieces on visible example listings; custom VE-FJ-001 MOQ unknown",
+          "capturedAt": "2026-08-01T20:00:00Z",
+          "sourceUrl": "https://topshowfashion.en.alibaba.com/index.html?from=detail&productId=1600407726200"
+        }
+      ],
+      "risks": {
+        "catalogImagesOnly": true,
+        "customMoqUnclear": true
+      }
+    },
+    {
+      "id": "dongguan-hangyue",
+      "name": "Dongguan Hangyue Clothing Co., Ltd.",
+      "platform": "Alibaba.com",
+      "profileUrl": "https://hangyue.m.en.alibaba.com/company_profile.html",
+      "styleIds": ["VE-WD-001", "VE-MD-001"],
+      "evidence": [
+        {
+          "id": "hangyue-platform-identity-20260801",
+          "requirement": "legal-identity",
+          "status": "linked",
+          "authority": "platform-report",
+          "sourceUrl": "https://hangyue.m.en.alibaba.com/company_profile.html",
+          "capturedAt": "2026-08-01T21:00:00Z",
+          "styleIds": ["VE-WD-001", "VE-MD-001"],
+          "details": "Alibaba storefront displays Dongguan Hangyue Clothing Co., Ltd.; original business licence and beneficiary identity remain unreconciled."
+        },
+        {
+          "id": "hangyue-assessment-claims-20260801",
+          "requirement": "assessment-report",
+          "status": "linked",
+          "authority": "platform-report",
+          "sourceUrl": "https://hangyue.m.en.alibaba.com/company_profile.html",
+          "capturedAt": "2026-08-01T21:00:00Z",
+          "styleIds": ["VE-WD-001", "VE-MD-001"],
+          "details": "Storefront shows Verified by TÜV Rheinland; the underlying report has not been downloaded or reconciled to the proposed production site."
+        },
+        {
+          "id": "hangyue-denim-focus-20260801",
+          "requirement": "style-capability",
+          "status": "linked",
+          "authority": "platform-report",
+          "sourceUrl": "https://hangyue.m.en.alibaba.com/productlist.html",
+          "capturedAt": "2026-08-01T21:00:00Z",
+          "styleIds": ["VE-WD-001", "VE-MD-001"],
+          "details": "Storefront lists Jeans and Denim Jacket among main categories and displays a women's-jeans popularity claim; this is category evidence, not construction or wash proof."
+        }
+      ],
+      "claims": [
+        {
+          "id": "hangyue-role-20260801",
+          "key": "factory-role",
+          "value": "Custom Manufacturer",
+          "capturedAt": "2026-08-01T21:00:00Z",
+          "sourceUrl": "https://hangyue.m.en.alibaba.com/productlist.html"
+        },
+        {
+          "id": "hangyue-public-moq-20260801",
+          "key": "listing-moq",
+          "value": "Visible listings/search results range from low stock quantities to 50 pieces; custom VE-WD-001 and VE-MD-001 MOQ unknown",
+          "capturedAt": "2026-08-01T21:00:00Z",
+          "sourceUrl": "https://hangyue.m.en.alibaba.com/productlist.html"
+        }
+      ],
+      "risks": {
+        "catalogImagesOnly": true,
+        "customMoqUnclear": true
+      }
+    },
+    {
+      "id": "hebei-dilly",
+      "name": "Hebei Dilly Fashion Co., Ltd.",
+      "platform": "Alibaba.com",
+      "profileUrl": "https://dillyfashion.en.alibaba.com/company_profile.html",
+      "styleIds": ["VE-SC-001"],
+      "evidence": [
+        {
+          "id": "dilly-platform-identity-20260801",
+          "requirement": "legal-identity",
+          "status": "linked",
+          "authority": "platform-report",
+          "sourceUrl": "https://dillyfashion.en.alibaba.com/company_profile.html",
+          "capturedAt": "2026-08-01T21:00:00Z",
+          "styleIds": ["VE-SC-001"],
+          "details": "Alibaba storefront displays Hebei Dilly Fashion Co., Ltd.; original licence and beneficiary identity remain unreconciled."
+        },
+        {
+          "id": "dilly-assessment-claims-20260801",
+          "requirement": "assessment-report",
+          "status": "linked",
+          "authority": "platform-report",
+          "sourceUrl": "https://dillyfashion.en.alibaba.com/company_profile.html",
+          "capturedAt": "2026-08-01T21:00:00Z",
+          "styleIds": ["VE-SC-001"],
+          "details": "Storefront displays third-party-assessment-derived export, floorspace and years-in-industry claims; full report and exact scope remain unreviewed."
+        },
+        {
+          "id": "dilly-scarf-focus-20260801",
+          "requirement": "style-capability",
+          "status": "linked",
+          "authority": "platform-report",
+          "sourceUrl": "https://dillyfashion.en.alibaba.com/index.html",
+          "capturedAt": "2026-08-01T21:00:00Z",
+          "styleIds": ["VE-SC-001"],
+          "details": "Alibaba storefront/search pages list cashmere scarves among main products; fibre truth, woven-body match and finish performance are not verified."
+        }
+      ],
+      "claims": [
+        {
+          "id": "dilly-tenure-20260801",
+          "key": "platform-tenure",
+          "value": "18 years displayed on Alibaba",
+          "capturedAt": "2026-08-01T21:00:00Z",
+          "sourceUrl": "https://dillyfashion.en.alibaba.com/company_profile.html"
+        },
+        {
+          "id": "dilly-public-scale-20260801",
+          "key": "public-scale",
+          "value": "Platform displays US$7,306,830 annual exports and 1,660 m² floorspace from an assessment-derived dataset",
+          "capturedAt": "2026-08-01T21:00:00Z",
+          "sourceUrl": "https://dillyfashion.en.alibaba.com/company_profile.html"
+        }
+      ],
+      "risks": {
+        "catalogImagesOnly": true,
+        "customMoqUnclear": true
+      }
+    },
+    {
+      "id": "dongguan-designeroon",
+      "name": "Dongguan Designeroon Garment Co., Ltd.",
+      "platform": "Alibaba.com",
+      "profileUrl": "https://diznew.en.alibaba.com/",
+      "styleIds": ["VE-MD-001"],
+      "evidence": [
+        {
+          "id": "designeroon-platform-identity-20260801",
+          "requirement": "legal-identity",
+          "status": "linked",
+          "authority": "platform-report",
+          "sourceUrl": "https://diznew.en.alibaba.com/",
+          "capturedAt": "2026-08-01T21:00:00Z",
+          "styleIds": ["VE-MD-001"],
+          "details": "Alibaba storefront displays Dongguan Designeroon Garment Co., Ltd.; licence, site and beneficiary remain unreconciled."
+        },
+        {
+          "id": "designeroon-assessment-claims-20260801",
+          "requirement": "assessment-report",
+          "status": "linked",
+          "authority": "platform-report",
+          "sourceUrl": "https://diznew.en.alibaba.com/",
+          "capturedAt": "2026-08-01T21:00:00Z",
+          "styleIds": ["VE-MD-001"],
+          "details": "Storefront displays assessment-derived staff, sample-customization and years-in-industry claims; the full report and BSCI scope remain unverified."
+        },
+        {
+          "id": "designeroon-mens-denim-focus-20260801",
+          "requirement": "style-capability",
+          "status": "linked",
+          "authority": "platform-report",
+          "sourceUrl": "https://www.alibaba.com/supplier/diznew-manufacturer.html",
+          "capturedAt": "2026-08-01T21:00:00Z",
+          "styleIds": ["VE-MD-001"],
+          "details": "Alibaba supplier pages display men's-jeans category positioning, 30-piece listing MOQs and denim customization options; no pattern, wash-plant or sample proof is accepted."
+        }
+      ],
+      "claims": [
+        {
+          "id": "designeroon-tenure-20260801",
+          "key": "platform-tenure",
+          "value": "8 years displayed on storefront",
+          "capturedAt": "2026-08-01T21:00:00Z",
+          "sourceUrl": "https://diznew.en.alibaba.com/"
+        },
+        {
+          "id": "designeroon-public-moq-20260801",
+          "key": "listing-moq",
+          "value": "30 pieces on visible Alibaba supplier results; custom VE-MD-001 MOQ unknown",
+          "capturedAt": "2026-08-01T21:00:00Z",
+          "sourceUrl": "https://www.alibaba.com/supplier/diznew-manufacturer.html"
+        }
+      ],
+      "risks": {
+        "catalogImagesOnly": true,
+        "customMoqUnclear": true
+      }
+    }
+  ]
+}

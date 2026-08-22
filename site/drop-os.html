@@ -15,7 +15,12 @@
   <script src="drop-os-config.js" defer onerror="void 0"></script>
   <script src="drop-os-auth.js" defer></script>
   <script src="drop-os-supabase.js" defer></script>
+  <script src="edge-commerce-library.js" defer></script>
+  <script src="edge-commerce-catalog.js" defer></script>
   <script src="drop-os-algorithm.js" defer></script>
+  <script src="sales-forecast.js" defer></script>
+  <script src="public-commerce-priors.js" defer></script>
+  <script src="forecast-synthetic-fixture.js" defer></script>
   <script src="drop-os.js" defer></script>
 </head>
 <body>
@@ -47,7 +52,11 @@
         </button>
         <button class="nav-item" data-workspace="campaign" type="button">
           <i data-lucide="zap"></i>
-          <span>Campaign</span>
+          <span>Edge Lab</span>
+        </button>
+        <button class="nav-item" data-workspace="forecast" type="button">
+          <i data-lucide="chart-no-axes-combined"></i>
+          <span>Forecast Lab</span>
         </button>
         <button class="nav-item" data-workspace="production" type="button">
           <i data-lucide="factory"></i>
@@ -123,17 +132,17 @@
               <article class="kpi-card">
                 <div class="kpi-icon indigo"><i data-lucide="trending-up"></i></div>
                 <div class="kpi-body">
-                  <span class="kpi-label">Drop energy</span>
-                  <strong class="kpi-value"><span id="cmdConfidence">52</span><small>%</small></strong>
-                  <p class="kpi-note">Proof-gated — not a sell-through promise</p>
+                  <span class="kpi-label">Drop readiness</span>
+                  <strong class="kpi-value"><span id="cmdConfidence">0</span><small>/100</small></strong>
+                  <p class="kpi-note" id="cmdConfidenceNote">Evidence-adjusted readiness band</p>
                 </div>
               </article>
               <article class="kpi-card">
                 <div class="kpi-icon violet"><i data-lucide="megaphone"></i></div>
                 <div class="kpi-body">
-                  <span class="kpi-label">Sell-through vibe</span>
-                  <strong class="kpi-value"><span id="cmdCampaignRate">48</span><small>%</small></strong>
-                  <p class="kpi-note">Working forecast from heat + content</p>
+                  <span class="kpi-label">Campaign outlook</span>
+                  <strong class="kpi-value"><span id="cmdCampaignRate">0</span><small>/100</small></strong>
+                  <p class="kpi-note" id="cmdCampaignNote">Directional index, not a probability</p>
                 </div>
               </article>
               <article class="kpi-card">
@@ -212,7 +221,7 @@
             <details class="cockpit-panel" id="cmdCockpit">
               <summary class="cockpit-toggle">
                 <span>Readiness model</span>
-                <span class="cockpit-version" id="cmdAlgorithmVersion">v0.4</span>
+                <span class="cockpit-version" id="cmdAlgorithmVersion">v1.0</span>
               </summary>
               <div class="cockpit-content">
                 <div id="algorithmBreakdown" class="algo-grid"></div>
@@ -262,6 +271,7 @@
               <form id="signalForm" class="inline-form">
                 <input id="signalItem" type="text" placeholder="e.g. Jacket fit DMs after founder table" required />
                 <input id="signalSource" type="text" placeholder="Source — TikTok, IG DMs, pop-up…" aria-label="Signal source" />
+                <input id="signalEvidence" type="text" placeholder="Proof URL or repo path" aria-label="Signal proof reference" />
                 <select id="signalCity" aria-label="Signal city">
                   <option>Ottawa/Gatineau</option>
                   <option>Montreal</option>
@@ -322,17 +332,59 @@
           <div class="ws-inner">
             <div class="ws-header">
               <div>
-                <p class="eyebrow">Campaign proof</p>
-                <h2 class="ws-title">Content before bulk — no cap</h2>
-                <p class="ws-sub">Approve tactics only when the proof is real and consented. No bulk until this clears.</p>
+                <p class="eyebrow">Edge Commerce Lab</p>
+                <h2 class="ws-title">Wild ideas. Controlled proof.</h2>
+                <p class="ws-sub">The ledger contributes zero readiness. Only a prerequisite-cleared, approved, measured result can move the algorithm.</p>
               </div>
               <div class="campaign-score-wrap">
-                <span class="eyebrow">Content score</span>
+                <span class="eyebrow">Campaign proof</span>
                 <strong class="campaign-score-value" id="campaignScoreValue">0</strong>
               </div>
             </div>
             <div id="campaignGate" class="campaign-gate"></div>
-            <div id="tacticList" class="tactic-grid"></div>
+            <div id="edgeLabSummary" class="edge-summary-grid"></div>
+            <section class="edge-lab-shell" aria-labelledby="edgeLabHeading">
+              <div class="edge-lab-head">
+                <div>
+                  <p class="eyebrow">Source → test → memory</p>
+                  <h3 id="edgeLabHeading">Commerce intelligence</h3>
+                </div>
+                <div class="edge-view-toggle" role="group" aria-label="Edge Lab view">
+                  <button class="edge-view-btn active" type="button" data-edge-view="experiments">Experiments</button>
+                  <button class="edge-view-btn" type="button" data-edge-view="library">Free library</button>
+                  <button class="edge-view-btn" type="button" data-edge-view="ledger">30-tactic ledger</button>
+                  <button class="edge-view-btn" type="button" data-edge-view="memory">Decision memory</button>
+                </div>
+              </div>
+              <div id="edgeLabPanel"></div>
+            </section>
+            <section class="campaign-proof-receipts" aria-labelledby="campaignReceiptsHeading">
+              <div class="section-heading-row">
+                <div>
+                  <p class="eyebrow">Campaign proof board</p>
+                  <h3 id="campaignReceiptsHeading">Campaign receipts</h3>
+                </div>
+                <p>Approve only after a real clip, metric, or audience receipt is linked.</p>
+              </div>
+              <div id="tacticList" class="tactic-grid"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="ws" id="ws-forecast">
+          <div class="ws-inner">
+            <div class="ws-header">
+              <div>
+                <p class="eyebrow">Sales Forecast Lab</p>
+                <h2 class="ws-title">Range the demand. Freeze the call. Grade reality.</h2>
+                <p class="ws-sub">A probabilistic planning layer for revenue, units, sell-through, and stockout risk. It never overrides the production-readiness gate.</p>
+              </div>
+              <span class="badge">VORG Sales Forecast v1.0</span>
+            </div>
+            <div id="forecastTruthBanner" class="forecast-truth-banner blocked"></div>
+            <div id="forecastSummary" class="forecast-summary-grid"></div>
+            <div id="forecastWorkbench"></div>
+            <section id="forecastCalibration" class="forecast-section forecast-calibration"></section>
           </div>
         </section>
 
@@ -390,6 +442,7 @@
                 <p class="ws-sub">Expansion reads from logged heat — not one loud comment thread.</p>
               </div>
             </div>
+            <div id="marketEntryGate" class="manufacturing-board"></div>
             <div id="cityGrid" class="city-grid"></div>
           </div>
         </section>
@@ -439,6 +492,10 @@
     <div class="dialog-actions">
       <button id="downloadDialogBtn" class="top-btn outline" type="button">Download file</button>
     </div>
+  </dialog>
+
+  <dialog id="edgeExperimentDialog" class="help-dialog edge-experiment-dialog">
+    <div id="edgeExperimentDialogBody"></div>
   </dialog>
 
   <input id="csvInput" class="sr-only" type="file" accept=".csv,text/csv" />
@@ -492,6 +549,10 @@
       <div class="field">
         <label for="newDropSeason">Season / release code</label>
         <input id="newDropSeason" type="text" placeholder="SS27" required />
+      </div>
+      <div class="field">
+        <label for="newDropSpendCap">Production spend cap (C$)</label>
+        <input id="newDropSpendCap" type="number" min="1" max="6000" value="6000" required />
       </div>
       <button class="btn-primary full" type="submit">Open next drop desk</button>
     </form>

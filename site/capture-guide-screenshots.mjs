@@ -1,6 +1,8 @@
 /**
  * Capture Drop OS guide screenshots — run from repo root:
  *   node site/capture-guide-screenshots.mjs
+ *   node site/capture-guide-screenshots.mjs --tail-only
+ *   node site/capture-guide-screenshots.mjs --readiness-only
  * Requires: npx playwright (auto-installs chromium on first run)
  */
 import { chromium } from 'playwright';
@@ -11,6 +13,9 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.join(__dirname, 'assets', 'guide');
 const BASE = 'http://localhost:4182/drop-os.html';
+const TAIL_ONLY = process.argv.includes('--tail-only');
+const READINESS_ONLY = process.argv.includes('--readiness-only');
+const EDGE_ONLY = process.argv.includes('--edge-only');
 
 async function shot(page, name, opts = {}) {
   const file = path.join(OUT, `${name}.png`);
@@ -28,11 +33,65 @@ async function main() {
 
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  page.setDefaultTimeout(15000);
 
   await page.goto(BASE);
   await page.evaluate(() => localStorage.removeItem('vorgDropOS.v1'));
   await page.reload({ waitUntil: 'networkidle' });
   await page.waitForTimeout(600);
+
+  if (EDGE_ONLY) {
+    await page.getByRole('button', { name: 'Skip tour' }).click();
+    await clickNav(page, 'Edge Lab');
+    await shot(page, '09-campaign');
+    await page.locator('[data-edge-view="library"]').click();
+    await page.waitForTimeout(300);
+    await shot(page, '09b-free-library');
+    await browser.close();
+    console.log('\nDone — Edge Commerce Lab screenshots in site/assets/guide/');
+    return;
+  }
+
+  if (READINESS_ONLY) {
+    await page.getByRole('button', { name: 'Skip tour' }).click();
+    await clickNav(page, 'Drop desk');
+    await page.locator('#cmdCockpit').evaluate(element => {
+      element.open = true;
+      element.scrollIntoView({ block: 'start' });
+    });
+    await page.waitForTimeout(300);
+    await shot(page, '19-readiness-model');
+    await browser.close();
+    console.log('\nDone — readiness screenshot in site/assets/guide/');
+    return;
+  }
+
+  if (TAIL_ONLY) {
+    await page.getByRole('button', { name: 'Skip tour' }).click();
+    await clickNav(page, 'Handoff');
+    await shot(page, '15-handoff');
+    await page.locator('#snapshotBtn').click();
+    await page.waitForTimeout(400);
+    await shot(page, '16-snapshot-dialog');
+    await page.locator('#snapshotDialog').evaluate(dialog => dialog.close());
+    await page.locator('#helpOpenBtn').click();
+    await page.waitForTimeout(400);
+    await shot(page, '17-help-dialog');
+    await page.locator('#helpDialog').evaluate(dialog => dialog.close());
+    await clickNav(page, 'Handoff');
+    await page.locator('#newDropBtn').click();
+    await page.waitForTimeout(400);
+    await shot(page, '18-new-drop-dialog');
+    await page.locator('#newDropDialog').evaluate(dialog => dialog.close());
+    await clickNav(page, 'Drop desk');
+    await page.locator('#cmdCockpit').evaluate(element => { element.open = true; });
+    await page.waitForTimeout(300);
+    await page.locator('#cmdCockpit').evaluate(element => element.scrollIntoView({ block: 'start' }));
+    await shot(page, '19-readiness-model');
+    await browser.close();
+    console.log('\nDone — tail screenshots in site/assets/guide/');
+    return;
+  }
 
   // 01 — onboarding
   await shot(page, '01-onboarding');
@@ -76,9 +135,12 @@ async function main() {
   await page.waitForTimeout(400);
   await shot(page, '08b-sku-edit');
 
-  // 09 — campaign
-  await clickNav(page, 'Campaign');
+  // 09 — Edge Commerce Lab
+  await clickNav(page, 'Edge Lab');
   await shot(page, '09-campaign');
+  await page.locator('[data-edge-view="library"]').click();
+  await page.waitForTimeout(300);
+  await shot(page, '09b-free-library');
 
   // 10 — factory
   await clickNav(page, 'Factory');
@@ -130,6 +192,7 @@ async function main() {
   await clickNav(page, 'Drop desk');
   await page.locator('#cmdCockpit').evaluate(el => { el.open = true; });
   await page.waitForTimeout(300);
+  await page.locator('#cmdCockpit').evaluate(element => element.scrollIntoView({ block: 'start' }));
   await shot(page, '19-readiness-model');
 
   await browser.close();
