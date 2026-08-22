@@ -1,0 +1,122 @@
+[
+  {
+    "id": "J01",
+    "brand": "Jacquemus",
+    "title": "Le Bonheur - white/red look",
+    "source_file": "references/jacquemus/official/0-JACQUEMUS-LEBONHEUR-COVER-WOMEN-WHITEREDLOOK.avif",
+    "page_url": "https://www.jacquemus.com/en_us/%22le-bonheur%22/lebonheur.html",
+    "access_date": "2026-07-10",
+    "palette": [
+      "#758FA5",
+      "#714B54",
+      "#91A2AD",
+      "#F1E5D1",
+      "#D9C8AE"
+    ],
+    "dimensions": {
+      "width": 1267,
+      "height": 1600
+    },
+    "notice": "Private educational master study. Source image belongs to the named brand/source."
+  },
+  {
+    "id": "J02",
+    "brand": "Jacquemus",
+    "title": "La Croisiere - architectural set",
+    "source_file": "references/jacquemus/official/0-JACQUEMUS_LACROISIERE_SET_3.webp",
+    "page_url": "https://www.jacquemus.com/en_us/collections/collections-jacquemus-page.html",
+    "access_date": "2026-07-10",
+    "palette": [
+      "#6F381B",
+      "#582510",
+      "#30140B",
+      "#935E3E",
+      "#D5BCA6"
+    ],
+    "dimensions": {
+      "width": 1440,
+      "height": 810
+    },
+    "notice": "Private educational master study. Source image belongs to the named brand/source."
+  },
+  {
+    "id": "J03",
+    "brand": "Jacquemus",
+    "title": "La Casa - model and architecture",
+    "source_file": "references/jacquemus/official/Jacquemus-La-Casa-Look-4x5-05-NO-LOGO.avif",
+    "page_url": "https://www.jacquemus.com/en_us/collections/collections-jacquemus-page.html",
+    "access_date": "2026-07-10",
+    "palette": [
+      "#DCBFB8",
+      "#D9DDE8",
+      "#CCDAE5",
+      "#CDA293",
+      "#E2D6D6"
+    ],
+    "dimensions": {
+      "width": 1080,
+      "height": 1350
+    },
+    "notice": "Private educational master study. Source image belongs to the named brand/source."
+  },
+  {
+    "id": "R01",
+    "brand": "Rhode",
+    "title": "Glazing Milk - hero study",
+    "source_file": "references/rhode/official/milk-Hero-1_Desktop_2000x.webp",
+    "page_url": "https://www.rhodeskin.com/products/glazing-milk",
+    "access_date": "2026-07-10",
+    "palette": [
+      "#C0A28A",
+      "#040603",
+      "#151209",
+      "#0A0B05",
+      "#5E412D"
+    ],
+    "dimensions": {
+      "width": 1600,
+      "height": 1329
+    },
+    "notice": "Private educational master study. Source image belongs to the named brand/source."
+  },
+  {
+    "id": "R02",
+    "brand": "Rhode",
+    "title": "Glazing Milk - clean still life",
+    "source_file": "references/rhode/official/glazing-milk-hero-desktop-final_1_2000x.webp",
+    "page_url": "https://www.rhodeskin.com/products/glazing-milk",
+    "access_date": "2026-07-10",
+    "palette": [
+      "#E8E8E8",
+      "#BCBCBC",
+      "#EDEDED",
+      "#E1E1E1",
+      "#E4E4E4"
+    ],
+    "dimensions": {
+      "width": 1600,
+      "height": 1329
+    },
+    "notice": "Private educational master study. Source image belongs to the named brand/source."
+  },
+  {
+    "id": "R03",
+    "brand": "Rhode",
+    "title": "Highlight Milk - skin/product crop",
+    "source_file": "references/rhode/official/highlight-milk-1-hover_2000x.webp",
+    "page_url": "https://www.rhodeskin.com/products/highlight-milk-02",
+    "access_date": "2026-07-10",
+    "palette": [
+      "#100907",
+      "#CC957B",
+      "#DBAA91",
+      "#8E5843",
+      "#E2C6B8"
+    ],
+    "dimensions": {
+      "width": 1377,
+      "height": 1600
+    },
+    "notice": "Private educational master study. Source image belongs to the named brand/source."
+  }
+]

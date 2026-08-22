@@ -1,0 +1,246 @@
+{
+  "version": "macro-economy-ledger-v1",
+  "checkedOn": "2026-08-22",
+  "purpose": "Dated sources for the macro-economy nowcast, supplier-origin tariff map, hedge-fund tactics translation, and MacroContext engine inputs. Separate file from source-ledger.json to avoid merge collisions with concurrent brand-path work.",
+  "truthNote": "Research and working analysis only — not tax, customs, legal, or investment advice. Tariff entries are NOT broker-verified.",
+  "ga4Status": {
+    "authorizedVorgProperty": false,
+    "treatment": "unavailable — do not invent GA traffic, conversion, audience, or geo data; see nowcast section 2 for the instrumentation spec once authorized"
+  },
+  "sources": [
+    {
+      "id": "mac-census-marts-jul2026",
+      "url": "https://www.census.gov/retail/marts/www/marts_current.pdf",
+      "title": "US Census Advance Monthly Retail Sales (MARTS), July 2026 — retail -0.6% MoM / +5.0% YoY; clothing stores +1.9% MoM / +5.0% YoY ($28.3B SA)",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-statistics",
+      "geography": "United States",
+      "confidence": 0.9,
+      "limitations": "Advance estimate, subject to revision; nominal dollars, not inflation-adjusted; store-based category."
+    },
+    {
+      "id": "mac-fred-rsccasn",
+      "url": "https://fred.stlouisfed.org/series/RSCCASN",
+      "title": "FRED RSCCASN — Advance Retail Sales: Clothing and Clothing Accessory Stores (Jul 2026: $28,117M NSA)",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-statistics",
+      "geography": "United States",
+      "confidence": 0.9,
+      "limitations": "Same advance-estimate caveats as MARTS; NSA series."
+    },
+    {
+      "id": "mac-umich-aug2026",
+      "url": "https://www.sca.isr.umich.edu/",
+      "title": "University of Michigan Surveys of Consumers — Aug 2026 preliminary sentiment 51.0 (Jul 55.2; May 2026 record low 44.8); year-ahead inflation expectations 4.3%; 8% expect income to beat inflation",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-statistics",
+      "geography": "United States",
+      "confidence": 0.9,
+      "limitations": "Preliminary reading; final due 2026-08-28. Survey window 2026-07-28 to 2026-08-10 during Iran-conflict fuel-price shock."
+    },
+    {
+      "id": "mac-confboard-jul2026",
+      "url": "https://tradingeconomics.com/united-states/consumer-confidence",
+      "title": "Conference Board consumer confidence July 2026: 90.8 (as reported via aggregator); next release 2026-08-25",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-statistics-republished",
+      "geography": "United States",
+      "confidence": 0.7,
+      "limitations": "Republished value; confirm at conference-board.org on release update."
+    },
+    {
+      "id": "mac-bea-savings",
+      "url": "https://www.bea.gov/data/income-saving/personal-saving-rate",
+      "title": "BEA personal saving rate — 2.7% June 2026 (down from 3.8% Feb 2026); PCE price index +3.7% YoY June",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-statistics",
+      "geography": "United States",
+      "confidence": 0.9,
+      "limitations": "Next release 2026-08-26; monthly series is revision-prone."
+    },
+    {
+      "id": "mac-nyfed-q2-2026",
+      "url": "https://www.newyorkfed.org/newsevents/news/research/2026/20260811",
+      "title": "NY Fed Q2 2026 Household Debt & Credit — total debt $18.8T; credit cards $1.26T; new-delinquency flow ~6.97% elevated-but-stable; 12.8% stock figure driven by stale charge-offs",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-regulator",
+      "geography": "United States",
+      "confidence": 0.9,
+      "limitations": "Quarterly; next update ~Nov 2026 (after launch window). K-shaped read from accompanying Liberty Street Economics post."
+    },
+    {
+      "id": "mac-truflation-apr2026",
+      "url": "https://truflation.com/blog/truflation-bea-pce-price-index-monthly-report-april-2026",
+      "title": "Truflation PCE monthly report April 2026 — apparel a top PCE inflation contributor; tariff pass-through from China/Vietnam/Bangladesh/Mexico named as driver",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "industry-research",
+      "geography": "United States",
+      "confidence": 0.55,
+      "limitations": "Private nowcaster; use as corroboration of the tariff-price channel, not as official price data."
+    },
+    {
+      "id": "mac-statcan-retail-jun2026",
+      "url": "https://www150.statcan.gc.ca/n1/daily-quotidien/260821/t002a-eng.htm",
+      "title": "StatCan retail trade June 2026 — total +0.6% MoM to $74.3B (+5.2% YoY); clothing group +3.1% MoM; e-commerce +18.7% YoY; July advance estimate -0.8%",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-statistics",
+      "geography": "Canada",
+      "confidence": 0.9,
+      "limitations": "July flash based on 56.5% response rate, subject to revision; nominal dollars."
+    },
+    {
+      "id": "mac-boc-fsr-2026",
+      "url": "https://www.bankofcanada.ca/publications/financial-stability-report/financial-stability-report-2026/households/",
+      "title": "Bank of Canada Financial Stability Report 2026 (Households) — resilient overall, elevated debt, unemployment ~6.5-7%, mortgage renewals absorbed",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-regulator",
+      "geography": "Canada",
+      "confidence": 0.9,
+      "limitations": "Annual report; conditions dated to publication."
+    },
+    {
+      "id": "mac-statcan-spring2026",
+      "url": "https://www150.statcan.gc.ca/n1/pub/36-28-0001/2026004/article/00005-eng.htm",
+      "title": "StatCan Recent Developments Spring 2026 — household credit-market debt 177.2% of disposable income (Q4 2025); DSR easing; tariff pass-through visible in clothing prices",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-statistics",
+      "geography": "Canada",
+      "confidence": 0.85,
+      "limitations": "Data through late 2025; ratios lag current quarter."
+    },
+    {
+      "id": "mac-boc-rate-hold",
+      "url": "https://www.mpamag.com/ca/mortgage-industry/industry-trends/retail-sales-data-unlikely-to-shift-bank-of-canada-rate-path/587071",
+      "title": "BoC overnight rate 2.25%, held since late 2025; no change expected 2026-09-02 (trade-press synthesis, 2026-08-21)",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "reputable-editorial",
+      "geography": "Canada",
+      "confidence": 0.7,
+      "limitations": "Editorial synthesis; confirm at bankofcanada.ca on decision date."
+    },
+    {
+      "id": "mac-fx-usdcad",
+      "url": "https://tradingeconomics.com/canada/currency",
+      "title": "USD/CAD ~1.374-1.377 on 2026-08-21; bank consensus Q3 2026 ~1.39-1.41 easing toward ~1.35-1.37 by mid-2027 (with mtfxgroup.com 5-bank table and exchangerates.org.uk 2026-08-22 note)",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "market-data-republished",
+      "geography": "Canada/United States",
+      "confidence": 0.75,
+      "limitations": "Spot moves daily; forecasts are bank views, not VORG-owned predictions. Tentative Canada-US trade deal is unfinished and a swing factor."
+    },
+    {
+      "id": "mac-tariff-cn-us",
+      "url": "https://www.shapiro.com/tariffs/tariff-news/current-tariffs/",
+      "title": "China-origin apparel into US as of 2026-08-22: MFN (~16.5% typical knit) + Section 301 List 4A 7.5% + Section 301 2026 determination 12.5% (effective 2026-07-24) ≈ ~36.5% typical (with portless.com and tariffstool.com corroboration)",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "secondary-practitioner",
+      "geography": "China to United States",
+      "confidence": 0.6,
+      "limitations": "Broker/vendor syntheses of USTR actions; NOT broker-verified for VORG HTS codes; regime changed 3x in 6 months; second China investigation open."
+    },
+    {
+      "id": "mac-tariff-vn-us",
+      "url": "https://www.phamfashion.com/blog/vietnam-apparel-tariffs-guide",
+      "title": "Vietnam-origin apparel into US as of 2026-08-22: MFN + Section 301 2026 12.5% tier (dockets USTR-2026-0265/0266, effective 2026-07-24) ≈ ~29% typical; no List 4A layer (with tariffstool.com and vneconomy.vn corroboration)",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "secondary-practitioner",
+      "geography": "Vietnam to United States",
+      "confidence": 0.6,
+      "limitations": "Secondary syntheses; NOT broker-verified; possible apparel TRQ/lower-tier developments unconfirmed."
+    },
+    {
+      "id": "mac-scotus-ieepa",
+      "url": "https://www.troutman.com/insights/the-800-free-pass-is-gone-cit-confirms-president-can-eliminate-de-minimis-tariff-exemption/",
+      "title": "SCOTUS struck down IEEPA reciprocal/fentanyl tariffs 2026-02-20 (Learning Resources v. Trump); Section 122 10% bridge expired 2026-07-24; CIT upheld de minimis elimination 2026-08-13",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "law-firm-analysis",
+      "geography": "United States",
+      "confidence": 0.75,
+      "limitations": "Law-firm summary of litigation; primary opinions not read in full."
+    },
+    {
+      "id": "mac-deminimis-fr",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2026-06-24/html/2026-12670.htm",
+      "title": "Federal Register 2026-06-24: de minimis exemption indefinitely suspended for all modes (19 CFR 10.151 / 145.31); OBBBA statutory termination 2027-07-01",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-regulator",
+      "geography": "United States",
+      "confidence": 0.95,
+      "limitations": "Interim final rule; comment period could adjust mechanics, not direction. Every VORG parcel to US pays duties."
+    },
+    {
+      "id": "mac-cusma-yarn-forward",
+      "url": "https://www.international.gc.ca/trade-commerce/trade-agreements-accords-commerciaux/agr-acc/cusma-aceum/Uniform-regulation-RoO-2021.aspx?lang=eng",
+      "title": "CUSMA Uniform Regulations (RoO ch.4/6) — apparel yarn-forward rules; 10% de minimis fiber weight; storage/relabeling in Canada confers no origin (with afslaw.com and Canada Gazette SOR/2020-155 corroboration)",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-regulator",
+      "geography": "Canada/United States/Mexico",
+      "confidence": 0.9,
+      "limitations": "Not legal advice; product-specific rules per HTS heading must be checked individually."
+    },
+    {
+      "id": "mac-transship-risk",
+      "url": "https://traverseintel.com/analysis/vietnam-transshipment-after-40-percent-tariff",
+      "title": "Transshipment/false-origin enforcement continues after 40% IEEPA transshipment duty ended Feb 2026; misdeclaration remains 19 USC 1592 exposure",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "industry-research",
+      "geography": "Vietnam/China to United States",
+      "confidence": 0.6,
+      "limitations": "Paywalled analysis (abstract only); legal-risk framing is VORG working synthesis — counsel to confirm."
+    },
+    {
+      "id": "mac-tariff-ca-mfn",
+      "url": "https://dutiable.io/duty-rates/canada/clothing",
+      "title": "Canada apparel import: ~18% MFN on HS 61/62 (China-origin) + 5% GST on duty-paid value",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "secondary-practitioner",
+      "geography": "into Canada",
+      "confidence": 0.6,
+      "limitations": "Aggregator; verify per code in CBSA Customs Tariff 2026."
+    },
+    {
+      "id": "mac-tariff-vn-ca-cptpp",
+      "url": "https://www.cbsa-asfc.gc.ca/trade-commerce/tariff-tarif/2026/html/countries-pays-eng.html",
+      "title": "CBSA 2026 tariff treatments: Vietnam has CPTPT treatment (potential 0% apparel if CPTPP ch.4 rules of origin met); China MFN only (with epicsourcing.ca, tradecommissioner.gc.ca, and SOR/2018-223 corroboration)",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-regulator",
+      "geography": "Vietnam to Canada",
+      "confidence": 0.8,
+      "limitations": "Qualification is not automatic: yarn/fabric origin declarations, certificate of origin, and direct-shipment proof required; Chinese-fabric garments likely fail."
+    },
+    {
+      "id": "mac-hf-card-panels",
+      "url": "https://dataproducts.consumeredge.com/products/consumer-edge-transact-consumer-financial-data-for-hedge-fund-consumer-edge",
+      "title": "Consumer Edge card-panel products (100M+ cards, apparel vertical) — representative of hedge-fund transaction-panel tactics (with yipitdata.com and alphanume-research.com corroboration)",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "vendor-marketing",
+      "geography": "United States",
+      "confidence": 0.6,
+      "limitations": "Vendor self-description; NOT ACCESSIBLE to VORG at micro-label budget — documented for tactic translation only."
+    },
+    {
+      "id": "mac-hf-altdata-survey",
+      "url": "https://brightdata.com/blog/web-data/best-alternative-data-providers",
+      "title": "Alternative-data provider survey (card panels, foot traffic, web data, satellite) used to map fund tactics to VORG equivalents",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "vendor-editorial",
+      "geography": "global",
+      "confidence": 0.5,
+      "limitations": "Vendor blog; used for landscape mapping, not for any numeric claim."
+    }
+  ],
+  "workingAssumptions": [
+    "Consumer health composite indices (US ~42 worsening, CA ~50 flat) are founder-judgment blends of the sourced indicators, not measured indices.",
+    "Scenario weights base 0.55 / upside 0.20 / downside 0.25 are working planning weights, not measured probabilities.",
+    "Typical duty stacks (CN→US ~36.5%, VN→US ~29%, CN→CA ~18%+GST, VN→CA 0% if CPTPP-qualified) use example MFN rates, not VORG's real HTS codes — customs broker verification required before any PO or price promise.",
+    "All landed-cost illustrations use unquoted internal COGS planning numbers from sku-inventory.json."
+  ],
+  "refreshCalendar": [
+    { "date": "2026-08-25", "event": "Conference Board consumer confidence (Aug)" },
+    { "date": "2026-08-26", "event": "BEA Personal Income & Outlays (Jul) — savings rate, PCE" },
+    { "date": "2026-08-28", "event": "UMich final August sentiment" },
+    { "date": "2026-09-02", "event": "Bank of Canada rate decision" },
+    { "date": "2026-09-15", "event": "US Census MARTS (Aug), approximate" },
+    { "date": "2026-09-19", "event": "StatCan retail trade (Jul final, Aug advance), approximate" }
+  ]
+}

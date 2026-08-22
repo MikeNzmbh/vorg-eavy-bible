@@ -1,0 +1,20 @@
+{
+  "id": "J01",
+  "brand": "Jacquemus",
+  "title": "Le Bonheur - white/red look",
+  "source_file": "references/jacquemus/official/0-JACQUEMUS-LEBONHEUR-COVER-WOMEN-WHITEREDLOOK.avif",
+  "page_url": "https://www.jacquemus.com/en_us/%22le-bonheur%22/lebonheur.html",
+  "access_date": "2026-07-10",
+  "palette": [
+    "#758FA5",
+    "#714B54",
+    "#91A2AD",
+    "#F1E5D1",
+    "#D9C8AE"
+  ],
+  "dimensions": {
+    "width": 1267,
+    "height": 1600
+  },
+  "notice": "Private educational master study. Source image belongs to the named brand/source."
+}

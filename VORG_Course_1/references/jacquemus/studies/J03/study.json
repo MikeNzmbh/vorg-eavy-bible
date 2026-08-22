@@ -1,0 +1,20 @@
+{
+  "id": "J03",
+  "brand": "Jacquemus",
+  "title": "La Casa - model and architecture",
+  "source_file": "references/jacquemus/official/Jacquemus-La-Casa-Look-4x5-05-NO-LOGO.avif",
+  "page_url": "https://www.jacquemus.com/en_us/collections/collections-jacquemus-page.html",
+  "access_date": "2026-07-10",
+  "palette": [
+    "#DCBFB8",
+    "#D9DDE8",
+    "#CCDAE5",
+    "#CDA293",
+    "#E2D6D6"
+  ],
+  "dimensions": {
+    "width": 1080,
+    "height": 1350
+  },
+  "notice": "Private educational master study. Source image belongs to the named brand/source."
+}

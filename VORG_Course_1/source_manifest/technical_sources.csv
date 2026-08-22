@@ -1,0 +1,16 @@
+platform,topic,source_url,checked_date,course_use,version_note
+Blender,Current stable manual,https://docs.blender.org/manual/en/5.1/,2026-07-10,Primary interface and feature terminology,Use Blender 5.1 stable; 5.2 was still a release candidate when checked
+Blender,Cycles film transparency,https://docs.blender.org/manual/en/5.1/render/cycles/render_settings/film.html,2026-07-10,Transparent background renders for compositing,Feature labels may move between releases
+Blender,Shadow catcher object setting,https://docs.blender.org/manual/en/5.1/render/cycles/object_settings/object_data.html,2026-07-10,Contact and indirect-light integration,Inference and render tests still required per scene
+Blender,Cryptomatte passes,https://docs.blender.org/manual/en/5.1/render/layers/passes.html,2026-07-10,Editable object and material masks,Verify pass availability in the selected renderer
+Blender,OpenEXR output,https://docs.blender.org/manual/en/5.1/files/media/image_formats.html,2026-07-10,High-dynamic-range render-pass handoff,Use multilayer EXR only when the downstream workflow needs it
+Blender,Color management,https://docs.blender.org/manual/en/5.1/render/color_management.html,2026-07-10,View-transform and exposure discipline,Do not bake a display look into linear render passes accidentally
+Adobe Photoshop,What's new on desktop,https://helpx.adobe.com/photoshop/desktop/whats-new/whats-new-in-adobe-photoshop-on-desktop.html,2026-07-10,Current terminology and feature boundaries,Photoshop 27.8 was current when checked
+Adobe Camera Raw,What's new,https://helpx.adobe.com/camera-raw/using/whats-new.html,2026-07-10,RAW masking and Generative Expand terminology,Camera Raw 18.4.1 was current when checked
+Adobe Camera Raw,Masking,https://helpx.adobe.com/camera-raw/using/masking.html,2026-07-10,Local subject garment background and range masks,Use manual edge review for fabric and hair
+Adobe Photoshop,Smart Filters,https://helpx.adobe.com/photoshop/using/applying-smart-filters.html,2026-07-10,Nondestructive filter workflow,Smart Objects do not excuse weak layer naming
+Adobe Photoshop,Select Subject and Select and Mask,https://helpx.adobe.com/photoshop/desktop/make-selections/automatic-color-based-selections/improved-select-subject-and-remove-background-results.html,2026-07-10,Starting masks for hair and fabric edges,Manual refinement remains required
+Blackmagic Design,DaVinci Resolve 21 product page,https://www.blackmagicdesign.com/products/davinciresolve,2026-07-10,Current product line and page structure,Resolve 21 was the current line when checked
+Blackmagic Design,DaVinci Resolve 21 Photo page,https://www.blackmagicdesign.com/uk/products/davinciresolve/photo,2026-07-10,Still-photo RAW management and grading,Photoshop remains primary for detailed layer compositing in this course
+Blackmagic Design,DaVinci Resolve 21 new features guide,https://documents.blackmagicdesign.com/SupportNotes/DaVinci_Resolve_21_New_Features_Guide.pdf,2026-07-10,Photo page and current feature terminology,Some AI features require Studio or compatible hardware
+Blackmagic Design,Official training,https://www.blackmagicdesign.com/au/products/davinciresolve/training,2026-07-10,Certified guides and project files,Resolve 20 books remain useful for core color and Fusion concepts

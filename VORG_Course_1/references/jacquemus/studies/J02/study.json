@@ -1,0 +1,20 @@
+{
+  "id": "J02",
+  "brand": "Jacquemus",
+  "title": "La Croisiere - architectural set",
+  "source_file": "references/jacquemus/official/0-JACQUEMUS_LACROISIERE_SET_3.webp",
+  "page_url": "https://www.jacquemus.com/en_us/collections/collections-jacquemus-page.html",
+  "access_date": "2026-07-10",
+  "palette": [
+    "#6F381B",
+    "#582510",
+    "#30140B",
+    "#935E3E",
+    "#D5BCA6"
+  ],
+  "dimensions": {
+    "width": 1440,
+    "height": 810
+  },
+  "notice": "Private educational master study. Source image belongs to the named brand/source."
+}
