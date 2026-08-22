@@ -1,6 +1,6 @@
 # VORG-EAVY Master Brief
 
-Last updated: 2026-07-07
+Last updated: 2026-08-22
 
 ## Executive Summary
 
@@ -8,13 +8,13 @@ VORG-EAVY should be built first as a direct-to-consumer fashion micro-label. The
 
 The highest-probability move is to narrow the system:
 
-- one city
+- one primary market route
 - one brand site
 - one drop architecture
-- one pop-up format
+- one pop-up format (after the market is selected and permitted)
 - one repeatable reinvestment loop
 
-The first wedge is Ottawa/Gatineau, with University of Ottawa and bilingual social spillover as the first dense audience.
+The launch wedge is no longer locked to Ottawa/Gatineau. Per `docs/DECISIONS.md` (2026-08-22), the wedge is the **highest-gain market route** — currently the **U.S./Brooklyn forecast track**, still pending market-entry hard stops. This is an authorized direction change, not proven U.S. demand. Ottawa/Gatineau remains the Canadian fallback / parallel proof option (University of Ottawa and bilingual spillover stay useful local assets for that fallback).
 
 ## Operating Model
 
@@ -43,7 +43,7 @@ Do not copy any one brand. VORG-EAVY should synthesize the principles.
 
 ## First Drop
 
-Drop 001 should launch in September 2026.
+Drop 001 should work toward a November 5-12, 2026 launch window. This is conditional on quote-backed landed costs, approved pre-production samples, a vendor-backed inbound and QC buffer, and verified campaign proof. October is not the active plan unless those gates clear early enough.
 
 Base architecture:
 

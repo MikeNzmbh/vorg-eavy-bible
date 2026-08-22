@@ -6,14 +6,15 @@ This repo is the internal Bible for VORG-EAVY. Treat it as the strategic source 
 
 VORG-EAVY is being narrowed into a direct-to-consumer fashion micro-label. The current launch thesis is one city, one drop architecture, one site, one controlled pop-up, and one reinvestment loop until demand is proven.
 
-The near-term business target is Drop 001 in September 2026:
+The near-term business target is a conditionally gated Drop 001 in the November 5-12, 2026 working window. October is viable only if vendor-backed production, inbound, QC, and campaign-proof gates clear early enough:
 
 - Founder-stated active product set: The Firm Jacket, women's low-rise denim jean, men's denim jean, scarf, and women's top/bodysuit.
 - Units, prices, and revenue must be rebuilt from vendor quotes.
 - Initial inventory / production spend ceiling: C$5,000-C$6,000 max unless the founder explicitly revises it.
 - Open direct-to-consumer online drop; no password gate at launch.
-- One day-to-night pop-up.
-- Ottawa/Gatineau as the first wedge.
+- One day-to-night pop-up (city after market proof / permissions).
+- Launch wedge: highest-gain market route — currently U.S./Brooklyn forecast track, pending hard-stop gates (`docs/DECISIONS.md` 2026-08-22). Not a demand-proof claim.
+- Ottawa/Gatineau remains the Canadian fallback / parallel proof option.
 - Proof before scale.
 
 ## How To Work In This Repo
@@ -80,7 +81,7 @@ Every important doc should answer:
 
 - VORG-EAVY is not yet proven as a revenue engine.
 - The first financial model is a working model, not vendor-quoted truth.
-- The September 2026 launch plan is the active target, not a completed event.
+- The November 5-12, 2026 launch window is a conditional working target, not a completed event or publicly committed date.
 - The Atelier app can produce concept garment artifacts, not manufacturing-ready reconstruction.
 - AI model candidates in `research/` require license and feasibility review before use.
 

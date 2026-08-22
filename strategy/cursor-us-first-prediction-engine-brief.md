@@ -1,7 +1,7 @@
 # Cursor Build Brief: U.S.-First Positioning & Prediction Engine
 
 Checked: 2026-08-22
-Status: Build brief for Cursor — not an approved launch decision and not a replacement for the Ottawa/Gatineau source of truth yet.
+Status: Build brief for Cursor — **v1 engine + source ledger delivered 2026-08-22**. Founder later authorized alternating the launch wedge to the highest-gain market route (currently U.S./Brooklyn forecast) pending hard-stop gates (`docs/DECISIONS.md`). Still not Drop OS GO and not proven demand. Ottawa/Gatineau is CA fallback / parallel proof.
 
 ## Decision This Engine Must Support
 
@@ -42,7 +42,7 @@ The initial result is a **prediction with a confidence band**, not a claim that 
 - Current active Drop 001 product set: The Firm Jacket, women’s low-rise denim jean, men’s denim jean, scarf, and women’s top/bodysuit.
 - Units, prices, landed COGS, vendor quotes, samples, and product claims remain unresolved until evidenced.
 - Initial inventory/production ceiling remains C$5,000–C$6,000 unless the founder changes it.
-- Current repo source of truth still names Ottawa/Gatineau as the first wedge. The engine may recommend a U.S.-first replacement only as a recorded proposal with the reasons, confidence, and gates to test it.
+- Current repo wedge direction (2026-08-22): highest-gain market route — currently U.S./Brooklyn forecast track, pending hard-stop gates. Ottawa/Gatineau is Canadian fallback / parallel proof. The engine still must not silently authorize inventory or Drop OS GO.
 - The existing `VORG Drop OS score v1.3` remains the production-readiness authority. This engine is a **position-selection and forecast** authority; it must not silently authorize inventory, venue deposits, broad paid media, or public launch claims.
 
 Read before implementing:
@@ -296,7 +296,7 @@ Cursor is done only when it delivers:
 - a learning/receipt-ingestion path that can change the recommendation;
 - tax, compliance, fulfilment, creator, and pop-up controls visible as gates;
 - a concise markdown report that distinguishes Known, Public Priors, Working Assumptions, VORG Receipts, Unresolved, and Next Actions;
-- no alteration of the existing Ottawa/Gatineau decision without adding an explicit dated decision-log entry.
+- no alteration of launch-wedge language without an explicit dated decision-log entry (satisfied for Brooklyn direction by `docs/DECISIONS.md` 2026-08-22; still not GO).
 
 ## First Cursor Work Order
 
@@ -310,4 +310,4 @@ Cursor is done only when it delivers:
 
 ## Next Agent
 
-Do not start with code weights or a preferred city. Start with the source ledger and candidate definitions, then encode only what can be traced. When the engine names a winner, write it as a provisional forecast with its failure conditions—not as a declaration that demand has been proven.
+Pure engine, tests, source ledger, provisional Brooklyn winner plan, cross-border gate artifact, and beginner HTML explainer are in-repo. Next: attach a real DDP/3PL quote, update `route-to-market-gates.json` with evidence links, capture metro Trends snapshots, then consider a read-only Drop OS prediction panel. Do not treat the forecast as demand proof.

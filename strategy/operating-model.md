@@ -9,7 +9,7 @@ Do not start as a broad marketplace.
 ## First Cycle
 
 - Channel: DTC only.
-- Geography: Ottawa/Gatineau first.
+- Geography: highest-gain market route first (currently U.S./Brooklyn forecast track, pending hard-stop gates); Ottawa/Gatineau as Canadian fallback / parallel proof.
 - Catalog: 3 SKUs only.
 - Launch format: open online drop plus one physical event.
 - Cash rule: reinvest first, withdraw later.

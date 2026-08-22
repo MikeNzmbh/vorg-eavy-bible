@@ -2,7 +2,7 @@
 
 Checked: 2026-08-22
 
-Status: **fails the current gate; proof build only.** This is a proposed strategic change under test, not a replacement for the active Ottawa/Gatineau-first source of truth.
+Status: **fails the current market-entry / production gates; proof build only.** Founder-authorized direction (2026-08-22) is to pursue the highest-gain market route — currently U.S./Brooklyn forecast — **without** treating that as demand proof or Drop OS GO. Ottawa/Gatineau is the Canadian fallback / parallel proof option, not a locked wedge.
 
 ## Decision Supported
 
@@ -12,8 +12,8 @@ Decide whether VORG-EAVY may replace its first local wedge with a U.S.-first, Sh
 
 - **Referenced thread:** `Update launch focus` (`6a8a00bc-b4e8-83ea-85ad-5046fb9ee703`). It contains the founder direction but no completed Bible audit, decision log, or code change.
 - **Confirmed workspace:** `C:\Users\mbaho\OneDrive\Documents\vorg-eavy-bible`.
-- **Current source-of-truth conflict:** `docs/MASTER_BRIEF.md`, `docs/HANDOFF.md`, launch planning, and the dashboard defaults still say Ottawa/Gatineau first. The existing traffic plan is explicitly local: 980 waitlist, 330 connector, 850 named paid sessions, and 135 pop-up visitors. None are U.S. receipts.
-- **Safe current posture:** evaluate the U.S. thesis as a new market-entry route. Do not overwrite the local thesis, start paid media, book a U.S. pop-up, or place inventory until the new route clears its controls.
+- **Current source-of-truth posture (updated 2026-08-22):** Founder authorized alternating the launch wedge to the highest-gain market route (currently U.S./Brooklyn forecast). See `docs/DECISIONS.md`. Existing traffic plan arithmetic in `launch/drop-001-traffic-channel-plan.md` is still Ottawa/Gatineau **plan data** and is **not** transferable U.S. evidence — rebuild before using it for U.S. forecasts.
+- **Safe current posture:** pursue the U.S. route as the authorized primary direction under hard-stop gates. Do not start broad paid media, book a U.S. pop-up, or place inventory until controls clear. Ottawa/Gatineau remains available as fallback/parallel proof.
 
 ## Plan Under Test
 
@@ -87,4 +87,6 @@ These are operating checks, not legal conclusions. The relevant sources must be 
 
 ## What The Next Agent Should Do
 
-Populate the new **Primary-market gate** in Drop OS with real documents, not placeholders. The first gate to clear is the cross-border fulfilment and USD economics decision; it changes pricing, shipping, returns, and whether the U.S. thesis is economically viable before any content scale or pop-up deposit.
+1. Use `strategy/us-first-cross-border-usd-gate-2026-08-22.md` to force the **DDP vs U.S. 3PL** choice and attach a real quote + USD contribution sheet.
+2. Keep populating Drop OS Primary-market gate fields with linked receipts only — no placeholders counted as proof.
+3. Treat `research/market-positioning/forecast-report-2026-08-22.md` as a **forecast**, not launch authorization. Wedge direction is U.S./Brooklyn pending hard stops; Ottawa/Gatineau is CA fallback (`docs/DECISIONS.md` 2026-08-22).
