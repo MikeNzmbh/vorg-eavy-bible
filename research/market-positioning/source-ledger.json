@@ -1,0 +1,1026 @@
+{
+  "version": "market-positioning-source-ledger-v2",
+  "checkedOn": "2026-08-22",
+  "ga4Status": {
+    "authorizedVorgProperty": false,
+    "treatment": "unavailable \u2014 do not invent GA traffic, conversion, audience, or geo data"
+  },
+  "sources": [
+    {
+      "id": "src-shopify-duties",
+      "url": "https://help.shopify.com/en/manual/international/duties-and-import-taxes",
+      "title": "Shopify duties and import taxes guidance",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-platform",
+      "geography": "global / US inbound relevant",
+      "families": [
+        "commerce"
+      ],
+      "confidence": 0.85,
+      "limitations": "Platform guidance, not a VORG quote or customs ruling."
+    },
+    {
+      "id": "src-shopify-markets-duties",
+      "url": "https://help.shopify.com/en/manual/markets/customizations/duties-and-taxes",
+      "title": "Shopify Markets duties and taxes setup",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-platform",
+      "geography": "global / US inbound relevant",
+      "families": [
+        "commerce"
+      ],
+      "confidence": 0.85,
+      "limitations": "Setup docs; still need HS/origin and carrier DDP proof for VORG SKUs."
+    },
+    {
+      "id": "src-cbp-deminimis",
+      "url": "https://www.help.cbp.gov/s/article/Article-1919?language=en_US",
+      "title": "CBP guidance on current import / de minimis treatment",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-regulator",
+      "geography": "United States",
+      "families": [
+        "commerce"
+      ],
+      "confidence": 0.9,
+      "limitations": "Not legal advice; recheck before consequential launch; specialist review required."
+    },
+    {
+      "id": "src-ftc-apparel",
+      "url": "https://www.ftc.gov/news-events/topics/tools-consumers/apparel-labeling",
+      "title": "FTC apparel labeling guidance",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-regulator",
+      "geography": "United States",
+      "families": [
+        "commerce",
+        "product"
+      ],
+      "confidence": 0.9,
+      "limitations": "General guidance; final SKU fibre/origin/RN still unproven for VORG."
+    },
+    {
+      "id": "src-ftc-care",
+      "url": "https://www.ftc.gov/business-guidance/resources/clothes-captioning-complying-care-labeling-rule",
+      "title": "FTC care-label guidance",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-regulator",
+      "geography": "United States",
+      "families": [
+        "commerce",
+        "product"
+      ],
+      "confidence": 0.9,
+      "limitations": "Requires care testing on final materials before sale claims."
+    },
+    {
+      "id": "src-ftc-disclosure",
+      "url": "https://www.ftc.gov/business-guidance/resources/disclosures-101-social-media-influencers",
+      "title": "FTC Disclosures 101 for influencers",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-regulator",
+      "geography": "United States",
+      "families": [
+        "creator"
+      ],
+      "confidence": 0.9,
+      "limitations": "Disclosure rules are not a creator sourcing map."
+    },
+    {
+      "id": "src-tiktok-promo",
+      "url": "https://support.tiktok.com/en/business-and-creator/creator-and-business-accounts/promoting-a-brand-product-or-service",
+      "title": "TikTok promoting a brand, product, or service",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-platform",
+      "geography": "global / US relevant",
+      "families": [
+        "creator",
+        "content"
+      ],
+      "confidence": 0.8,
+      "limitations": "Policy surface; not proof VORG can acquire U.S. buyers."
+    },
+    {
+      "id": "src-tiktok-music",
+      "url": "https://support.tiktok.com/en/business-and-creator/creator-and-business-accounts/commercial-use-of-music-on-tiktok",
+      "title": "TikTok commercial use of music",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-platform",
+      "geography": "global / US relevant",
+      "families": [
+        "creator",
+        "content"
+      ],
+      "confidence": 0.8,
+      "limitations": "Music rights still need per-asset clearance."
+    },
+    {
+      "id": "src-gq-corteiz-brooklyn",
+      "url": "https://www.gq.com/story/corteiz-brooklyn-denim-exchange-scene-report",
+      "title": "GQ Corteiz Brooklyn Denim Exchange scene report",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "reputable-editorial",
+      "geography": "New York / Brooklyn",
+      "families": [
+        "buyer",
+        "comparable",
+        "popup"
+      ],
+      "confidence": 0.7,
+      "limitations": "Describes one brand\u2019s event energy; do not copy unsafe queue / scarcity theatre; not VORG demand."
+    },
+    {
+      "id": "src-madhappy-about",
+      "url": "https://www.madhappy.com/en-ph/pages/about",
+      "title": "Madhappy official about page",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "brand-primary",
+      "geography": "United States (brand)",
+      "families": [
+        "comparable"
+      ],
+      "confidence": 0.45,
+      "limitations": "Brand self-statement; needs independent corroboration for any numeric claim; mechanism only."
+    },
+    {
+      "id": "src-beis-shopify",
+      "url": "https://www.shopify.com/case-studies/beis",
+      "title": "B\u00c9IS Shopify case study",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "vendor-case-study",
+      "geography": "United States (brand)",
+      "families": [
+        "comparable",
+        "content",
+        "commerce"
+      ],
+      "confidence": 0.55,
+      "limitations": "Mature-company scale is not a VORG benchmark; vendor-reported."
+    },
+    {
+      "id": "src-goodfair-tiktok",
+      "url": "https://ads.tiktok.com/business/en-US/inspiration/goodfair-466",
+      "title": "Goodfair TikTok ads inspiration case",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "vendor-case-study",
+      "geography": "United States (brand)",
+      "families": [
+        "comparable",
+        "content",
+        "creator"
+      ],
+      "confidence": 0.5,
+      "limitations": "Platform-reported results are not expected VORG results."
+    },
+    {
+      "id": "src-fashionzone-tiktok",
+      "url": "https://ads.tiktok.com/business/en-US/inspiration/fashionzone-tiktok-success-story",
+      "title": "FashionZone TikTok success story",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "vendor-case-study",
+      "geography": "United States (brand)",
+      "families": [
+        "comparable",
+        "content",
+        "creator"
+      ],
+      "confidence": 0.5,
+      "limitations": "Requires VORG rights, disclosure, claims, and commercial-music controls before copying format freedom."
+    },
+    {
+      "id": "src-wwd-joes-jeans-bh",
+      "url": "https://wwd.com/business-news/retail/joes-jeans-beverly-hills-flagship-25-years-1238651039/",
+      "title": "WWD: Joe\u2019s Jeans Beverly Hills flagship",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "reputable-editorial",
+      "geography": "Los Angeles",
+      "families": [
+        "buyer",
+        "search",
+        "popup"
+      ],
+      "confidence": 0.65,
+      "limitations": "Shows LA denim DTC retail activity; not category search volume for VORG SKUs."
+    },
+    {
+      "id": "src-wwd-earthling-melrose",
+      "url": "https://wwd.com/business-news/retail/earthling-melrose-flagship-los-angeles-femme-collection-1238613682/",
+      "title": "WWD: Earthling Melrose flagship",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "reputable-editorial",
+      "geography": "Los Angeles",
+      "families": [
+        "buyer",
+        "product"
+      ],
+      "confidence": 0.65,
+      "limitations": "Independent denim/leather density \u2260 VORG fit or price proof."
+    },
+    {
+      "id": "src-mckinsey-sof-2026",
+      "url": "https://www.mckinsey.com/industries/retail/our-insights/state-of-fashion",
+      "title": "McKinsey State of Fashion 2026",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "industry-research",
+      "geography": "global / US relevant",
+      "families": [
+        "search",
+        "buyer"
+      ],
+      "confidence": 0.6,
+      "limitations": "Macro fashion outlook; not metro-specific VORG SKU demand."
+    },
+    {
+      "id": "src-shopify-ca-import-2026",
+      "url": "https://www.shopify.com/ca/blog/international-import-shipping",
+      "title": "Shopify Canada international import shipping / tariff guide 2026",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-platform",
+      "geography": "Canada to United States",
+      "families": [
+        "commerce"
+      ],
+      "confidence": 0.75,
+      "limitations": "Merchant education; still need carrier/3PL quote and HS codes for VORG."
+    },
+    {
+      "id": "src-stress-test",
+      "url": "strategy/us-first-gtm-stress-test-2026-08-22.md",
+      "title": "Internal U.S.-first GTM stress test",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "internal-decision-artifact",
+      "geography": "United States thesis",
+      "families": [
+        "commerce",
+        "content",
+        "creator",
+        "popup"
+      ],
+      "confidence": 0.8,
+      "limitations": "Records failure modes; not external demand evidence."
+    },
+    {
+      "id": "src-traffic-plan-local",
+      "url": "launch/drop-001-traffic-channel-plan.md",
+      "title": "Drop 001 traffic channel plan (Ottawa/Gatineau)",
+      "checkedOn": "2026-08-19",
+      "sourceClass": "internal-planning-assumption",
+      "geography": "Ottawa/Gatineau",
+      "families": [
+        "search"
+      ],
+      "confidence": 0.4,
+      "limitations": "Non-transferable to U.S. metros; plan data only."
+    },
+    {
+      "id": "src-census-metro-portal",
+      "url": "https://www.census.gov/programs-surveys/metro-micro.html",
+      "title": "U.S. Census Bureau metropolitan and micropolitan hub",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-statistics",
+      "geography": "United States metros",
+      "families": [
+        "buyer"
+      ],
+      "confidence": 0.7,
+      "limitations": "Confirms metros are real statistical markets; does not measure VORG style demand."
+    },
+    {
+      "id": "src-sku-inventory",
+      "url": "research/market-positioning/sku-inventory.json",
+      "title": "VORG Drop 001 SKU inventory constraints",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "internal-planning-assumption",
+      "geography": "brand",
+      "families": [
+        "product"
+      ],
+      "confidence": 0.75,
+      "limitations": "SKU roles are known; prices/COGS unquoted."
+    },
+    {
+      "id": "src-nov-temps",
+      "url": "https://www.currentresults.com/Weather/US/average-city-temperatures-in-november.php",
+      "title": "Average November temperatures for large US cities (NCEI normals via Current Results)",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-statistics-republished",
+      "geography": "US metros",
+      "families": [
+        "product",
+        "buyer"
+      ],
+      "confidence": 0.8,
+      "limitations": "Climate normals \u2260 purchase intent."
+    },
+    {
+      "id": "src-bi-miami-creators",
+      "url": "https://www.businessinsider.com/miami-top-creator-influencer-city-la-new-york-2025-12",
+      "title": "Business Insider: Miami among top US influencer metros after LA and NYC",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "reputable-editorial",
+      "geography": "Miami / LA / NYC",
+      "families": [
+        "creator",
+        "content"
+      ],
+      "confidence": 0.65,
+      "limitations": "Creator density \u2260 conversion; counts are third-party research via BI."
+    },
+    {
+      "id": "src-creator-weather-map",
+      "url": "research/market-positioning/creator-efficiency-weather-map-2026-08-22.md",
+      "title": "Internal creator efficiency + weather map",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "internal-decision-artifact",
+      "geography": "five US metros",
+      "families": [
+        "creator",
+        "product"
+      ],
+      "confidence": 0.7,
+      "limitations": "Synthesizes public priors; not a rate card or signed roster."
+    },
+    {
+      "id": "src-blindspot-pack",
+      "url": "research/market-positioning/blindspot-ledger-us-canada-2026-08-22.md",
+      "title": "US+Canada blindspot ledger",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "internal-decision-artifact",
+      "geography": "US + Canada",
+      "families": [
+        "commerce"
+      ],
+      "confidence": 0.75,
+      "limitations": "Research states only; not counsel clearance."
+    },
+    {
+      "id": "src-us-nexus-avask",
+      "url": "https://avask.com/blog/economic-nexus/",
+      "title": "Economic nexus 2026 thresholds overview",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "secondary-practitioner",
+      "geography": "United States",
+      "families": [
+        "commerce"
+      ],
+      "confidence": 0.45,
+      "limitations": "Not official DOR guidance; requires tax professional."
+    },
+    {
+      "id": "src-us-nexus-insight",
+      "url": "https://insightscpa.ca/cross-border-sales-tax-guide-for-canadian-shopify-and-amazon-sellers-2026/",
+      "title": "CPA cross-border sales tax guide for Canadian Shopify sellers 2026",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "secondary-practitioner",
+      "geography": "Canada to United States",
+      "families": [
+        "commerce"
+      ],
+      "confidence": 0.5,
+      "limitations": "Secondary; Shopify \u2260 marketplace facilitator is a key operational warning."
+    },
+    {
+      "id": "src-shopify-tax-edu",
+      "url": "https://www.shopify.com/il/blog/16480780-should-you-be-charging-sales-tax-on-your-online-store",
+      "title": "Shopify education: charging sales tax / nexus concepts",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-platform",
+      "geography": "United States",
+      "families": [
+        "commerce"
+      ],
+      "confidence": 0.55,
+      "limitations": "Education article; not a filing instruction for VORG."
+    },
+    {
+      "id": "src-cpsc-ffa",
+      "url": "https://www.cpsc.gov/Business--Manufacturing/Business-Education/Business-Guidance/Flammable-Fabrics-Act",
+      "title": "CPSC Flammable Fabrics Act business guidance",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-regulator",
+      "geography": "United States",
+      "families": [
+        "commerce",
+        "product"
+      ],
+      "confidence": 0.9,
+      "limitations": "Confirm 16 CFR 1610 path per final fabric."
+    },
+    {
+      "id": "src-cpsc-clothing",
+      "url": "https://www.cpsc.gov/Business--Manufacturing/Business-Education/Business-Guidance/Clothing-OLD",
+      "title": "CPSC clothing business guidance (flammability / GCC)",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-regulator",
+      "geography": "United States",
+      "families": [
+        "commerce",
+        "product"
+      ],
+      "confidence": 0.85,
+      "limitations": "Page may be legacy-labeled; verify current CPSC URL before launch."
+    },
+    {
+      "id": "src-uspto-clearance",
+      "url": "https://www.uspto.gov/trademarks/search/comprehensive-clearance-search-similar-trademarks",
+      "title": "USPTO comprehensive trademark clearance search guidance",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-regulator",
+      "geography": "United States",
+      "families": [
+        "commerce"
+      ],
+      "confidence": 0.9,
+      "limitations": "Guidance only; no VORG search packet attached."
+    },
+    {
+      "id": "src-tcpa-sms-prior",
+      "url": "https://spoks.com/resources/shopify-sms-marketing",
+      "title": "Secondary Shopify SMS / TCPA consent prior",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "secondary-practitioner",
+      "geography": "United States",
+      "families": [
+        "commerce"
+      ],
+      "confidence": 0.4,
+      "limitations": "Not FCC primary text; counsel before SMS programs."
+    },
+    {
+      "id": "src-ccpa-overview-prior",
+      "url": "https://www.consentmo.com/blog-posts/ccpa-cpra-checklist-navigating-californias-privacy-laws-with-ease",
+      "title": "Secondary CCPA/CPRA Shopify checklist",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "secondary-practitioner",
+      "geography": "California / United States",
+      "families": [
+        "commerce"
+      ],
+      "confidence": 0.35,
+      "limitations": "Vendor blog; use California AG materials + counsel for decisions."
+    },
+    {
+      "id": "src-cra-gst-exports",
+      "url": "https://www.canada.ca/en/revenue-agency/services/forms-publications/publications/rc4027/doing-business-canada-gst-hst-information-non-residents.html",
+      "title": "CRA GST/HST information including zero-rated exports",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-regulator",
+      "geography": "Canada",
+      "families": [
+        "commerce"
+      ],
+      "confidence": 0.85,
+      "limitations": "Confirm VORG facts with accountant; keep export proof."
+    },
+    {
+      "id": "src-ca-crossborder-cpa",
+      "url": "https://insightscpa.ca/cross-border-sales-tax-guide-for-canadian-shopify-and-amazon-sellers-2026/",
+      "title": "CPA guide: GST/HST zero-rating and US nexus for Canadian sellers",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "secondary-practitioner",
+      "geography": "Canada / United States",
+      "families": [
+        "commerce"
+      ],
+      "confidence": 0.5,
+      "limitations": "Secondary synthesis of CRA/US rules."
+    },
+    {
+      "id": "src-crtc-casl",
+      "url": "https://crtc.gc.ca/eng/com500/faq500.htm",
+      "title": "CRTC CASL FAQ",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-regulator",
+      "geography": "Canada",
+      "families": [
+        "commerce",
+        "creator"
+      ],
+      "confidence": 0.9,
+      "limitations": "Applies to CEMs; keep consent records."
+    },
+    {
+      "id": "src-oqlf-sites",
+      "url": "https://www.oqlf.gouv.qc.ca/francisation/entreprises/sites.html",
+      "title": "OQLF guidance on enterprise websites",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-regulator",
+      "geography": "Quebec",
+      "families": [
+        "commerce"
+      ],
+      "confidence": 0.85,
+      "limitations": "Counsel for applicability to VORG\u2019s exact footprint."
+    },
+    {
+      "id": "src-oqlf-commerce",
+      "url": "https://www.oqlf.gouv.qc.ca/francisation/droits_linguistiques/droits/langue-du-commerce-et-des-affaires.html",
+      "title": "OQLF language of commerce and business (consumer rights)",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-regulator",
+      "geography": "Quebec",
+      "families": [
+        "commerce"
+      ],
+      "confidence": 0.85,
+      "limitations": "French info/service rights; storefront parity still unresolved."
+    },
+    {
+      "id": "src-educaloi-language",
+      "url": "https://educaloi.qc.ca/en/capsules/language-laws-and-doing-business-in-quebec/",
+      "title": "\u00c9ducaloi: language laws and doing business in Quebec",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "reputable-public-education",
+      "geography": "Quebec",
+      "families": [
+        "commerce"
+      ],
+      "confidence": 0.7,
+      "limitations": "Public education summary, not a legal opinion."
+    },
+    {
+      "id": "src-free-source-library",
+      "url": "research/commerce-intelligence/FREE_SOURCE_LIBRARY.md",
+      "title": "VORG free commerce source library (CASL, OPC, Competition Bureau, OQLF indexes)",
+      "checkedOn": "2026-07-22",
+      "sourceClass": "internal-source-index",
+      "geography": "Canada / Quebec",
+      "families": [
+        "commerce"
+      ],
+      "confidence": 0.7,
+      "limitations": "Index date older than this pack; re-open primary links before launch."
+    },
+    {
+      "id": "src-gq-jacquemus",
+      "url": "https://www.gq.com/story/how-jacquemus-became-the-main-character-of-french-fashion",
+      "title": "GQ: How Jacquemus Became the Main Character of French Fashion",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "editorial",
+      "geography": "France / global",
+      "families": [
+        "brand",
+        "content"
+      ],
+      "confidence": 0.8,
+      "limitations": "Editorial profile; peer revenue/scale not VORG forecasts."
+    },
+    {
+      "id": "src-forbes-jacquemus",
+      "url": "https://www.forbes.com/sites/gustavlundbergtoresson/2024/09/01/how-jacquemus-took-over-your-phone/",
+      "title": "Forbes: How Jacquemus Transformed Fashion Marketing",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "editorial",
+      "geography": "global",
+      "families": [
+        "brand",
+        "content"
+      ],
+      "confidence": 0.75,
+      "limitations": "Marketing analysis; aspirational sales targets are not VORG plans."
+    },
+    {
+      "id": "src-drum-jacquemus",
+      "url": "https://www.thedrum.com/news/jacquemus-15-inside-the-fashion-label-s-surreal-marketing-success",
+      "title": "The Drum: Jacquemus at 15 surreal marketing success",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "editorial",
+      "geography": "France",
+      "families": [
+        "brand",
+        "content"
+      ],
+      "confidence": 0.8,
+      "limitations": "Marketing trade analysis; show budgets and MIV are not VORG plans."
+    },
+    {
+      "id": "src-forbes-nude",
+      "url": "https://www.forbes.com/profile/nude-project/",
+      "title": "Forbes profile: Nude Project",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "editorial",
+      "geography": "Spain / EU",
+      "families": [
+        "brand",
+        "community"
+      ],
+      "confidence": 0.8,
+      "limitations": "Profile claims revenue/stores; not transferable VORG benchmarks."
+    },
+    {
+      "id": "src-fnw-nude",
+      "url": "https://ww.fashionnetwork.com/news/Nude-project-to-open-stores-in-valencia-and-barcelona-eyes-international-markets,1458995.html",
+      "title": "FashionNetwork: Nude Project store expansion",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "trade-press",
+      "geography": "Spain / EU",
+      "families": [
+        "brand",
+        "retail"
+      ],
+      "confidence": 0.75,
+      "limitations": "Older expansion article; store counts may be outdated."
+    },
+    {
+      "id": "src-numero-nude",
+      "url": "https://www.numeroberlin.de/2026/07/in-conversation-with-bruno-casanovas-from-nude-project/",
+      "title": "Num\u00e9ro Berlin: Bruno Casanovas / Nude Project interview",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "editorial",
+      "geography": "EU",
+      "families": [
+        "brand",
+        "community"
+      ],
+      "confidence": 0.75,
+      "limitations": "Founder interview; community claims are self-reported."
+    },
+    {
+      "id": "src-umbrex-hermes",
+      "url": "https://umbrex.com/resources/company-profiles/hermes-international/",
+      "title": "Umbrex: Herm\u00e8s strategy and business model",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "secondary-analysis",
+      "geography": "global",
+      "families": [
+        "brand",
+        "ops"
+      ],
+      "confidence": 0.7,
+      "limitations": "Secondary strategy profile; not Herm\u00e8s official IR."
+    },
+    {
+      "id": "src-hermes-finance-strategy",
+      "url": "https://finance.hermes.com/fr/strategie/",
+      "title": "Herm\u00e8s Finance: Strat\u00e9gie",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "official-company",
+      "geography": "global",
+      "families": [
+        "brand",
+        "ops"
+      ],
+      "confidence": 0.9,
+      "limitations": "Official strategy page; luxury vertical model is not a micro-label blueprint."
+    },
+    {
+      "id": "src-vogue-jaded",
+      "url": "https://www.vogue.com/article/inside-jaded-londons-plan-to-hit-pound100m-with-dtc-drops-and-viral-trends",
+      "title": "Vogue Business: Inside Jaded London DTC drops plan",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "trade-press",
+      "geography": "UK / US",
+      "families": [
+        "brand",
+        "growth"
+      ],
+      "confidence": 0.85,
+      "limitations": "Peer growth targets and celebrity anecdotes are not VORG forecasts."
+    },
+    {
+      "id": "src-wwd-jaded-nyc",
+      "url": "https://wwd.com/business-news/retail/jaded-london-nyc-pop-up-store-1238255836/",
+      "title": "WWD: Jaded London NYC pop-up",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "trade-press",
+      "geography": "United States",
+      "families": [
+        "brand",
+        "retail"
+      ],
+      "confidence": 0.85,
+      "limitations": "Pop-up PR; US revenue share claims are peer-reported."
+    },
+    {
+      "id": "src-fu-scuffers",
+      "url": "https://fashionunited.com/news/fashion/scuffers-how-to-build-a-cult-brand/2025041765475",
+      "title": "FashionUnited: Scuffers how to build a cult brand",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "trade-press",
+      "geography": "Spain / EU",
+      "families": [
+        "brand",
+        "community"
+      ],
+      "confidence": 0.8,
+      "limitations": "Trade profile; older turnover figures may be stale."
+    },
+    {
+      "id": "src-shopify-scuffers",
+      "url": "https://www.shopify.com/case-studies/scuffers",
+      "title": "Shopify case study: Scuffers growth",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "vendor-case",
+      "geography": "Spain / EU",
+      "families": [
+        "brand",
+        "commerce"
+      ],
+      "confidence": 0.7,
+      "limitations": "Vendor case study; traffic/growth claims are not VORG expected outcomes."
+    },
+    {
+      "id": "src-fu-eme",
+      "url": "https://fashionunited.com/news/business/eme-studios-expansion-new-womenswear-collection-and-international-stores-in-2026/2026013070319",
+      "title": "FashionUnited: EME Studios expansion 2026",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "trade-press",
+      "geography": "Spain / US / EU",
+      "families": [
+        "brand",
+        "retail"
+      ],
+      "confidence": 0.8,
+      "limitations": "Peer turnover figures are not VORG plans."
+    },
+    {
+      "id": "src-fnw-eme-nyc",
+      "url": "https://ww.fashionnetwork.com/news/Eme-studios-targets-the-international-market-with-a-temporary-base-in-new-york,1828485.html",
+      "title": "FashionNetwork: EME Studios NYC temporary base",
+      "checkedOn": "2026-08-22",
+      "sourceClass": "trade-press",
+      "geography": "United States",
+      "families": [
+        "brand",
+        "retail"
+      ],
+      "confidence": 0.8,
+      "limitations": "Pop-up announcement; not demand proof for VORG."
+    }
+  ],
+  "signals": [
+    {
+      "id": "sig-brooklyn-city-exchange",
+      "family": "comparable",
+      "candidateIds": [
+        "us-nyc-brooklyn",
+        "us-los-angeles",
+        "us-chicago",
+        "us-atlanta",
+        "us-miami"
+      ],
+      "sourceIds": [
+        "src-gq-corteiz-brooklyn"
+      ],
+      "geography": "New York / Brooklyn (mechanism reference)",
+      "definition": "Editorial documentation of a densim-exchange / city-participation event mechanism usable as a comparable for controlled city tests.",
+      "normalizedScore": 62,
+      "limitations": "Strongest geographic relevance is Brooklyn; other metros inherit mechanism learning only."
+    },
+    {
+      "id": "sig-brooklyn-comparable-home",
+      "family": "comparable",
+      "candidateIds": [
+        "us-nyc-brooklyn"
+      ],
+      "sourceIds": [
+        "src-gq-corteiz-brooklyn"
+      ],
+      "geography": "New York / Brooklyn",
+      "definition": "Home-metro relevance for the Corteiz densim-exchange mechanism.",
+      "normalizedScore": 82,
+      "limitations": "Mechanism prior only; queue/scarcity theatre disallowed."
+    },
+    {
+      "id": "sig-brooklyn-buyer-fit",
+      "family": "buyer",
+      "candidateIds": [
+        "us-nyc-brooklyn"
+      ],
+      "sourceIds": [
+        "src-gq-corteiz-brooklyn",
+        "src-census-metro-portal"
+      ],
+      "geography": "New York / Brooklyn",
+      "definition": "Documented densim/event culture concentration plus confirmed metro market status.",
+      "normalizedScore": 76,
+      "limitations": "Culture density \u2260 VORG buyers."
+    },
+    {
+      "id": "sig-la-denim-retail-density",
+      "family": "buyer",
+      "candidateIds": [
+        "us-los-angeles"
+      ],
+      "sourceIds": [
+        "src-wwd-joes-jeans-bh",
+        "src-wwd-earthling-melrose",
+        "src-census-metro-portal"
+      ],
+      "geography": "Los Angeles",
+      "definition": "Recent independent/denim brand physical openings in LA retail corridors.",
+      "normalizedScore": 74,
+      "limitations": "Competitive texture, not VORG intent."
+    },
+    {
+      "id": "sig-chicago-buyer-fit",
+      "family": "buyer",
+      "candidateIds": [
+        "us-chicago"
+      ],
+      "sourceIds": [
+        "src-census-metro-portal",
+        "src-mckinsey-sof-2026"
+      ],
+      "geography": "Chicago",
+      "definition": "Large cold-weather U.S. metro where outerwear has seasonal dressing relevance for a fall drop.",
+      "normalizedScore": 68,
+      "limitations": "Seasonal buyer logic is inferred; needs local retail/creator map next."
+    },
+    {
+      "id": "sig-atlanta-buyer-fit",
+      "family": "buyer",
+      "candidateIds": [
+        "us-atlanta"
+      ],
+      "sourceIds": [
+        "src-census-metro-portal",
+        "src-stress-test"
+      ],
+      "geography": "Atlanta",
+      "definition": "Named Southern growth metro in the founder comparison set with rising denim/culture retail attention in public fashion coverage.",
+      "normalizedScore": 62,
+      "limitations": "Weaker primary editorial depth in this ledger than NYC/LA; score stays moderate."
+    },
+    {
+      "id": "sig-miami-buyer-fit",
+      "family": "buyer",
+      "candidateIds": [
+        "us-miami"
+      ],
+      "sourceIds": [
+        "src-census-metro-portal",
+        "src-mckinsey-sof-2026"
+      ],
+      "geography": "Miami",
+      "definition": "Coastal fashion-visible metro with tourism/retail density useful for content tests.",
+      "normalizedScore": 60,
+      "limitations": "Warm climate conflicts with jacket-led Nov storytelling."
+    },
+    {
+      "id": "sig-product-five-sku-map",
+      "family": "product",
+      "candidateIds": [
+        "us-nyc-brooklyn",
+        "us-los-angeles",
+        "us-chicago",
+        "us-atlanta"
+      ],
+      "sourceIds": [
+        "src-sku-inventory",
+        "src-stress-test"
+      ],
+      "geography": "brand / candidate metros",
+      "definition": "Five active SKUs mapped to hero jacket + denim cores + scarf + top without unsupported performance claims.",
+      "normalizedScore": 64,
+      "limitations": "Position mapping only; materials/fit unproven."
+    },
+    {
+      "id": "sig-macro-us-fashion",
+      "family": "search",
+      "candidateIds": [
+        "us-nyc-brooklyn",
+        "us-los-angeles",
+        "us-chicago",
+        "us-atlanta",
+        "us-miami"
+      ],
+      "sourceIds": [
+        "src-mckinsey-sof-2026"
+      ],
+      "geography": "United States",
+      "definition": "Macro US/global fashion outlook supporting that apparel remain a live retail category.",
+      "normalizedScore": 48,
+      "limitations": "Generic fashion macro; weak for exact five-SKU proposition; capped in engine."
+    },
+    {
+      "id": "sig-commerce-cross-border-hard",
+      "family": "commerce",
+      "candidateIds": [
+        "us-nyc-brooklyn",
+        "us-los-angeles",
+        "us-chicago",
+        "us-atlanta",
+        "us-miami"
+      ],
+      "sourceIds": [
+        "src-shopify-duties",
+        "src-shopify-markets-duties",
+        "src-cbp-deminimis",
+        "src-shopify-ca-import-2026"
+      ],
+      "geography": "Canada to United States",
+      "definition": "Official surfaces show U.S. inbound parcels need duties/tax treatment; de minimis no longer a free pass.",
+      "normalizedScore": 40,
+      "limitations": "Feasibility screen is incomplete until VORG chooses DDP vs U.S. 3PL and attaches quotes."
+    },
+    {
+      "id": "sig-creator-policy-path",
+      "family": "creator",
+      "candidateIds": [
+        "us-nyc-brooklyn",
+        "us-los-angeles",
+        "us-chicago",
+        "us-atlanta",
+        "us-miami"
+      ],
+      "sourceIds": [
+        "src-ftc-disclosure",
+        "src-tiktok-promo",
+        "src-tiktok-music"
+      ],
+      "geography": "United States",
+      "definition": "Documented disclosure and commercial-content/music policy path for UGC seeding.",
+      "normalizedScore": 55,
+      "limitations": "Policy existence \u2260 creator supply map or conversion."
+    },
+    {
+      "id": "sig-founder-longform-mech",
+      "family": "content",
+      "candidateIds": [
+        "us-nyc-brooklyn",
+        "us-los-angeles",
+        "us-chicago",
+        "us-atlanta",
+        "us-miami"
+      ],
+      "sourceIds": [
+        "src-beis-shopify",
+        "src-goodfair-tiktok",
+        "src-fashionzone-tiktok"
+      ],
+      "geography": "United States",
+      "definition": "Vendor case studies showing founder/employee content + Shopify/TikTok loops as a transferable format hypothesis.",
+      "normalizedScore": 58,
+      "limitations": "Vendor-reported; zero expected VORG ROAS."
+    },
+    {
+      "id": "sig-chicago-jacket-season",
+      "family": "product",
+      "candidateIds": [
+        "us-chicago"
+      ],
+      "sourceIds": [
+        "src-mckinsey-sof-2026"
+      ],
+      "geography": "Chicago",
+      "definition": "Working product-position prior: Nov drop + Firm Jacket aligns better with cold Midwestern city dressing than warm coastal metros.",
+      "normalizedScore": 70,
+      "limitations": "Seasonality hypothesis; not purchase intent data. Needs Trends/Keyword evidence next."
+    },
+    {
+      "id": "sig-miami-warm-penalty",
+      "family": "product",
+      "candidateIds": [
+        "us-miami"
+      ],
+      "sourceIds": [
+        "src-mckinsey-sof-2026"
+      ],
+      "geography": "Miami",
+      "definition": "Warm-climate Nov window weakens Firm Jacket as lead SKU relative to denim/top/scarf.",
+      "normalizedScore": 35,
+      "limitations": "Climate/seasonality prior only."
+    },
+    {
+      "id": "sig-atlanta-residency-mech",
+      "family": "popup",
+      "candidateIds": [
+        "us-atlanta"
+      ],
+      "sourceIds": [
+        "src-stress-test"
+      ],
+      "geography": "Atlanta",
+      "definition": "Southern metro is a plausible later residency/pop-up test geography after online proof; no venue attached.",
+      "normalizedScore": 45,
+      "limitations": "No venue, permit, or RSVP receipt; score is later-feasibility only."
+    },
+    {
+      "id": "sig-popup-all-unproven",
+      "family": "popup",
+      "candidateIds": [
+        "us-nyc-brooklyn",
+        "us-los-angeles",
+        "us-chicago",
+        "us-miami"
+      ],
+      "sourceIds": [
+        "src-stress-test"
+      ],
+      "geography": "candidate metros",
+      "definition": "No VORG venue/partner/permit package exists in any metro.",
+      "normalizedScore": 20,
+      "limitations": "Zero pop-up sales forecast allowed."
+    }
+  ],
+  "missingResearchTasks": [
+    "Capture Google Trends screenshots/exports for exact silhouette terms (cropped firm jacket, low-rise denim, men\u2019s straight denim) by metro DMA with query + date.",
+    "Build a metro creator sourcing map of reachable nano/micro fashion creators (authorized outreach list), not follower vanity counts.",
+    "Attach one DDP carrier quote or U.S. 3PL quote with HS/origin assumptions per SKU.",
+    "Name one venue/partner path per top-2 metros for later pop-up feasibility only.",
+    "Accountant confirms GST/HST status + export-doc SOP; tax counsel reviews US nexus plan.",
+    "Founder names Ontario city + Quebec city for Canada expansion queue (Vancouver/Halifax already cities).",
+    "USPTO + common-law clearance packet for VORG-EAVY / key marks before US paid seeding."
+  ]
+}

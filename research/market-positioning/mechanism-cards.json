@@ -1,0 +1,128 @@
+{
+  "version": "market-positioning-mechanism-cards-v2",
+  "checkedOn": "2026-08-22",
+  "ambitionNote": "Cards include study peers for brand-house path. Revenue/follower figures are observed claims from sources — never VORG forecasts.",
+  "cards": [
+    {
+      "id": "mech-corteiz-city-exchange",
+      "reference": "Corteiz",
+      "sourceIds": ["src-gq-corteiz-brooklyn"],
+      "observedFact": "GQ reported a Brooklyn denim-exchange scene with intense city participation and event energy.",
+      "transferableMechanism": "City-specific participation around a product exchange / densim moment, measured with RSVP and controlled capacity.",
+      "disallowedCopy": ["surprise unsafe queues", "scarcity theatre", "uncontrolled public activation", "copycat crowd stunts"],
+      "vorgHypothesis": "If Brooklyn is later chosen for a pop-up, run a booked, capacity-capped fit/try event after online metro proof—not a street mob.",
+      "contentPillar": "city-participation",
+      "controlledTest": "After online receipts, one RSVP-gated Brooklyn try-on with hard capacity and photo consent."
+    },
+    {
+      "id": "mech-madhappy-world",
+      "reference": "Madhappy",
+      "sourceIds": ["src-madhappy-about"],
+      "observedFact": "Brand positions products, editorial, community language, and physical experience as one world.",
+      "transferableMechanism": "Keep Drop 001 SKUs, content, and any later pop-up inside one coherent brand world.",
+      "disallowedCopy": ["assume community slogans create conversion", "copy scale or store footprint"],
+      "vorgHypothesis": "Firm Jacket + denim + scarf should share one visual/language system across TikTok, YouTube, and Shopify.",
+      "contentPillar": "world-coherence",
+      "controlledTest": "Publish one product-truth YouTube cut + three TikToks + one Shopify PDP set that share identical fit claims and imagery rules."
+    },
+    {
+      "id": "mech-beis-founder-shopify-pos",
+      "reference": "BÉIS",
+      "sourceIds": ["src-beis-shopify"],
+      "observedFact": "Shopify case study highlights founder-led trust and connected Shopify/POS pop-up operations at mature scale.",
+      "transferableMechanism": "Founder long-form trust content feeding a Shopify checkout path, with POS reconciliation if a pop-up happens later.",
+      "disallowedCopy": ["treat mature revenue as VORG benchmark", "assume pop-up sales before venue proof"],
+      "vorgHypothesis": "Founder YouTube is a product-truth library; short cuts feed TikTok; Shopify owns checkout measurement.",
+      "contentPillar": "founder-product-truth",
+      "controlledTest": "Ship three founder fit/fabric clips, cut shorts, land on one U.S.-priced Shopify page, measure qualified product/size/city actions."
+    },
+    {
+      "id": "mech-goodfair-native-tiktok",
+      "reference": "Goodfair",
+      "sourceIds": ["src-goodfair-tiktok"],
+      "observedFact": "TikTok case material describes native creator/employee content connected to Shopify with measured experimentation.",
+      "transferableMechanism": "Original native short-form + measured Shopify landing tests.",
+      "disallowedCopy": ["treat platform case ROAS as expected VORG ROAS", "fake UGC"],
+      "vorgHypothesis": "Employee/founder-native clips outperform scripted praise for a new micro-label.",
+      "contentPillar": "native-short-form",
+      "controlledTest": "Run a capped creative sprint with kill rules on qualified actions, not views."
+    },
+    {
+      "id": "mech-fashionzone-creator-freedom",
+      "reference": "FashionZone",
+      "sourceIds": ["src-fashionzone-tiktok"],
+      "observedFact": "TikTok case material emphasizes creator freedom and native format testing.",
+      "transferableMechanism": "Give creators format freedom inside a signed brief with disclosure, claims, and music controls.",
+      "disallowedCopy": ["uncontrolled claims", "uncleared commercial music", "undisclosed gifted posts"],
+      "vorgHypothesis": "One contracted/gift-disclosed U.S. creator test can beat ten vague seeding DMs.",
+      "contentPillar": "governed-ugc",
+      "controlledTest": "One signed creator brief + disclosure checklist + outcome receipt before any scale."
+    },
+    {
+      "id": "mech-jacquemus-world-show",
+      "reference": "Jacquemus",
+      "sourceIds": ["src-gq-jacquemus", "src-forbes-jacquemus", "src-drum-jacquemus"],
+      "observedFact": "Editorial sources describe founder-as-channel storytelling, a coherent Southern-France visual world, and runway/settings designed for social shareability; GQ cites independent Paris scale and retail rollout at mature revenue.",
+      "transferableMechanism": "One irreducible brand world + founder personal channel + image discipline where every asset reinforces the same place/story/product grammar.",
+      "disallowedCopy": ["lavender-field budgets", "using peer revenue as VORG target", "CGI/stunt without product truth", "claiming luxury adjacency without craft proof"],
+      "vorgHypothesis": "VORG wins by making The Firm / Originals world as recognizable as a color/place code — not by copying Provence aesthetics.",
+      "contentPillar": "world-building",
+      "controlledTest": "Lock 3 must / 3 never image rules; shoot one lookbook set that obeys them; cold-test recognition without logo."
+    },
+    {
+      "id": "mech-nude-project-community",
+      "reference": "Nude Project",
+      "sourceIds": ["src-forbes-nude", "src-fnw-nude", "src-numero-nude"],
+      "observedFact": "Founder-duo brand built from small start capital; podcast/community/events sit beside product; retail share grew after online; US pop-ups followed organic US demand claims in interviews.",
+      "transferableMechanism": "Community media (long-form conversation) + in-person events after demand exists; retail follows data.",
+      "disallowedCopy": ["open stores to look big", "podcast as empty content without community", "treating reported multi-million revenue as VORG baseline"],
+      "vorgHypothesis": "A VORG product-truth podcast/YouTube series can build trust before retail; US pop-up only after Brooklyn online receipts.",
+      "contentPillar": "community-media",
+      "controlledTest": "Four founder long-form episodes tied to SKU fit questions; measure waitlist/size captures, not downloads alone."
+    },
+    {
+      "id": "mech-hermes-craft-scarcity",
+      "reference": "Hermès",
+      "sourceIds": ["src-umbrex-hermes", "src-hermes-finance-strategy"],
+      "observedFact": "Strategy profiles describe vertical control, craft capacity limits, owned retail, and full-price discipline rather than promotional scarcity theatre.",
+      "transferableMechanism": "At micro scale: price integrity, claim restraint, scarcity as byproduct of real capacity/QC — not fake sold-out.",
+      "disallowedCopy": ["waitlist-as-ad without craft", "vertical tannery fantasy on C$5-6k", "Hermès margins as Drop 001 model", "artificial sold-out with leftover stock"],
+      "vorgHypothesis": "VORG earns Hermès-like trust only after repeated QC and honest materials — Phase 0 is claim ladder + sample truth.",
+      "contentPillar": "craft-discipline",
+      "controlledTest": "Publish zero unproven luxury adjectives; every fibre/finish claim maps to a quote or sample photo."
+    },
+    {
+      "id": "mech-jaded-silhouette-heat",
+      "reference": "Jaded London",
+      "sourceIds": ["src-vogue-jaded", "src-wwd-jaded-nyc"],
+      "observedFact": "Vogue Business reports DTC-led growth, trend-led drops, organic stylist/celebrity demand around a hero parachute-pant silhouette; US share and pop-ups followed demand.",
+      "transferableMechanism": "One hero silhouette that becomes requestable; DTC-first; physical retail after territory proves itself.",
+      "disallowedCopy": ["wholesale (ASOS-class) before DTC proof", "celebrity spray gifting", "chasing every TikTok microtrend"],
+      "vorgHypothesis": "Firm Jacket or women’s low-rise can be the requestable hero if fit is proven — then denim compounds.",
+      "contentPillar": "hero-silhouette",
+      "controlledTest": "Pick one hero; run all Wave-0 content on that hero’s fit truth; measure stylist/creator request rate and PDP actions."
+    },
+    {
+      "id": "mech-scuffers-community-organic",
+      "reference": "Scuffers",
+      "sourceIds": ["src-fu-scuffers", "src-shopify-scuffers"],
+      "observedFact": "FashionUnited/Shopify case material describe community-named tribe, limited drops, organic/direct traffic emphasis, and retail after online validation across EU markets.",
+      "transferableMechanism": "Named community + drop discipline + expand geography only after online data.",
+      "disallowedCopy": ["expect billion organic views", "creator-farm vanity as strategy", "open multi-city retail simultaneously"],
+      "vorgHypothesis": "Name a small VORG circle (seed/waitlist tier) with real obligations; grow organic before paid.",
+      "contentPillar": "named-community",
+      "controlledTest": "Define seed circle rules (15–20) with disclosure + outcome fields; no paid until circle produces qualified actions."
+    },
+    {
+      "id": "mech-eme-drop-event",
+      "reference": "EME Studios",
+      "sourceIds": ["src-fu-eme", "src-fnw-eme-nyc"],
+      "observedFact": "FashionUnited/FashionNetwork report Spanish digital-first growth, drop/pop-up culture, measured internationalization via temporary NYC base before permanent leaps; founders describe slowing drop cadence for quality.",
+      "transferableMechanism": "Drop-as-event + temporary market tests before permanent retail; slow cadence when quality demands it.",
+      "disallowedCopy": ["permanent NYC lease early", "collab spectacle without product depth", "treating €33M peer revenue as VORG plan"],
+      "vorgHypothesis": "Brooklyn online proof → time-boxed pop-up → only then discuss permanence.",
+      "contentPillar": "drop-as-event",
+      "controlledTest": "One drop calendar with kill rules; pop-up only after metro receipts and venue package."
+    }
+  ]
+}

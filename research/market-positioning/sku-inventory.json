@@ -1,0 +1,67 @@
+{
+  "version": "market-positioning-sku-inventory-v1",
+  "checkedOn": "2026-08-22",
+  "activeLaunchWedge": "US/Brooklyn forecast track (pending hard-stop gates)",
+  "canadianFallback": "Ottawa/Gatineau",
+  "wedgeDecisionRef": "docs/DECISIONS.md#2026-08-22-authorize-alternating-the-launch-wedge-to-the-highest-gain-market-route",
+  "productionCeilingCad": { "min": 5000, "max": 6000 },
+  "workingMerchandisePlan": {
+    "source": "launch/drop-001-sales-forecast-inputs.md",
+    "evidenceClass": "internal-planning-assumption",
+    "totalUnits": 126,
+    "workingInventoryCostCad": 3712
+  },
+  "skus": [
+    {
+      "id": "VE-FJ-001",
+      "name": "The Firm Jacket",
+      "role": "hero",
+      "workingUnits": 12,
+      "workingPriceCad": 249,
+      "workingLandedCogsCad": 85,
+      "proofStatus": "unquoted-unsampled"
+    },
+    {
+      "id": "VE-WD-001",
+      "name": "Women's Low-Rise Denim Jean",
+      "role": "core-bottom-women",
+      "workingUnits": 24,
+      "workingPriceCad": 128,
+      "workingLandedCogsCad": 38,
+      "proofStatus": "unquoted-unsampled"
+    },
+    {
+      "id": "VE-MD-001",
+      "name": "Men's Denim Jean",
+      "role": "core-bottom-men",
+      "workingUnits": 20,
+      "workingPriceCad": 128,
+      "workingLandedCogsCad": 38,
+      "proofStatus": "unquoted-unsampled"
+    },
+    {
+      "id": "VE-SC-001",
+      "name": "Scarf",
+      "role": "accessory",
+      "workingUnits": 40,
+      "workingPriceCad": 35,
+      "workingLandedCogsCad": 12,
+      "proofStatus": "unquoted-unsampled"
+    },
+    {
+      "id": "VE-WT-001",
+      "name": "Women's Top / Bodysuit",
+      "role": "top",
+      "workingUnits": 30,
+      "workingPriceCad": 68,
+      "workingLandedCogsCad": 18,
+      "note": "Black long-sleeve is the current fit-risk fallback until bodysuit proof clears",
+      "proofStatus": "unquoted-unsampled"
+    }
+  ],
+  "constraints": [
+    "Units, prices, and landed COGS remain working assumptions until vendor quotes and samples exist.",
+    "C$5,000-C$6,000 production ceiling remains unless the founder revises it.",
+    "No first-party U.S. VORG receipts are recorded in this inventory."
+  ]
+}

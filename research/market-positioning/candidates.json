@@ -1,0 +1,76 @@
+{
+  "version": "market-positioning-candidates-v1",
+  "checkedOn": "2026-08-22",
+  "operatingMarketDefault": "Canada",
+  "activeSkuIds": ["VE-FJ-001", "VE-WD-001", "VE-MD-001", "VE-SC-001", "VE-WT-001"],
+  "candidates": [
+    {
+      "id": "us-nyc-brooklyn",
+      "country": "United States",
+      "metro": "New York / Brooklyn",
+      "onlineScope": "national",
+      "targetBuyer": "Style-forward 20s–30s buyers who treat denim and a sharp outer layer as identity, not basics, and discover through short-form + city scenes.",
+      "positionStatement": "VORG-EAVY as a controlled Canadian micro-label entering Brooklyn’s densim/event culture with product truth content, not crowd-scarcity theatrics.",
+      "activeSkuIds": ["VE-FJ-001", "VE-WD-001", "VE-MD-001", "VE-SC-001", "VE-WT-001"],
+      "popUpIntent": "later-test",
+      "operatingMarket": "Canada",
+      "researchNotes": "Strongest public comparable for city-exchange energy (Corteiz Brooklyn reporting). Highest prestige risk of choosing culture over ops."
+    },
+    {
+      "id": "us-los-angeles",
+      "country": "United States",
+      "metro": "Los Angeles",
+      "onlineScope": "national",
+      "targetBuyer": "Creator-adjacent West Coast buyers who shop denim/outerwear as brand identity and respond to founder/product-process content.",
+      "positionStatement": "VORG-EAVY as product-truth DTC competing in LA’s denim and independent-label density without copying mature flagship economics.",
+      "activeSkuIds": ["VE-FJ-001", "VE-WD-001", "VE-MD-001", "VE-SC-001", "VE-WT-001"],
+      "popUpIntent": "later-test",
+      "operatingMarket": "Canada",
+      "researchNotes": "Active denim/independent retail openings (Joe’s Jeans Beverly Hills; Earthling Melrose) show physical brand building, not VORG demand."
+    },
+    {
+      "id": "us-chicago",
+      "country": "United States",
+      "metro": "Chicago",
+      "onlineScope": "national",
+      "targetBuyer": "Cold-weather urban buyers who need a real outer layer and structured denim for fall/winter dressing, discoverable via TikTok + Shopify.",
+      "positionStatement": "VORG-EAVY as a climate-fit drop for Midwestern city buyers where the Firm Jacket has seasonal relevance for a Nov window.",
+      "activeSkuIds": ["VE-FJ-001", "VE-WD-001", "VE-MD-001", "VE-SC-001", "VE-WT-001"],
+      "popUpIntent": "later-test",
+      "operatingMarket": "Canada",
+      "researchNotes": "Jacket seasonality alignment is a product-position prior, not a purchase receipt."
+    },
+    {
+      "id": "us-atlanta",
+      "country": "United States",
+      "metro": "Atlanta",
+      "onlineScope": "national",
+      "targetBuyer": "Southern metro buyers in a growing denim/street-culture retail corridor who discover via creators and local retail residency patterns.",
+      "positionStatement": "VORG-EAVY as a disciplined five-SKU label testing whether Atlanta’s expanding denim/culture retail energy transfers to a Canadian newcomer.",
+      "activeSkuIds": ["VE-FJ-001", "VE-WD-001", "VE-MD-001", "VE-SC-001", "VE-WT-001"],
+      "popUpIntent": "later-test",
+      "operatingMarket": "Canada",
+      "researchNotes": "Denim Tears Lenox Square residency is a transferable *mechanism* (standing local residency), not a VORG forecast."
+    },
+    {
+      "id": "us-miami",
+      "country": "United States",
+      "metro": "Miami",
+      "onlineScope": "national",
+      "targetBuyer": "Fashion-visible coastal buyers with strong tourism/retail density and creator content volume, weaker November outerwear need.",
+      "positionStatement": "VORG-EAVY as a content-first coastal test where denim/top/scarf may travel better than a heavy Firm Jacket in a warm Nov window.",
+      "activeSkuIds": ["VE-FJ-001", "VE-WD-001", "VE-MD-001", "VE-SC-001", "VE-WT-001"],
+      "popUpIntent": "later-test",
+      "operatingMarket": "Canada",
+      "researchNotes": "Included as the research-justified fifth metro for creator/retail density; jacket seasonality is an explicit penalty in scoring."
+    }
+  ],
+  "invalidExamples": [
+    {
+      "id": "us-whole-country",
+      "country": "United States",
+      "metro": "",
+      "reason": "Whole-country candidates are invalid; a named metro is required."
+    }
+  ]
+}
