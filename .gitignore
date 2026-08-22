@@ -2,7 +2,11 @@
 Thumbs.db
 *.tmp
 *.log
+__pycache__/
+*.pyc
 ~$*
 .cursor/
 output/
 outputs/
+tmp/
+research/commerce-intelligence/public-data-model/raw/

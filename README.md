@@ -16,6 +16,7 @@ Use it for the brand thesis, launch strategy, product system, financial model, p
 - `finance/` - unit economics, budgets, P&L assumptions, cash gates
 - `research/` - source notes, competitor references, models, citations
 - `site/` - public Drop 001 site prototype and team-facing Drop OS dashboard
+- `VORG_Course_1/` - real-image luxury compositing course, workbook, references, exercises, and source manifests
 
 ## Working Rule
 
