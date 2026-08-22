@@ -25,7 +25,7 @@ Founder-stated active pick, corrected 2026-07-07:
 
 ## Hero Product
 
-The Firm Jacket should be a structured cropped or waist-length uniform jacket with a strong collar, controlled branding, and a premium shell fabric path.
+The Firm Jacket should be a structured cropped or waist-length uniform jacket with a strong leather collar, controlled branding, a premium quilted shell path, and straight continuous sleeves finished without a separate cuff or wrist cinch.
 
 Avoid broad true-leather runs until demand is proven.
 
@@ -33,3 +33,4 @@ Avoid broad true-leather runs until demand is proven.
 
 - `drop-001.md` - first product system and SKU roles
 - `tech-packs/barrel-jeans-supplier-brief.md` - Alibaba RFQ handoff for the VE-BJ-001 barrel-jean concept; reference only unless mapped to the corrected denim plan
+- `tech-packs/drop-001/README.md` - Drop 001 five-style RFQ/prototype pack, truth boundaries, and generated artifact map

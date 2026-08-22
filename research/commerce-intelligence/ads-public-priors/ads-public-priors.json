@@ -1,0 +1,95 @@
+{
+  "profileId": "ads-public-priors-v1",
+  "modelVersion": "VORG ads public practice priors v1.0",
+  "checkedOn": "2026-08-20",
+  "truth": "external-public-practice",
+  "intendedUse": "Fill Drop 001 paid-channel empty fields for cash-geometry practice only. Not VORG evidence, not spend authorization, not a media-buyer model.",
+  "fxAssumption": {
+    "usdToCad": 1.37,
+    "gbpToCad": 1.85,
+    "note": "Working FX for practice envelopes. Reconfirm before any real budget decision.",
+    "checkedOn": "2026-08-20"
+  },
+  "vorgWorkingCaps": {
+    "paidSocialAndSeedingCad": 450,
+    "source": "docs/MASTER_BRIEF.md and launch/fall-drop-launch-decision-report.md",
+    "note": "Working assumption, not an approved ad buy."
+  },
+  "paidCoveragePlan": {
+    "sessions": 850,
+    "ordersAtPlanningRate": 26,
+    "planningSessionPurchaseRate": 0.0306,
+    "source": "launch/drop-001-traffic-channel-plan.md"
+  },
+  "sources": [
+    {
+      "id": "S-ADS-001",
+      "name": "WordStream Facebook Ads Benchmarks 2025",
+      "publisher": "WordStream by LocaliQ",
+      "url": "https://www.wordstream.com/blog/facebook-ads-benchmarks-2025",
+      "pdf": "https://www.wordstream.com/wp-content/uploads/2025/09/ws-guide-2025-fb-benchmarks.pdf",
+      "access": "open",
+      "rightsBasis": "public-permitted-citation",
+      "sampleWindow": "2024-04-01 to 2025-06-30",
+      "campaigns": 1180,
+      "vertical": "Apparel / Fashion & Jewelry",
+      "metrics": {
+        "trafficCtr": 0.0129,
+        "trafficCpcUsd": 0.86
+      },
+      "note": "Traffic-objective medians. Lead CVR tables are not used as ecommerce purchase rates."
+    },
+    {
+      "id": "S-ADS-002",
+      "name": "IRP Fashion Clothing & Accessories Market Data",
+      "publisher": "IRP Commerce",
+      "url": "https://www.irpcommerce.com/en/gb/ecommercemarketdata.aspx?Market=3",
+      "access": "open",
+      "rightsBasis": "public-permitted-with-attribution",
+      "sampleWindow": "July 2026 vs July 2025",
+      "vertical": "Fashion Clothing & Accessories",
+      "metrics": {
+        "sessionConversionRate": 0.0174,
+        "costPerAcquisitionPctOfRevenue": 0.0906,
+        "costPerSessionGbp": 0.11,
+        "revenuePerSessionGbp": 1.25,
+        "averageOrderValueGbp": null
+      },
+      "note": "UK/Ireland platform first-party aggregates. Free with attribution. CPA is marketing cost ÷ revenue, not Meta CPA."
+    },
+    {
+      "id": "S-ADS-003",
+      "name": "UCI Online Shoppers Purchasing Intention",
+      "publisher": "UCI Machine Learning Repository",
+      "url": "https://archive.ics.uci.edu/dataset/468/online+shoppers+purchasing+intention+dataset",
+      "access": "open",
+      "rightsBasis": "CC-BY-4.0",
+      "metrics": {
+        "sessionPurchaseRateRaw": 0.15474453,
+        "engineTransferStrength": 7.75785
+      },
+      "note": "Already in public-transfer-v1. Raw 15.47% rate is rejected for VORG; only uncertainty strength transfers."
+    }
+  ],
+  "rejectedTransfers": [
+    {
+      "claim": "Import WordStream or IRP rates as VORG conversion or CAC truth",
+      "reason": "Different countries, brands, prices, creatives, and attribution. Practice only."
+    },
+    {
+      "claim": "Use Criteo attribution raw rows as Meta fashion CPC",
+      "reason": "Display attribution schema, not Ottawa DTC Meta traffic."
+    },
+    {
+      "claim": "Autopilot Hermes media buyer from these priors",
+      "reason": "External averages are not live account state; unattended spend remains Red."
+    }
+  ],
+  "practicePriors": {
+    "metaTrafficCtr": 0.0129,
+    "metaTrafficCpcUsd": 0.86,
+    "fashionSessionConversionRate": 0.0174,
+    "fashionCostPerSessionGbp": 0.11,
+    "fashionCpaPctOfRevenue": 0.0906
+  }
+}

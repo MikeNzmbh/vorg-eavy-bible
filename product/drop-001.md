@@ -18,6 +18,16 @@ Working budget boundary:
 - Units, prices, landed COGS, and revenue are not locked.
 - Vendor quotes, samples, and fit proof must control final production decisions.
 
+Working Drop 001 complexity rule from the 2026-07-21 ecommerce stress test:
+
+- one production colour for The Firm Jacket
+- one wash for the women's denim block
+- one wash for the separate men's denim block
+- black as the bulk long-sleeve colour; white remains sample-only until opacity and demand proof clear
+- two scarf colours may remain because they do not create a size curve
+
+This is a proof-buy direction, not a purchase order. The quote-backed model may reduce units or remove a product; it may not silently restore a one-block unisex jean or multiply colourways without founder approval and evidence.
+
 ## The Firm Jacket
 
 Role:
@@ -29,6 +39,8 @@ Target:
 - cropped or waist-length blouson / uniform jacket
 - structured shoulders
 - strong collar
+- straight continuous quilted sleeves with no separate cuff, taper, cinch, elastic, rib, band, or closure
+- approximately 3 cm self-fabric sleeve-end turnback with precise parallel topstitching
 - clean body
 - minimal branding
 - void black primary color
@@ -37,9 +49,9 @@ Material path:
 
 - coated cotton twill
 - waxed canvas
-- premium synthetic leather
+- genuine leather collar only; exact species, tannery, grade, thickness, finish, and testing remain supplier to confirm
 
-Avoid broad true-leather production until demand is proven.
+Avoid broad true-leather shell production until demand is proven. The collar is the controlled leather component; the sleeve continues in the quilted shell fabric to its finished end.
 
 ## Women's Low-Rise Denim Jean
 

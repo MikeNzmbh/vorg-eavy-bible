@@ -15,6 +15,8 @@ Current state: reset 2026-07-07 after founder correction to the Drop 001 product
 
 The old per-unit recovery math should not be used until the new SKU count, unit quantities, landed COGS, and prices are rebuilt.
 
+The 2026-07-21 launch decision report contains a corrected 126-unit proof-buy stress test under the production cap. Treat it as an internal scenario only; vendor-backed values remain TBD in this canonical costing table until quotes and approved samples exist.
+
 ## Active Costing Table
 
 | Product | Units | Price | Landed COGS | Revenue | COGS | Status |

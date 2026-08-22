@@ -2,7 +2,7 @@
 
 ## Working Target
 
-September 2026.
+November 5-12, 2026, conditional on quote-backed landed costs, approved pre-production samples, verified demand and campaign proof, and a vendor-backed inbound and QC buffer. October is not the active plan unless those gates clear early enough.
 
 ## Channel
 
