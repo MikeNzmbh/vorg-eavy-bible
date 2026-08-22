@@ -14,7 +14,7 @@ vm.runInContext(source, sandbox, { filename: bundlePath });
 
 const engine = sandbox.VorgStrategyGenerator;
 assert.ok(engine, 'engine global exists');
-assert.equal(engine.ENGINE_VERSION, 'VORG Strategy Generator v1');
+assert.equal(engine.ENGINE_VERSION, 'VORG Strategy Generator v1.1');
 
 // ---------------------------------------------------------------- fixtures
 
@@ -58,7 +58,15 @@ const baseInput = {
   brand,
   library: libraryPack.cards,
   markets: candidatesPack.candidates.map((c) => ({ id: c.id, metro: c.metro, country: c.country })),
-  gates: gatesPack.gates.map((g) => ({ id: g.id, label: g.label, state: g.state, hardStop: g.hardStop, notes: g.notes }))
+  gates: gatesPack.gates.map((g) => ({
+    id: g.id,
+    label: g.label,
+    state: g.state,
+    hardStop: g.hardStop,
+    region: g.region,
+    appliesToMarkets: g.appliesToMarkets,
+    notes: g.notes
+  }))
 };
 
 // ---------------------------------------------------------------- 1. winner + full plan from scratch, zero first-party results
@@ -68,6 +76,9 @@ const result = engine.generateStrategy(baseInput);
 
 assert.ok(result.winner, 'picks a winner strategy with zero first-party sales');
 assert.ok(result.runnerUp, 'picks a runner-up');
+assert.equal(result.winnerSet.length, 2, 'near-tie policy keeps the two operationally indistinguishable leaders');
+assert.equal(result.winnerSetThresholdPoints, 0.5, 'near-tie threshold is explicit and scale-aware');
+assert.equal(result.rankingStrength, 'co-winners');
 assert.notEqual(result.winner.strategyId, result.runnerUp.strategyId);
 assert.equal(result.mode, 'from-scratch');
 assert.ok(result.rankedStrategies.length >= 7, 'enumerates base archetypes plus hybrids');
@@ -93,6 +104,14 @@ for (const wave of plan.waves) {
 }
 assert.ok(plan.waves.some((w) => w.phaseId === 'P0'), 'plan includes gate-clearance phase');
 assert.ok(result.unpreparednessReport.length > 0, 'unpreparedness report lists open gates');
+assert.ok(
+  result.unpreparednessReport.every((gate) => !gate.gateId.startsWith('gate-ca-')),
+  'Canada-only expansion gates do not freeze the U.S. strategy branch'
+);
+assert.ok(
+  plan.waves.every((wave) => wave.items.every((item) => item.gateDependencies.every((gateId) => !gateId.startsWith('gate-ca-')))),
+  'compiled U.S. plan does not reintroduce Canada-only gate dependencies'
+);
 
 // ---------------------------------------------------------------- 2. input immutability
 
@@ -121,6 +140,7 @@ const syntheticCard = (industry) => ({
   workedOrFailed: 'worked',
   why: 'synthetic evidence',
   transferabilityConditions: ['none'],
+  sourceClass: 'reputable-editorial',
   confidence: 0.8
 });
 const scoreFor = (industry) => {
@@ -128,6 +148,37 @@ const scoreFor = (industry) => {
   return r.rankedStrategies.find((s) => s.strategyId === 'creator-seeding').evidenceScore;
 };
 assert.ok(scoreFor('fashion') > scoreFor('restaurant-qsr'), 'cross-industry evidence earns less than same-industry evidence');
+
+const oneSource = engine.generateStrategy({ ...baseInput, library: [syntheticCard('fashion')] });
+const duplicatedSource = engine.generateStrategy({
+  ...baseInput,
+  library: [syntheticCard('fashion'), { ...syntheticCard('fashion'), id: 'syn-duplicate' }]
+});
+assert.equal(
+  duplicatedSource.rankedStrategies.find((s) => s.strategyId === 'creator-seeding').evidenceScore,
+  oneSource.rankedStrategies.find((s) => s.strategyId === 'creator-seeding').evidenceScore,
+  'duplicate cards from the same source URL cannot amplify strategy evidence'
+);
+
+const officialSource = engine.generateStrategy({
+  ...baseInput,
+  library: [{ ...syntheticCard('fashion'), sourceClass: 'official-regulator' }]
+});
+const vendorSource = engine.generateStrategy({
+  ...baseInput,
+  library: [{ ...syntheticCard('fashion'), sourceClass: 'vendor-case-study' }]
+});
+assert.ok(
+  officialSource.rankedStrategies.find((s) => s.strategyId === 'creator-seeding').evidenceScore >
+    vendorSource.rankedStrategies.find((s) => s.strategyId === 'creator-seeding').evidenceScore,
+  'official sources carry more strategy evidence weight than vendor case studies'
+);
+
+const futureOnly = engine.generateStrategy({
+  ...baseInput,
+  library: [{ ...syntheticCard('fashion'), dateChecked: '2027-01-01' }]
+});
+assert.equal(futureOnly.winner, null, 'future-dated evidence cannot produce a strategy winner');
 
 const crossUse = result.winner.stress.supporting.find((u) => u.crossIndustry);
 assert.ok(crossUse, 'winner uses at least one cross-industry receipt');

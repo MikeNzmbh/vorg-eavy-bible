@@ -3075,6 +3075,71 @@ function renderEvents() {
 /* ═══════════════════════════════════════════════════
    City Expansion
    ═══════════════════════════════════════════════════ */
+function renderPositioningForecast() {
+  const el = qs('#positioningForecast');
+  if (!el) return;
+  const marketRuntime = window.VORG_MARKET_POSITIONING_RUNTIME;
+  const strategyRuntime = window.VORG_STRATEGY_RUNTIME;
+  const market = marketRuntime?.result;
+  const strategy = strategyRuntime?.result;
+
+  if (!market?.provisionalWinner) {
+    el.innerHTML = `
+      <div class="positioning-empty">
+        <span class="eyebrow">U.S. position forecast</span>
+        <h3>No generated market result loaded</h3>
+        <p>Run <code>npm run generate:strategy</code> in <code>site/</code>. Forecast output never changes Drop OS GO.</p>
+      </div>`;
+    return;
+  }
+
+  const lead = market.provisionalWinner;
+  const coFinalists = market.provisionalWinners || [lead];
+  const strategyWinners = strategy?.winnerSet || (strategy?.winner ? [strategy.winner] : []);
+  const openUsHardStops = (market.blindSpotGates || []).filter(gate =>
+    gate.hardStop && gate.state !== 'cleared-with-evidence' && String(gate.region || '').toUpperCase().includes('US')
+  );
+
+  el.innerHTML = `
+    <div class="positioning-hero">
+      <div>
+        <span class="eyebrow">Forecast authority only · ${escapeAttr(market.version)}</span>
+        <h3>${escapeAttr(lead.metro)} is the operating lead — not a proven exclusive winner</h3>
+        <p>${coFinalists.length} co-finalist${coFinalists.length === 1 ? '' : 's'} sit inside the near-tie rule. No metro-specific search or VORG GA4 evidence is loaded, so the engine keeps the recommendation fragile.</p>
+      </div>
+      <div class="positioning-score">
+        <strong>${Number(lead.posteriorScore).toFixed(1)}</strong>
+        <span>forecast / 100</span>
+        <small>${Number(lead.confidence).toFixed(1)} confidence · ${escapeAttr(market.rankingStrength)}</small>
+      </div>
+    </div>
+    <div class="positioning-strip">
+      <div>
+        <span>Market co-finalists</span>
+        <strong>${coFinalists.map(candidate => escapeAttr(candidate.metro)).join(' · ')}</strong>
+      </div>
+      <div>
+        <span>Strategy co-winners</span>
+        <strong>${strategyWinners.length ? strategyWinners.map(candidate => escapeAttr(candidate.label)).join(' · ') : 'Generate strategy result'}</strong>
+      </div>
+      <div>
+        <span>U.S. hard stops</span>
+        <strong>${openUsHardStops.length} open · spend stays locked</strong>
+      </div>
+    </div>
+    <div class="positioning-ranking">
+      ${(market.rankedCandidates || []).map((candidate, index) => `
+        <div class="positioning-rank-row">
+          <span>${index + 1}</span>
+          <strong>${escapeAttr(candidate.metro)}</strong>
+          <em>${Number(candidate.posteriorScore).toFixed(1)}</em>
+          <small>${escapeAttr(candidate.selectionRole || 'challenger')}</small>
+        </div>`).join('')}
+    </div>
+    <p class="positioning-footnote">Prediction can guide a small learning plan. It cannot raise manufacturing proof, financial proof, campaign proof, or Drop OS readiness.</p>
+  `;
+}
+
 function renderMarketEntryGate() {
   const el = qs('#marketEntryGate');
   if (!el) return;
@@ -3195,6 +3260,7 @@ function saveMarketEntry(e) {
 }
 
 function renderCityExpansion() {
+  renderPositioningForecast();
   renderMarketEntryGate();
   const byCity = new Map(CITIES.map(c => [c, []]));
   state.signals.forEach(sig => {

@@ -5,7 +5,7 @@
  */
 var VorgMarketPositioning;
 (function (VorgMarketPositioning) {
-    VorgMarketPositioning.ENGINE_VERSION = "VORG Market Positioning Prediction v1";
+    VorgMarketPositioning.ENGINE_VERSION = "VORG Market Positioning Prediction v1.1";
     const WEIGHTS = {
         search: 20,
         buyer: 15,
@@ -34,6 +34,7 @@ var VorgMarketPositioning;
         waitlist: 2,
         popup: 5
     };
+    const NEAR_TIE_POINTS = 1;
     function clamp(n, lo = 0, hi = 100) {
         return Math.max(lo, Math.min(hi, n));
     }
@@ -46,21 +47,77 @@ var VorgMarketPositioning;
         return /^(https?:\/\/|[\w.-]+\/)/i.test(t) || t.includes("/");
     }
     function sourceMap(sources) {
-        return new Map(sources.map((s) => [s.id, s]));
+        const mapped = new Map();
+        for (const source of sources) {
+            if (!mapped.has(source.id))
+                mapped.set(source.id, source);
+        }
+        return mapped;
     }
     function daysBetween(a, b) {
         const da = Date.parse(a);
         const db = Date.parse(b);
         if (Number.isNaN(da) || Number.isNaN(db))
-            return 0;
+            return Number.POSITIVE_INFINITY;
         return Math.abs(db - da) / (1000 * 60 * 60 * 24);
+    }
+    function sourceClassFactor(sourceClass) {
+        const normalized = String(sourceClass || "").toLowerCase();
+        if (/official-regulator|official-statistics/.test(normalized))
+            return 1;
+        if (/official-platform/.test(normalized))
+            return 0.9;
+        if (/reputable-editorial/.test(normalized))
+            return 0.8;
+        if (/industry-research/.test(normalized))
+            return 0.75;
+        if (/vendor-case-study/.test(normalized))
+            return 0.6;
+        if (/internal-decision-artifact/.test(normalized))
+            return 0.5;
+        if (/internal-planning-assumption/.test(normalized))
+            return 0.35;
+        return 0.55;
+    }
+    function signalBasisFactor(basis) {
+        if (basis === "observed-data")
+            return 1;
+        if (basis === "working-assumption")
+            return 0.4;
+        return 0.72;
+    }
+    function sourceAgeFactor(source, asOf, expiryDays) {
+        const checked = Date.parse(source.checkedOn);
+        const decision = Date.parse(asOf);
+        if (!Number.isFinite(checked) || !Number.isFinite(decision))
+            return 0;
+        if (checked > decision + 24 * 60 * 60 * 1000)
+            return 0;
+        const age = daysBetween(source.checkedOn, asOf);
+        if (age > expiryDays * 2)
+            return 0;
+        if (age > expiryDays)
+            return 0.5;
+        if (age > expiryDays / 2)
+            return 0.8;
+        return 1;
+    }
+    function usableSource(source, asOf, expiryDays) {
+        return Boolean(source &&
+            hasEvidenceReference(source.url) &&
+            source.id &&
+            source.sourceClass &&
+            Number.isFinite(source.confidence) &&
+            source.confidence >= 0 &&
+            source.confidence <= 1 &&
+            sourceAgeFactor(source, asOf, expiryDays) > 0);
     }
     function average(nums) {
         if (!nums.length)
             return 0;
         return nums.reduce((s, n) => s + n, 0) / nums.length;
     }
-    function linkedSignalsFor(candidateId, family, signals, sources) {
+    function linkedSignalsFor(candidateId, family, signals, sources, asOf, expiryDays) {
         return signals.filter((sig) => {
             if (sig.family !== family)
                 return false;
@@ -70,7 +127,7 @@ var VorgMarketPositioning;
                 return false;
             const linked = sig.sourceIds.filter((id) => {
                 const src = sources.get(id);
-                return src && hasEvidenceReference(src.url);
+                return usableSource(src, asOf, expiryDays);
             });
             return linked.length > 0;
         });
@@ -79,56 +136,88 @@ var VorgMarketPositioning;
         const families = Object.keys(FAMILY_TO_COMPONENT).filter((f) => FAMILY_TO_COMPONENT[f] === component);
         const matched = [];
         for (const family of families) {
-            matched.push(...linkedSignalsFor(candidateId, family, signals, sources));
+            matched.push(...linkedSignalsFor(candidateId, family, signals, sources, asOf, expiryDays));
         }
         const sourceIds = new Set();
         const values = [];
-        const confBits = [];
+        const confidenceBySource = new Map();
         for (const sig of matched) {
             let score = clamp(sig.normalizedScore);
             // Generic US-wide search macros cannot dominate metro ranking.
             if (sig.family === "search" && /united states/i.test(sig.geography) && !/metro|brooklyn|los angeles|chicago|atlanta|miami/i.test(sig.geography)) {
                 score = Math.min(score, 50);
             }
+            const qualityBits = [];
             for (const sid of sig.sourceIds) {
                 const src = sources.get(sid);
-                if (!src || !hasEvidenceReference(src.url))
+                if (!usableSource(src, asOf, expiryDays))
                     continue;
                 sourceIds.add(sid);
-                const age = daysBetween(src.checkedOn, asOf);
-                const decay = age > expiryDays ? 0.6 : age > expiryDays / 2 ? 0.85 : 1;
-                confBits.push(src.confidence * decay);
+                const ageFactor = sourceAgeFactor(src, asOf, expiryDays);
+                const quality = src.confidence * ageFactor * sourceClassFactor(src.sourceClass);
+                qualityBits.push(quality);
+                confidenceBySource.set(sid, Math.max(confidenceBySource.get(sid) || 0, quality));
             }
-            values.push(score);
+            const sourceQuality = average(qualityBits);
+            const geographyFactor = sig.candidateIds.length === 1 ? 1 : 0.82;
+            values.push(score * sourceQuality * signalBasisFactor(sig.basis) * geographyFactor);
         }
         if (component === "comparable") {
-            const usable = mechanisms.filter((m) => m.sourceIds.some((id) => sources.get(id) && hasEvidenceReference(sources.get(id).url)));
+            const usable = mechanisms.filter((m) => m.sourceIds.some((id) => usableSource(sources.get(id), asOf, expiryDays)));
             if (usable.length < 3) {
-                return { score: Math.min(average(values) || 0, 25), sourceIds: [...sourceIds], confidenceBits: confBits };
+                return { score: Math.min(average(values) || 0, 25), sourceIds: [...sourceIds], confidenceBits: [...confidenceBySource.values()] };
             }
             // Mechanism count alone earns nothing beyond presence; require mapped hypotheses.
             const withHypothesis = usable.filter((m) => m.transferableMechanism && m.vorgHypothesis);
-            values.push(clamp(40 + withHypothesis.length * 8));
-            for (const m of withHypothesis)
-                m.sourceIds.forEach((id) => sourceIds.add(id));
+            const mechanismSourceIds = new Set();
+            for (const mechanism of withHypothesis) {
+                for (const id of mechanism.sourceIds) {
+                    const source = sources.get(id);
+                    if (!usableSource(source, asOf, expiryDays))
+                        continue;
+                    mechanismSourceIds.add(id);
+                    sourceIds.add(id);
+                    const quality = source.confidence * sourceAgeFactor(source, asOf, expiryDays) * sourceClassFactor(source.sourceClass);
+                    confidenceBySource.set(id, Math.max(confidenceBySource.get(id) || 0, quality));
+                }
+            }
+            values.push(clamp(35 + Math.min(35, mechanismSourceIds.size * 5)) * 0.72);
         }
         if (!values.length)
             return { score: 0, sourceIds: [], confidenceBits: [] };
-        return { score: clamp(average(values)), sourceIds: [...sourceIds], confidenceBits: confBits };
+        return { score: clamp(average(values)), sourceIds: [...sourceIds], confidenceBits: [...confidenceBySource.values()] };
     }
-    function commerceCap(gates, base) {
+    function normalizeMarket(value) {
+        return String(value || "").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+    }
+    function gateAppliesToCandidate(gate, candidate) {
+        var _a;
+        if ((_a = gate.appliesToMarkets) === null || _a === void 0 ? void 0 : _a.length) {
+            const targets = gate.appliesToMarkets.map(normalizeMarket);
+            return targets.includes(normalizeMarket(candidate.country)) || targets.includes("global");
+        }
+        if (!gate.region)
+            return true;
+        const region = gate.region.toUpperCase();
+        if (/UNITED STATES|\bUS\b|\bUSA\b/i.test(candidate.country))
+            return region.includes("US");
+        if (/CANADA|\bCA\b/i.test(candidate.country))
+            return region.includes("CA");
+        return region === "GLOBAL";
+    }
+    function commerceCap(gates, candidate, base) {
         const flags = [];
-        const hardOpen = gates.filter((g) => g.hardStop && g.state !== "cleared-with-evidence");
+        const hardOpen = gates.filter((g) => gateAppliesToCandidate(g, candidate) && g.hardStop && g.state !== "cleared-with-evidence");
         if (hardOpen.length) {
             flags.push(`Commerce capped: ${hardOpen.length} hard-stop gate(s) not cleared with evidence.`);
             return { score: Math.min(base, 35), flags };
         }
         return { score: base, flags };
     }
-    function coverage(candidateId, signals, sources) {
+    function coverage(candidateId, signals, sources, asOf, expiryDays) {
         const missing = [];
         for (const family of REQUIRED_FAMILIES) {
-            if (!linkedSignalsFor(candidateId, family, signals, sources).length)
+            if (!linkedSignalsFor(candidateId, family, signals, sources, asOf, expiryDays).length)
                 missing.push(family);
         }
         return { complete: missing.length === 0, missing };
@@ -137,14 +226,23 @@ var VorgMarketPositioning;
         const adjustments = [];
         const byId = new Map(ranked.map((r) => [r.candidateId, { ...r, componentScores: { ...r.componentScores } }]));
         const seenArtifacts = new Set();
+        const candidateAdjustment = new Map();
+        const candidateAdjustmentMagnitude = new Map();
         for (const receipt of receipts) {
             if (!hasEvidenceReference(receipt.artifactUrl))
                 continue;
-            if (seenArtifacts.has(receipt.artifactUrl))
+            const artifactKey = receipt.artifactUrl.trim().toLowerCase();
+            if (seenArtifacts.has(artifactKey))
                 continue;
-            seenArtifacts.add(receipt.artifactUrl);
+            seenArtifacts.add(artifactKey);
             const row = byId.get(receipt.candidateId);
             if (!row)
+                continue;
+            if (!Number.isFinite(receipt.quantity) || receipt.quantity <= 0)
+                continue;
+            const countedAt = Date.parse(receipt.countedAt);
+            const decisionAt = Date.parse(asOf);
+            if (!Number.isFinite(countedAt) || !Number.isFinite(decisionAt) || countedAt > decisionAt + 24 * 60 * 60 * 1000)
                 continue;
             const age = daysBetween(receipt.countedAt, asOf);
             if (age > expiryDays)
@@ -154,15 +252,25 @@ var VorgMarketPositioning;
                 delta *= 0.35;
             if (receipt.geoPrecision === "unknown")
                 delta *= 0.15;
-            if (receipt.kind === "purchase" || receipt.kind === "checkout") {
-                // purchases/checkouts matter more already via weight
-            }
+            if (receipt.outcome === "negative")
+                delta *= -1;
+            const used = candidateAdjustment.get(receipt.candidateId) || 0;
+            const usedMagnitude = candidateAdjustmentMagnitude.get(receipt.candidateId) || 0;
+            const remaining = Math.max(0, 20 - usedMagnitude);
+            delta = Math.sign(delta) * Math.min(Math.abs(delta), remaining);
+            if (delta === 0)
+                continue;
+            candidateAdjustment.set(receipt.candidateId, used + delta);
+            candidateAdjustmentMagnitude.set(receipt.candidateId, usedMagnitude + Math.abs(delta));
             const prior = row.posteriorScore;
             const posterior = clamp(prior + delta);
             const confDelta = receipt.geoPrecision === "metro" ? 6 : 2;
             row.posteriorScore = posterior;
             row.confidence = clamp(row.confidence + confDelta);
-            row.decisionStatus = "recalibrated";
+            const uncertainty = clamp(2 + (100 - row.confidence) * 0.08, 2, 8);
+            row.scoreBand = { low: clamp(posterior - uncertainty), high: clamp(posterior + uncertainty) };
+            if (row.decisionStatus === "testable")
+                row.decisionStatus = "recalibrated";
             adjustments.push({
                 receiptId: receipt.id,
                 candidateId: receipt.candidateId,
@@ -170,7 +278,7 @@ var VorgMarketPositioning;
                 adjustment: posterior - prior,
                 posteriorScore: posterior,
                 confidenceDelta: confDelta,
-                reason: `${receipt.kind} receipt x${receipt.quantity} (${receipt.geoPrecision}) via ${receipt.artifactUrl}`
+                reason: `${receipt.outcome === "negative" ? "negative " : ""}${receipt.kind} receipt x${receipt.quantity} (${receipt.geoPrecision}) via ${receipt.artifactUrl}`
             });
         }
         const next = [...byId.values()].sort((a, b) => b.posteriorScore - a.posteriorScore || b.confidence - a.confidence);
@@ -217,7 +325,6 @@ var VorgMarketPositioning;
         const signals = input.signals || [];
         const mechanisms = input.mechanisms || [];
         const gates = (input.gates || []).map((g) => ({ ...g }));
-        const hardStopsOpen = gates.filter((g) => g.hardStop && g.state !== "cleared-with-evidence");
         const ranked = [];
         const globalFlags = [];
         for (const raw of input.candidates || []) {
@@ -233,6 +340,10 @@ var VorgMarketPositioning;
                     priorScore: 0,
                     posteriorScore: 0,
                     confidence: 0,
+                    scoreBand: { low: 0, high: 0 },
+                    selectionRole: "challenger",
+                    sourceDiversity: 0,
+                    candidateSpecificFamilies: [],
                     decisionStatus: "research-incomplete",
                     redFlags: ["Whole-country / missing metro candidates are invalid."],
                     sourceIdsUsed: [],
@@ -240,7 +351,9 @@ var VorgMarketPositioning;
                 });
                 continue;
             }
-            const cov = coverage(candidate.id, signals, sources);
+            const candidateGates = gates.filter((gate) => gateAppliesToCandidate(gate, candidate));
+            const hardStopsOpen = candidateGates.filter((g) => g.hardStop && g.state !== "cleared-with-evidence");
+            const cov = coverage(candidate.id, signals, sources, asOf, expiryDays);
             const comps = {
                 search: 0,
                 buyer: 0,
@@ -258,7 +371,7 @@ var VorgMarketPositioning;
                 part.sourceIds.forEach((id) => sourceIdsUsed.add(id));
                 confBits.push(...part.confidenceBits);
             });
-            const commerce = commerceCap(gates, comps.commerce);
+            const commerce = commerceCap(candidateGates, candidate, comps.commerce);
             comps.commerce = commerce.score;
             let prior = 0;
             prior += (comps.search * WEIGHTS.search) / 100;
@@ -273,7 +386,25 @@ var VorgMarketPositioning;
                 // Incomplete research does not get a default competitive score.
                 prior = 0;
             }
-            const confidence = cov.complete ? clamp(average(confBits) * 100) : clamp(average(confBits) * 40);
+            const uniqueSourceIds = [...sourceIdsUsed];
+            const sourceDomains = new Set(uniqueSourceIds.map((id) => {
+                var _a;
+                const url = ((_a = sources.get(id)) === null || _a === void 0 ? void 0 : _a.url) || "";
+                try {
+                    return new URL(url).hostname.replace(/^www\./, "");
+                }
+                catch {
+                    return url.toLowerCase();
+                }
+            }).filter(Boolean));
+            const candidateSpecificFamilies = Object.keys(FAMILY_TO_COMPONENT).filter((family) => linkedSignalsFor(candidate.id, family, signals, sources, asOf, expiryDays)
+                .some((signal) => signal.candidateIds.length === 1));
+            const specificityFactor = 0.65 + Math.min(0.35, candidateSpecificFamilies.length * 0.05);
+            const diversityFactor = Math.min(1, 0.55 + sourceDomains.size * 0.05);
+            const confidence = cov.complete
+                ? clamp(average(confBits) * 100 * specificityFactor * diversityFactor)
+                : clamp(average(confBits) * 35);
+            const uncertainty = clamp(2 + (100 - confidence) * 0.08, 2, 8);
             const redFlags = [...commerce.flags];
             if (!cov.complete)
                 redFlags.push(`Research incomplete: missing ${cov.missing.join(", ")}`);
@@ -290,6 +421,10 @@ var VorgMarketPositioning;
                 priorScore: prior,
                 posteriorScore: prior,
                 confidence,
+                scoreBand: { low: clamp(prior - uncertainty), high: clamp(prior + uncertainty) },
+                selectionRole: "challenger",
+                sourceDiversity: sourceDomains.size,
+                candidateSpecificFamilies,
                 decisionStatus: status,
                 redFlags,
                 sourceIdsUsed: [...sourceIdsUsed],
@@ -312,11 +447,28 @@ var VorgMarketPositioning;
             ? (input.candidates || []).find((c) => c.id === provisionalWinner.candidateId) || null
             : null;
         const alt = provisionalWinner ? complete.find((c) => c.candidateId !== provisionalWinner.candidateId) || null : null;
+        const scoreGap = provisionalWinner && alt
+            ? provisionalWinner.posteriorScore - alt.posteriorScore
+            : provisionalWinner ? provisionalWinner.posteriorScore : null;
+        const provisionalWinners = provisionalWinner
+            ? complete.filter((candidate) => provisionalWinner.posteriorScore - candidate.posteriorScore <= NEAR_TIE_POINTS)
+            : [];
+        const hasCandidateSpecificSearch = Boolean(provisionalWinner === null || provisionalWinner === void 0 ? void 0 : provisionalWinner.candidateSpecificFamilies.includes("search"));
+        const rankingStrength = !provisionalWinner
+            ? "no-defensible-winner"
+            : scoreGap !== null && scoreGap >= 3 && hasCandidateSpecificSearch
+                ? "clear-lead"
+                : "lead-hypothesis";
+        finalRanked.forEach((candidate, index) => {
+            candidate.selectionRole = index === 0
+                ? "lead"
+                : provisionalWinners.some((winner) => winner.candidateId === candidate.candidateId)
+                    ? "co-finalist"
+                    : "challenger";
+        });
         const decisionStatus = !provisionalWinner
             ? "research-incomplete"
-            : receiptPass.adjustments.length
-                ? "recalibrated"
-                : provisionalWinner.decisionStatus;
+            : provisionalWinner.decisionStatus;
         const winnerPlan = provisionalWinner && winnerCandidate ? buildWinnerPlan(provisionalWinner, alt, winnerCandidate) : null;
         const confidenceBand = provisionalWinner
             ? {
@@ -335,10 +487,16 @@ var VorgMarketPositioning;
             version: VorgMarketPositioning.ENGINE_VERSION,
             generatedAt,
             provisionalWinner,
+            provisionalWinners,
             rankedCandidates: finalRanked,
+            rankingStrength,
+            scoreGap,
             winnerRationale: provisionalWinner
                 ? [
                     `${provisionalWinner.metro} leads on posterior forecast score ${provisionalWinner.posteriorScore.toFixed(1)} with confidence ${provisionalWinner.confidence.toFixed(1)}.`,
+                    rankingStrength === "clear-lead"
+                        ? "The lead clears the internal separation rule and includes candidate-specific search evidence."
+                        : `${provisionalWinners.length} market(s) sit inside the ${NEAR_TIE_POINTS}-point co-finalist rule; the first result is an operating lead, not a statistically proven exclusive winner.`,
                     "Ranking uses public priors only unless VORG receipts were supplied.",
                     "This is a prediction, not observed VORG demand, and does not authorize Drop OS GO."
                 ]
@@ -353,6 +511,7 @@ var VorgMarketPositioning;
                 "Launch wedge direction is highest-gain market route (currently U.S./Brooklyn forecast), pending hard-stop gates; Ottawa/Gatineau is Canadian fallback / parallel proof."
             ],
             receiptAdjustments: receiptPass.adjustments,
+            recalibrated: receiptPass.adjustments.length > 0,
             reversalConditions: (provisionalWinner === null || provisionalWinner === void 0 ? void 0 : provisionalWinner.reversalConditions) || ["Complete required public-prior families for at least one metro."],
             nextActions,
             winnerPlan,

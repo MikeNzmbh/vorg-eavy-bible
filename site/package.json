@@ -17,14 +17,15 @@
     "test:negotiation": "npm run build:negotiation && node tests/conscious-supplier-negotiator.test.mjs",
     "test:forecast": "npm run build:forecast && node tests/sales-forecast.test.mjs",
     "test:positioning": "npm run build:positioning && node tests/market-positioning-prediction.test.mjs",
+    "generate:positioning": "npm run build:positioning && node run-market-positioning.mjs",
     "test:growth-path": "node ../finance/tests/six-figure-sales-simulation.test.mjs",
     "test:public-priors": "node tests/public-commerce-priors.test.mjs",
     "test:ads-practice": "node tests/ads-public-priors-practice.test.mjs",
-    "test:unit": "npm run test:library && npm run test:algorithm && npm run test:suppliers && npm run test:negotiation && npm run test:public-priors && npm run test:ads-practice && npm run test:forecast && npm run test:positioning && npm run test:growth-path",
+    "test:unit": "npm run test:library && npm run test:algorithm && npm run test:suppliers && npm run test:negotiation && npm run test:public-priors && npm run test:ads-practice && npm run test:forecast && npm run test:positioning && npm run test:strategy && npm run test:growth-path",
     "test:flow": "node test-drop-os-flow.mjs",
     "build:strategy": "tsc -p tsconfig.strategy-generator.json",
     "test:strategy": "npm run build:strategy && node tests/strategy-generator.test.mjs",
-    "generate:strategy": "npm run build:strategy && node run-strategy-generator.mjs"
+    "generate:strategy": "npm run generate:positioning && npm run build:strategy && node run-strategy-generator.mjs"
   },
   "devDependencies": {
     "playwright": "^1.60.0",

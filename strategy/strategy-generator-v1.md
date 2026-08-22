@@ -1,10 +1,10 @@
-# VORG Strategy Generator v1 — Contract
+# VORG Strategy Generator v1.1 — Contract
 
 Status: built and tested 2026-08-22. Code: `site/src/strategy-generator.ts` (bundle `site/strategy-generator.js`). Tests: `site/tests/strategy-generator.test.mjs`. Seed evidence: `research/market-positioning/strategy-mechanism-library-2026-08-22.json`. Demo output: `research/market-positioning/generated-strategy-plan-2026-08-22.md`.
 
 ## 1. What decision does this support?
 
-Which go-to-market strategy a clothing brand runs and what the full staged plan is — **picked and compiled by the algorithm itself**, without being told the steps. The founder mandate it encodes: no sales yet is fine; the prediction engine draws up the play from external receipts (how mechanisms worked or failed for other companies and why, cross-industry allowed), then real results plug in and steer the plan toward the pre-existing 85% sell-through goal. Motto: *we don't fear failure, we fear unpreparedness.*
+Which go-to-market strategy a clothing brand runs and what the full staged plan is — **picked and compiled by the algorithm itself**, without being told the steps. The founder mandate it encodes: no sales yet is fine; the prediction engine draws up the play from public-prior evidence cards (how mechanisms worked or failed for other companies and why, cross-industry allowed), then real VORG results plug in and steer the plan toward the pre-existing 85% sell-through goal. Motto: *we don't fear failure, we fear unpreparedness.*
 
 ## 2. What the algorithm does (pipeline stages)
 
@@ -12,8 +12,8 @@ Each stage is explicit and covered by tests.
 
 1. **Input contract.** Brand profile (SKUs, prices, production ceiling, operating market, sell-through goal defaulting to 85%, configurable test cash pool), evidence-card library (mechanism, industry, `sourceUrl`, `dateChecked`, `workedOrFailed` + why, transferability conditions), ranked market candidates, gate states, optional existing plan (remix), optional macro context, optional first-party results (empty at start — engine must and does still work).
 2. **Strategy space generation.** Enumerates candidate strategies from the mechanism library: seven base archetypes (founder-story-led, community-first, creator-seeding, scarcity-drop, event/pop-up-led, wholesale-assisted, paid-performance-led) plus generated hybrid combos of compatible archetypes where both halves have supporting evidence. Cross-industry evidence is allowed with an explicit transferability adjustment: same-industry ×1.0, adjacent (beauty DTC, sneakers, accessories) ×0.8, distant (restaurant, gaming, music, events) ×0.6, plus a mandatory tweak note describing the adaptation ("check if it worked there, tweak it, try it here").
-3. **Stress test.** Every candidate is scored against external receipts: supporting evidence (worked elsewhere + why + similarity weight), contradicting evidence (failed elsewhere + why, including documented anti-patterns like wholesale-before-DTC-proof and hype-before-ops), and an unpreparedness audit (which gates are open, what breaks first, which capabilities are frozen). **Failure evidence lowers a score with reasons; it never zeroes a supported strategy.**
-4. **Winner selection.** Rank = evidence score (0-100 from weighted receipts) × preparedness (0-1 from gate states) × goal-fit (0-1 documented heuristic toward the sell-through goal). Picks winner + runner-up + reversal conditions. Selects a winner with **zero first-party sales** — public priors are sufficient, exactly like the positioning engine.
+3. **Stress test.** Every candidate is scored against public-prior evidence cards: supporting evidence (worked elsewhere + why + similarity weight), contradicting evidence (failed elsewhere + why, including documented anti-patterns like wholesale-before-DTC-proof and hype-before-ops), and an unpreparedness audit (which strategy-relevant gates are open, what breaks first, which capabilities are frozen). **Failure evidence lowers a score with reasons; it never zeroes a supported strategy.** Repeated use of the same source URL earns no extra independent evidence credit.
+4. **Winner selection.** Rank = evidence score (0-100 from weighted public-prior cards) × preparedness (0-1 from market-scoped gate states) × goal-fit (0-1 documented heuristic toward the sell-through goal). Returns a lead, runner-up, reversal conditions, and a co-winner set using an explicit scale-aware threshold: the greater of 0.5 total points or 3% of the leader's score. It can select an operating hypothesis with **zero first-party sales**, but output remains forecast-only and cannot claim VORG demand proof.
 5. **Plan compilation.** Expands the winner into a staged plan automatically: phases (P0 gate clearance → P1 organic signal waves → P2 conversion proof/drop staging → P3 drop window → P4 recalibration) → waves → concrete action items, each with owner-role, budget cap drawn from the test cash pool (never the production ceiling), a measurement contract (receipt required), success threshold, kill rule, and gate dependencies. From-scratch mode and remix mode both work.
 6. **Calibration loop.** When first-party results arrive (sessions, purchases, sell-through by SKU, wave outcomes with receipt URLs): recomputes the posterior strategy score, kills failing waves and reallocates their freed budget to passing waves (pool ceiling respected), tracks distance-to-goal overall and per SKU, and emits an audit trail (prior → evidence → posterior → change made → why). Receipt-less outcomes are ignored with an audit note. Deterministic given identical inputs.
 7. **Safety invariants.** See below.
@@ -28,6 +28,8 @@ Each stage is explicit and covered by tests.
 - Output always includes an unpreparedness report (open gates + consequences).
 - Inputs are never mutated; identical inputs give byte-identical outputs.
 - Cards without a usable `sourceUrl` earn nothing; an empty library means the engine refuses to pick a winner and says what to add.
+- Invalid dates are unusable; source age, source class, inference basis, duplicate URLs, and evidence diversity all affect weight or confidence.
+- Country/region applicability is explicit. Canada-only gates cannot freeze a U.S. plan, while U.S. and shared cross-border gates remain active.
 
 ## 4. How to run it
 
@@ -69,7 +71,7 @@ Pass any existing plan JSON as `existingPlan` (tolerant of missing fields). The 
 
 ## 8. What is known / assumed / unresolved
 
-- **Known:** the engine, tests, and seed library exist and pass; the current VORG run picks *Hybrid: community-first named circle + honest-capacity scarcity drop* with founder-story-led + scarcity-drop as runner-up; 19 hard-stop gates are open, so preparedness is 0.25 for every strategy and the drop-window branch is frozen.
+- **Known:** the v1.1 engine, tests, seed library, and generated runtime exist and pass. After source-class and age weighting, the current VORG run returns a co-winner set: *Hybrid: founder-story-led world building + honest-capacity scarcity drop* (10.12) and *Hybrid: community-first named circle + honest-capacity scarcity drop* (9.94). The associated market engine keeps Brooklyn as lead hypothesis with Chicago, Los Angeles, and Atlanta inside the near-tie set. Twelve U.S.-relevant hard-stop gates remain open, and the drop-window branch is frozen.
 - **Assumed:** goal-fit weights per archetype are documented heuristics; the C$500 test cash pool in the demo is a working assumption pending founder confirmation; wedge metro comes from the positioning engine's ranking (forecast only).
 - **Unresolved:** no first-party receipts exist yet; every open gate in the unpreparedness report; the mechanism library should keep growing (each new card automatically reshapes ranking on the next run).
 

@@ -192,3 +192,24 @@ Consequence:
 - Ottawa/Gatineau remains the **Canadian fallback / parallel proof option**, not the locked first wedge.
 - Rebuild U.S. traffic/channel plans before transferring Ottawa session arithmetic.
 - Agents must not treat this decision as Drop OS GO or inventory authorization.
+
+## 2026-08-22 - Adopt The Corrected U.S. Winner Set And Remove Ottawa From Launch Focus
+
+Decision:
+
+Use the corrected v1.1 prediction engines as the current planning layer. The U.S. remains primary. **Brooklyn is the operating lead hypothesis**, with **Chicago, Los Angeles, and Atlanta** retained as co-finalists under the one-point near-tie rule. The strategy winner is an operating synthesis: **community-first named circle + founder-story-led world building + honest-capacity scarcity**. Shopify closes conversion; TikTok opens discovery; governed UGC supplies trust; founder-led YouTube supplies depth. Canada is secondary in this order: **Ontario -> Quebec -> Vancouver -> Halifax**. Ottawa is not the launch focus.
+
+Status:
+
+**Authorized planning direction; forecast-only.** This decision does not clear Drop OS GO, production, broad paid media, inventory scale, or venue booking. Twelve U.S.-relevant hard stops remain open, including DDP vs U.S. 3PL, importer-of-record treatment, HS code/origin, USD contribution by SKU, returns, tax review, product compliance, creator/privacy controls, trademark clearance, and access authorization.
+
+Reason:
+
+The Cursor-built engines correctly created a research-and-recalibration path but overstated small ranking differences, mixed Canada-only gates into the U.S. plan, failed to make source quality/expiry materially affect scores, allowed only score-raising receipts, and let the strategy runner drift from the live market result. v1.1 corrects those defects and preserves the uncertainty instead of inventing precision.
+
+Consequence:
+
+- Run `cd site && npm run generate:strategy` to regenerate both engines and their runtime artifacts.
+- Use `research/market-positioning/forecast-report-2026-08-22.md` and `research/market-positioning/generated-strategy-plan-2026-08-22.md` as the machine-generated decision outputs.
+- Use `strategy/artifacts/final-winner-explainer-2026-08-22.html`, `strategy/artifacts/VORG_US_Winner_Explained_2026-08-22.pdf`, and `strategy/artifacts/VORG_US_Winner_Strategy_2026-08-22.pptx` as the founder explanation and presentation package.
+- Capture identical metro-specific search/query evidence and first-party product/size/checkout actions before treating the city order as stable. Negative receipts must be logged and can reverse the lead.

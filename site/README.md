@@ -17,6 +17,10 @@ Checked: 2026-07-25
 - `run-supplier-vetting.mjs` - read-only local runner that prints each candidate's next action and approval-paused message draft.
 - `src/sales-forecast.ts` - typed deterministic Monte Carlo sales-range and calibration engine.
 - `sales-forecast.js` - compiled forecast browser bundle generated from `src/sales-forecast.ts`.
+- `src/market-positioning-prediction.ts` - source-quality-aware market ranking and reversible receipt-calibration engine; current output is a Brooklyn lead hypothesis with Chicago, Los Angeles, and Atlanta co-finalists.
+- `market-positioning-prediction.js` + `market-positioning-runtime.js` - compiled browser engine and generated VORG forecast payload used by the read-only Drop OS positioning panel.
+- `src/strategy-generator.ts` - evidence-card strategy generator with market-scoped gates, co-winner policy, duplicate-source controls, and first-party recalibration.
+- `strategy-generator.js` + `strategy-runtime.js` - compiled strategy engine and generated VORG winner payload; current winner set combines community-first, founder-story and honest-capacity scarcity.
 - `public-commerce-priors.js` - generated, deeply frozen licensed public-data transfer profile consumed by Forecast Lab.
 - `run-public-prior-training.mjs` - portable launcher for the Python public-data trainer.
 - `forecast-synthetic-fixture.js` - canonical browser fixture for the isolated synthetic evidence test.
@@ -100,6 +104,9 @@ For team sharing, host the `site/` folder through a static host such as Vercel, 
 - Supplier-vetting compile + unit test: `cd site && npm run test:suppliers`
 - Print the current supplier review queue and draft messages: `cd site && npm run vet:suppliers`
 - Forecast compile + unit test: `cd site && npm run test:forecast`
+- Positioning engine compile + unit test: `cd site && npm run test:positioning`
+- Strategy generator compile + unit test: `cd site && npm run test:strategy`
+- Regenerate both positioning and strategy outputs: `cd site && npm run generate:strategy`
 - Public-prior artifact test: `cd site && npm run test:public-priors`
 - Reproduce public-data training: `cd site && npm run train:public-priors`
 - Free-library build + schema test: `cd site && npm run test:library`

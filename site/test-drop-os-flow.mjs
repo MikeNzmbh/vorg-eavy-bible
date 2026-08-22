@@ -2,6 +2,7 @@
  * Smoke-test Drop OS flows — run: node site/test-drop-os-flow.mjs
  */
 import { chromium } from 'playwright';
+import { existsSync } from 'node:fs';
 
 const BASE = 'http://localhost:4182/drop-os.html';
 let passed = 0;
@@ -11,7 +12,13 @@ function ok(label) { passed++; console.log('  ✓', label); }
 function fail(label, err) { failed++; console.error('  ✗', label, err?.message || err); }
 
 async function main() {
-  const browser = await chromium.launch();
+  const browserCandidates = [
+    process.env.PLAYWRIGHT_EXECUTABLE_PATH,
+    'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+  ].filter(Boolean);
+  const executablePath = browserCandidates.find((candidate) => existsSync(candidate));
+  const browser = await chromium.launch(executablePath ? { executablePath } : undefined);
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 
   await page.goto(BASE);
@@ -74,6 +81,28 @@ async function main() {
     const active = await page.locator('.nav-item.active').textContent();
     active?.includes(lane.split(' ')[0]) ? ok(`Lane: ${lane}`) : fail(`Lane: ${lane}`, active);
   }
+
+  // Positioning + strategy engines render as forecast authority without changing Drop OS GO.
+  await page.getByRole('button', { name: 'Next city', exact: true }).click();
+  await page.waitForTimeout(250);
+  const positioningText = await page.locator('#positioningForecast').textContent();
+  positioningText?.includes('New York / Brooklyn') &&
+  positioningText?.includes('not a proven exclusive winner') &&
+  positioningText?.includes('spend stays locked') &&
+  positioningText?.includes('Community-first named circle')
+    ? ok('Market + strategy forecast integrates without fake GO')
+    : fail('Positioning integration', positioningText);
+  const runtimeContract = await page.evaluate(() => ({
+    marketVersion: window.VORG_MARKET_POSITIONING_RUNTIME?.result?.version,
+    marketImpact: window.VORG_MARKET_POSITIONING_RUNTIME?.result?.dropOsImpact,
+    strategyImpact: window.VORG_STRATEGY_RUNTIME?.result?.safety?.dropOsImpact,
+    coFinalists: window.VORG_MARKET_POSITIONING_RUNTIME?.result?.provisionalWinners?.length || 0,
+    strategyWinners: window.VORG_STRATEGY_RUNTIME?.result?.winnerSet?.length || 0
+  }));
+  runtimeContract.marketVersion?.includes('v1.1') && runtimeContract.marketImpact === 'none' &&
+  runtimeContract.strategyImpact === 'none' && runtimeContract.coFinalists >= 2 && runtimeContract.strategyWinners >= 1
+    ? ok('Forecast runtime truth boundaries hold')
+    : fail('Forecast runtime contract', runtimeContract);
 
   // Forecast Lab: scenario, frozen pre-launch call, and evidence-linked actual.
   await page.getByRole('button', { name: 'Forecast Lab', exact: true }).click();

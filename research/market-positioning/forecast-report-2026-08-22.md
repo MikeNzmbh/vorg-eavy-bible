@@ -1,120 +1,64 @@
 # U.S. Market Positioning Forecast Report
 
-Checked: 2026-08-22  
-Engine: `VORG Market Positioning Prediction v1`  
-Status: **forecast-only** — not observed VORG demand; does **not** authorize Drop OS GO. Founder-authorized wedge direction (2026-08-22) is the highest-gain market route — currently this U.S./Brooklyn forecast track — still pending hard-stop gates.
+Checked: 2026-08-22
+Engine: `VORG Market Positioning Prediction v1.1`
+Status: **forecast-only** — public-prior forecast only; no Drop OS GO or production authority.
 
-## Known
+## Decision
 
-- Active Drop 001 SKUs: Firm Jacket, women’s low-rise denim, men’s denim, scarf, women’s top/bodysuit.
-- Production ceiling remains C$5,000–C$6,000 unless the founder revises it.
-- Launch wedge direction (authorized): highest-gain market route — currently U.S./Brooklyn forecast track, pending hard stops (`docs/DECISIONS.md` 2026-08-22). Not proven demand.
-- Ottawa/Gatineau remains the Canadian fallback / parallel proof option.
-- U.S.-first thesis still fails market-entry / readiness **spend** gates (`strategy/us-first-gtm-stress-test-2026-08-22.md`).
-- GA4 is unavailable (no authorized VORG property recorded).
+Use **New York / Brooklyn** as the operating lead hypothesis. The ranking is **lead-hypothesis**, not an exclusive proven win.
 
-## Public Priors
+Co-finalist set under the engine's 1-point near-tie rule: **New York / Brooklyn, Chicago, Los Angeles, Atlanta**.
 
-- Five named metros scored: New York/Brooklyn, Los Angeles, Chicago, Atlanta, Miami.
-- Comparable mechanisms logged for Corteiz, Madhappy, BÉIS, Goodfair, FashionZone **plus** ambition study peers Jacquemus, Nude Project, Hermès, Jaded London, Scuffers, EME Studios (`mechanism-cards.json` v2) — transferable mechanisms only; peer revenue/scale disallowed as VORG targets.
-- Brand-house path + all-corners master ledger (beyond US+CA entry): `strategy/brand-house-path-2026-08-22.md`, `brand-path-master-ledger-2026-08-22.md`. Ambition ≠ evidence; forecast ≠ Drop OS GO.
-- Official Shopify / CBP / FTC / TikTok / CPSC / USPTO / CRA / CRTC / OQLF surfaces logged for commerce and creator feasibility.
-- LA denim retail openings (WWD) and Brooklyn densim-exchange editorial (GQ) used as culture/mechanism priors only.
-- November weather normals + creator-density priors folded into `creator-efficiency-weather-map-2026-08-22.md`.
-- Full US+Canada blindspot research: `blindspot-ledger-us-canada-2026-08-22.md`.
+The scores are deliberately lower than v1 because v1.1 discounts vendor case studies, internal assumptions, generic national signals, repeated sources, and inference-only inputs. No metro-specific Google Trends or VORG GA4 data is present, so confidence remains low.
 
-## Creator efficiency recommendation (forecast ops)
+## Ranking
 
-Under the C$5–6k **production** ceiling, creator tests use a **separate** founder test-spend cap:
+| Rank | Metro | Forecast score | Score band | Confidence | Role |
+| ---: | --- | ---: | ---: | ---: | --- |
+| 1 | New York / Brooklyn | 19.9 | 12.8–27.0 | 36.3 | lead |
+| 2 | Chicago | 19.6 | 12.5–26.7 | 36.0 | co-finalist |
+| 3 | Los Angeles | 19.5 | 12.2–26.8 | 33.9 | co-finalist |
+| 4 | Atlanta | 18.9 | 11.8–26.1 | 36.0 | co-finalist |
+| 5 | Miami | 18.5 | 11.4–25.5 | 36.7 | challenger |
 
-1. Wave 0 — founder product-truth (cheapest, highest control).
-2. Wave 1 — **nano** gifted seeding in **Brooklyn + Chicago** (jacket weather aligned).
-3. Wave 2 — select **micro** only after Wave 1 qualified actions.
-4. Block mega/celebrity for now.
+## Strategy Implication
 
-Miami/LA are strong creator-supply metros but weak November jacket-proof metros; use them for denim/top UGC only if testing, not as jacket lead.
+- Online scope: U.S.-national Shopify education and checkout, with the lead metro used as the first content/community learning wedge.
+- Physical scope: no U.S. pop-up booking until metro-tagged actions, a venue package, POS/inventory reconciliation, insurance, and permissions exist.
+- Product sequence: Firm Jacket as the cold-weather identity lead only after sample truth; women’s and men’s denim as fit-content anchors; top and scarf as supporting entry points.
+- Distribution: founder product-truth first, governed nano/micro UGC second, paid amplification only after a qualifying creative receipt.
+- Strategy co-winner: community-first named circle + honest-capacity drop, with founder-story-led + honest-capacity drop close enough to combine operationally rather than pretend the evidence separates them cleanly.
 
-## Canada queue (not replaced)
+## Why This Is Not A Clear City Win
 
-- Authorized primary direction: U.S./Brooklyn forecast track pending hard stops.
-- Canadian fallback / parallel proof: **Ottawa/Gatineau**.
-- Further CA expansion remains blocked until cities are named (ON city, QC city, Vancouver, Halifax) and Quebec French/QST/contract package clears.
-- CASL + GST/HST export-doc SOP are review-required before CEM blasts / US export claims.
+- The five metros are separated by less than two forecast points.
+- The only search signal is a national fashion outlook, not metro-level query demand for the five VORG silhouettes.
+- Comparable-brand evidence describes mechanisms, not VORG conversion or contribution margin.
+- Cross-border shipping, duties, returns, USD contribution, and tax review remain unresolved.
+- There are no first-party VORG U.S. receipts yet.
 
-## Working Assumptions
+## Hard Stops Before Selling
 
-- Operating market remains Canada until a U.S. entity/3PL path is evidenced.
-- Working C$ unit/price/COGS table is planning data, not vendor truth.
-- Macro fashion outlook is capped so it cannot dominate metro ranking.
-- Pop-up sales are assumed **zero** until venue/POS/RSVP exist.
-
-## VORG Receipts
-
-- None recorded. Ranking is public-prior only.
-
-## Forecast Ranking (engine output)
-
-| Rank | Metro | Posterior score | Confidence | Status |
-| ---: | --- | ---: | ---: | --- |
-| 1 | New York / Brooklyn | 54.2 | 73.1 | forecast-only |
-| 2 | Los Angeles | 53.5 | 72.5 | forecast-only |
-| 3 | Atlanta | 52.9 | 73.8 | forecast-only |
-| 4 | Chicago | 52.9 | 71.9 | forecast-only |
-| 5 | Miami | 48.5 | 71.3 | forecast-only |
-
-Confidence band for winner: about **61–81** (engine low/high around winner confidence).
-
-## Provisional Winner Plan
-
-1. **Position:** VORG-EAVY as a controlled Canadian micro-label entering Brooklyn densim/event culture with product-truth content, not crowd-scarcity theatrics.
-2. **U.S. online scope:** National Shopify reach with Brooklyn as the first physical/test metro narrative.
-3. **First metro:** New York / Brooklyn. Closest alternative: Los Angeles. LA wins instead if metro-tagged receipts, creator supply, or denim content QA actions concentrate on the West Coast.
-4. **SKU sequence:** Firm Jacket hero content (sample TBD) → women’s/men’s denim fit truth → top → scarf.
-5. **Content system:** TikTok native shorts; founder YouTube product-truth library; Shopify USD education + checkout measurement after duties path; governed UGC; pop-up later only.
-6. **90-day learning route:** Lock DDP vs U.S. 3PL; creative sprint with kill rules; metro Trends snapshots; ingest first-party receipts.
-7. **Cash policy:** Test spend founder-capped and separate from the production ceiling.
-8. **Compliance path:** Tax counsel for nexus; broker for HS/IOR; FTC labels/care; creator disclosure + TikTok music/commercial preflight.
-
-## Unresolved (hard stops still open)
-
-**United States**
-
-- DDP carrier vs U.S. 3PL quote
-- HS/origin per SKU
-- USD contribution sheet
-- Returns/re-import operator
-- Sales-tax nexus professional review
-- Final textile/care + CPSC flammability path
-- USPTO clearance packet
-- Signed creator brief/release
-- SMS/privacy counsel before scale
-
-**Canada**
-
-- GST/HST status + export proof SOP (accountant)
-- CASL consent vault before CEMs
-- Named ON + QC cities for expansion queue
-- Quebec French / QST / consumer-contract package (blocked until intentional QC push)
-
-## Brand-house path (ambition layer)
-
-Phased path Drop 001 proof → repeatable drops → brand house is in `strategy/brand-house-path-2026-08-22.md`. Production ceiling C$5–6k intact; test spend separate. Stage gates borrow mechanisms (not sales) from the six study peers. Master blindspot map: `brand-path-master-ledger-2026-08-22.md` (merges with, does not replace, the US+CA entry ledger).
-
-## Next Actions
-
-1. Clear the cross-border/USD gate: `strategy/us-first-cross-border-usd-gate-2026-08-22.md` (standing P0)
-2. Lock creative image codes + hero SKU (brand-path Top 10 #2–3) while samples advance
-3. Confirm GST/HST + CASL readiness for any Canadian waitlist/CEM work
-4. Capture metro Google Trends / query snapshots for exact silhouette terms
-5. Build authorized nano/micro creator shortlist for Brooklyn + Chicago only
-6. Do **not** book a U.S. pop-up or authorize bulk on this forecast; do **not** treat peer-class ambition as proof
+- **Merchant entity / importer of record (US inbound)** — review-required. Canada-operating entity selling into U.S. needs explicit IOR before DDP or 3PL.
+- **Fulfilment path: Canada→US DDP vs U.S. 3PL** — blocked. No carrier/3PL quote. First P0 economics gate.
+- **HS codes + country of origin per SKU** — unknown. Required for duty estimates and customer promise.
+- **USD checkout + contribution sheet by SKU** — blocked. C$ planning prices are not USD economics.
+- **US returns / re-import operator** — unknown. Cross-border returns can erase margin.
+- **US state sales-tax nexus / filings (Shopify ≠ marketplace facilitator)** — review-required. Professional tax review required before material US sale. Do not mark green from blogs.
+- **FTC fibre / origin / care labels** — researching. Guidance logged; final SKU evidence absent.
+- **CPSC clothing textile flammability / GCC path** — researching. 16 CFR 1610 applies; adult GCC discretion only for some exempt fabrics — confirm per SKU.
+- **USPTO / common-law trademark clearance (Class 25)** — unknown. No clearance packet attached yet.
+- **Creator agreement + FTC disclosure + TikTok commercial music** — researching. Policy sources logged; signed VORG brief not attached. Prefer nano/micro mix.
+- **US email/SMS consent + state privacy / pixels** — review-required. TCPA-style SMS consent + CCPA-class notices before scale; counsel for thresholds.
+- **Authorization before paid data / ad / creator / tax account access** — blocked. GA4 unavailable; no unauthorized access.
 
 ## Reversal Conditions
 
-- Metro-tagged VORG purchases favor another city
-- Carrier/3PL economics make contribution margin non-viable after duties/returns
-- Silhouette search evidence concentrates elsewhere
+- Metro-tagged first-party purchases favoring another city
+- Carrier/3PL quote proving contribution margin negative after duties/returns
+- Silhouette search evidence concentrated elsewhere
 
-## Professional Review Note
+## Next Proof
 
-Before selling into the recommended market, humans must review: importer-of-record, duties/tariffs/HS, DDP vs 3PL liability, state sales-tax nexus, FTC labeling/care, creator disclosure/contracts, privacy/SMS, and pop-up permits/insurance. This engine is not legal, tax, or customs advice.
+Capture the same exact silhouette-term Google Trends/query method for all five metros, then add the first metro-tagged product/size action receipts. Re-run without changing weights.

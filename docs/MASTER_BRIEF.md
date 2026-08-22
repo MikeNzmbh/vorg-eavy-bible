@@ -14,7 +14,7 @@ The highest-probability move is to narrow the system:
 - one pop-up format (after the market is selected and permitted)
 - one repeatable reinvestment loop
 
-The launch wedge is no longer locked to Ottawa/Gatineau. Per `docs/DECISIONS.md` (2026-08-22), the wedge is the **highest-gain market route** — currently the **U.S./Brooklyn forecast track**, still pending market-entry hard stops. This is an authorized direction change, not proven U.S. demand. Ottawa/Gatineau remains the Canadian fallback / parallel proof option (University of Ottawa and bilingual spillover stay useful local assets for that fallback).
+The launch wedge is **U.S.-first**. Per `docs/DECISIONS.md` (2026-08-22), **Brooklyn is the operating lead hypothesis**, while Chicago, Los Angeles, and Atlanta remain inside the engine's one-point co-finalist band. This is an authorized direction and a forecast-only first move, not proven U.S. demand. Canada is secondary: **Ontario -> Quebec -> Vancouver -> Halifax**. Ottawa is not the launch focus.
 
 ## Operating Model
 

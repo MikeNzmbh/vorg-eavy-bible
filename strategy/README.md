@@ -4,8 +4,8 @@ The current strategic direction is to build VORG-EAVY as a direct-to-consumer fa
 
 ## Core Thesis
 
-- Highest-gain market route first (currently U.S./Brooklyn forecast track, pending hard-stop gates).
-- Ottawa/Gatineau as Canadian fallback / parallel proof — not a locked wedge.
+- U.S.-first, with Brooklyn as the current operating lead hypothesis and Chicago, Los Angeles, and Atlanta retained as co-finalists pending first-party proof.
+- Canada second: Ontario, Quebec, Vancouver, then Halifax. Ottawa is not the launch focus.
 - One controlled drop architecture.
 - One site, one waitlist, one pop-up format after market selection.
 - Reinvest proof into the next product cycle.
@@ -34,4 +34,7 @@ Minimum conditions before treating full-time self-employment as realistic:
 - `us-first-cross-border-usd-gate-2026-08-22.md` - first P0 economics gate: DDP vs U.S. 3PL, USD contribution, returns; currently blocked
 - `cursor-us-first-prediction-engine-brief.md` - build brief for the Market Positioning & Prediction Engine
 - `artifacts/us-first-prediction-explainer-2026-08-22.html` - beginner HTML explainer (stress test + prediction + creators/weather + Canada checklist)
+- `artifacts/final-winner-explainer-2026-08-22.html` - self-contained plain-language winner explainer produced through the ELI5 explanation contract
+- `artifacts/VORG_US_Winner_Explained_2026-08-22.pdf` - rendered 12-page illustrated decision explainer
+- `artifacts/VORG_US_Winner_Strategy_2026-08-22.pptx` - editable 12-slide founder presentation with per-slide source notes
 - `brand-house-path-2026-08-22.md` - McKinsey-grade path from Drop 001 proof → repeatable drops → brand house; study peers Jacquemus / Nude Project / Hermès / Jaded London / Scuffers / EME Studios (mechanisms only); stage gates; C$5–6k production ceiling intact

@@ -16,8 +16,8 @@ VORG-EAVY is currently being shaped as a direct-to-consumer fashion micro-label,
 
 The immediate thesis:
 
-- Pursue the **highest-gain market route** (currently U.S./Brooklyn forecast track per `docs/DECISIONS.md` 2026-08-22), still behind market-entry hard stops — not proven demand.
-- Keep Ottawa/Gatineau as the Canadian fallback / parallel proof option.
+- Pursue the **U.S.-first route**, with Brooklyn as the operating lead hypothesis and Chicago, Los Angeles, and Atlanta retained as co-finalists per `docs/DECISIONS.md` 2026-08-22. Market-entry hard stops remain; demand is not proven.
+- Treat Canada as the secondary expansion queue: Ontario, Quebec, Vancouver, then Halifax. Ottawa is not the launch focus.
 - Build a status-driven brand world before broad catalog.
 - Launch with a small controlled drop.
 - Use scarcity, community, product quality, and a controlled pop-up after the market is selected and permitted.
@@ -33,7 +33,7 @@ The immediate thesis:
 - Channel: direct-to-consumer only; U.S.-first Shopify + TikTok thesis is the authorized direction under test.
 - Storefront: open online drop at launch; no password gate.
 - Event: one controlled day-to-night pop-up after market proof / permissions.
-- Wedge: highest-gain market route — currently U.S./Brooklyn forecast; Ottawa/Gatineau = CA fallback.
+- Wedge: U.S.-first; Brooklyn = operating lead hypothesis; Chicago / Los Angeles / Atlanta = co-finalists; Canada expands Ontario -> Quebec -> Vancouver -> Halifax.
 
 ## Important Adjacent Work
 
@@ -94,7 +94,7 @@ Checked: 2026-08-19
 - Is the women's top a bodysuit, rib top, tee, or long-sleeve after fit proof?
 - What exact rise, fit, wash, and measurement spec define the women's low-rise denim jean?
 - What exact fit block defines the men's denim jean?
-- Which venue is safest for the first pop-up once the primary market (currently U.S./Brooklyn track) clears permissions — or for an Ottawa/Gatineau fallback event?
+- Which venue is safest for the first pop-up once the Brooklyn-led U.S. test identifies enough local proof and the permissions/economics gates clear?
 - Which Shopify theme and content model should be used for the open online launch?
 - Which AI garment stack is worth integrating first into Atelier?
 - What legal/compliance checklist should be locked before event deposits?
@@ -108,7 +108,7 @@ Founder clarified: idea seeds aim at peer **class** (Jacquemus, Nude Project, He
 
 1. Clear P0 cross-border/USD gate: choose DDP vs U.S. 3PL, attach quote + USD contribution sheet (`strategy/us-first-cross-border-usd-gate-2026-08-22.md`).
 2. Lock image codes + hero SKU (brand-path Top 10) while samples advance; do not claim peer-class proof.
-3. Replace the 126-unit proof-buy scenario assumptions with reconciled vendor quotes, approved sample decisions, price-revealed demand selections, and named traffic receipts while preserving the C$5,000-C$6,000 production cap. Rebuild U.S. channel plan — do not transfer Ottawa session arithmetic.
+3. Replace the 126-unit proof-buy scenario assumptions with reconciled vendor quotes, approved sample decisions, price-revealed demand selections, and named traffic receipts while preserving the C$5,000-C$6,000 production cap. Rebuild the U.S. channel plan from U.S. evidence; do not transfer Canadian session arithmetic.
 4. Turn the corrected product set into vendor-ready tech-pack outlines.
 5. Replace financial assumptions with vendor quotes as they arrive.
 6. Build a venue shortlist only after market proof / permissions path exists.

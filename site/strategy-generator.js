@@ -1,15 +1,17 @@
 "use strict";
 /**
- * VORG Strategy Generator v1
- * Picks the winner strategy and compiles the full staged plan itself, from external
- * receipts (evidence cards about what worked/failed for others) — with zero first-party
+ * VORG Strategy Generator v1.1
+ * Picks the winner strategy and compiles the full staged plan itself, from public
+ * evidence cards about what worked/failed for others — with zero first-party
  * sales required. Never claims demand proof. Never authorizes production spend or Drop OS GO.
  * Motto encoded: failure evidence lowers a score with reasons; unpreparedness freezes branches.
  */
 var VorgStrategyGenerator;
 (function (VorgStrategyGenerator) {
-    VorgStrategyGenerator.ENGINE_VERSION = "VORG Strategy Generator v1";
+    VorgStrategyGenerator.ENGINE_VERSION = "VORG Strategy Generator v1.1";
     VorgStrategyGenerator.DEFAULT_SELL_THROUGH_GOAL_PCT = 85;
+    const STRATEGY_NEAR_TIE_MIN_POINTS = 0.5;
+    const STRATEGY_NEAR_TIE_SHARE = 0.03;
     const ARCHETYPES = [
         {
             id: "founder-story-led",
@@ -19,7 +21,7 @@ var VorgStrategyGenerator;
             contraMechanisms: ["off-brand-extension"],
             goalFit: 0.75,
             requiresPaidSpend: false,
-            requiredGateIds: [],
+            requiredGateIds: ["gate-textile-labels"],
             hybridCompatible: ["scarcity-drop", "creator-seeding"]
         },
         {
@@ -30,7 +32,7 @@ var VorgStrategyGenerator;
             contraMechanisms: ["off-brand-extension"],
             goalFit: 0.7,
             requiresPaidSpend: false,
-            requiredGateIds: [],
+            requiredGateIds: ["gate-privacy-sms-us"],
             hybridCompatible: ["creator-seeding", "scarcity-drop"]
         },
         {
@@ -58,7 +60,7 @@ var VorgStrategyGenerator;
             contraMechanisms: ["hype-before-ops"],
             goalFit: 0.9,
             requiresPaidSpend: false,
-            requiredGateIds: [],
+            requiredGateIds: ["gate-shopify-route", "gate-usd-contribution", "gate-textile-labels"],
             hybridCompatible: ["founder-story-led", "community-first"]
         },
         {
@@ -337,13 +339,84 @@ var VorgStrategyGenerator;
         return transferFactor(cardIndustry) < 1.0;
     }
     function usableCard(card) {
+        const checkedAt = Date.parse(card.dateChecked);
         return (hasEvidenceReference(card.sourceUrl) &&
-            !!card.dateChecked &&
+            Number.isFinite(checkedAt) &&
             Number.isFinite(card.confidence) &&
-            card.confidence > 0);
+            card.confidence > 0 &&
+            card.confidence <= 1);
+    }
+    function sourceClassFactor(sourceClass) {
+        const normalized = String(sourceClass || "").toLowerCase();
+        if (/official-regulator|official-statistics/.test(normalized))
+            return 1;
+        if (/official-platform/.test(normalized))
+            return 0.9;
+        if (/reputable-editorial/.test(normalized))
+            return 0.8;
+        if (/industry-research/.test(normalized))
+            return 0.75;
+        if (/vendor-case-study/.test(normalized))
+            return 0.6;
+        if (/brand-primary/.test(normalized))
+            return 0.55;
+        if (/internal-decision-artifact/.test(normalized))
+            return 0.5;
+        if (/internal-planning-assumption/.test(normalized))
+            return 0.35;
+        return 0.55;
+    }
+    function sourceAgeFactor(dateChecked, asOf) {
+        const checkedAt = Date.parse(dateChecked);
+        const decisionAt = Date.parse(asOf);
+        if (!Number.isFinite(checkedAt) || !Number.isFinite(decisionAt))
+            return 0;
+        if (checkedAt > decisionAt + 24 * 60 * 60 * 1000)
+            return 0;
+        const ageDays = Math.abs(decisionAt - checkedAt) / (1000 * 60 * 60 * 24);
+        if (ageDays > 730)
+            return 0;
+        if (ageDays > 365)
+            return 0.5;
+        if (ageDays > 180)
+            return 0.8;
+        return 1;
+    }
+    function qualityAdjustedCard(card, asOf) {
+        if (!usableCard(card))
+            return null;
+        const ageFactor = sourceAgeFactor(card.dateChecked, asOf);
+        if (ageFactor <= 0)
+            return null;
+        const adjustedConfidence = round2(card.confidence * sourceClassFactor(card.sourceClass) * ageFactor);
+        if (adjustedConfidence <= 0)
+            return null;
+        return { ...card, confidence: adjustedConfidence };
     }
     function gateOpen(g) {
         return g.state !== "cleared-with-evidence";
+    }
+    function normalizeMarket(value) {
+        return String(value || "").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+    }
+    function gateAppliesToMarkets(gate, markets) {
+        var _a;
+        if ((_a = gate.appliesToMarkets) === null || _a === void 0 ? void 0 : _a.length) {
+            const targetMarkets = gate.appliesToMarkets.map(normalizeMarket);
+            if (targetMarkets.includes("global"))
+                return true;
+            return markets.some((market) => targetMarkets.includes(normalizeMarket(market.country)));
+        }
+        if (!gate.region)
+            return true;
+        const region = gate.region.toUpperCase();
+        return markets.some((market) => {
+            if (/UNITED STATES|\bUS\b|\bUSA\b/i.test(market.country))
+                return region.includes("US");
+            if (/CANADA|\bCA\b/i.test(market.country))
+                return region.includes("CA");
+            return region === "GLOBAL";
+        });
     }
     function toEvidenceUse(card, weight) {
         const use = {
@@ -443,12 +516,24 @@ var VorgStrategyGenerator;
     function stressTest(strategy, library, gates) {
         const supporting = [];
         const contradicting = [];
-        for (const card of library) {
+        const eligibleCards = library.filter((card) => {
             if (!usableCard(card))
-                continue;
-            const w = card.confidence * transferFactor(card.industry);
+                return false;
             const matches = strategy.mechanisms.indexOf(card.mechanism) >= 0;
             const contraMatch = strategy.contraMechanisms.indexOf(card.mechanism) >= 0;
+            return matches || contraMatch;
+        });
+        const sourceCardCounts = new Map();
+        for (const card of eligibleCards) {
+            const sourceKey = card.sourceUrl.trim().toLowerCase();
+            sourceCardCounts.set(sourceKey, (sourceCardCounts.get(sourceKey) || 0) + 1);
+        }
+        for (const card of eligibleCards) {
+            const matches = strategy.mechanisms.indexOf(card.mechanism) >= 0;
+            const contraMatch = strategy.contraMechanisms.indexOf(card.mechanism) >= 0;
+            const sourceKey = card.sourceUrl.trim().toLowerCase();
+            const dependencyFactor = 1 / (sourceCardCounts.get(sourceKey) || 1);
+            const w = card.confidence * transferFactor(card.industry) * dependencyFactor;
             if (matches) {
                 if (card.workedOrFailed === "worked")
                     supporting.push(toEvidenceUse(card, w));
@@ -467,10 +552,6 @@ var VorgStrategyGenerator;
             }
         }
         const relevantGateIds = new Set();
-        for (const g of gates) {
-            if (g.hardStop)
-                relevantGateIds.add(g.id);
-        }
         for (const id of strategy.requiredGateIds)
             relevantGateIds.add(id);
         const openGateIds = [];
@@ -489,12 +570,12 @@ var VorgStrategyGenerator;
             if (g)
                 frozenCapabilities.push(`${g.label} not cleared (${g.id})`);
         }
-        const firstOpenHard = gates.filter((g) => g.hardStop && gateOpen(g))[0];
+        const firstOpenHard = gates.filter((g) => relevantGateIds.has(g.id) && g.hardStop && gateOpen(g))[0];
         const breaksFirst = strategy.requiresPaidSpend && authGate
             ? "Paid spend before account authorization breaks first — spend without consent/authorization evidence."
             : firstOpenHard
                 ? `Commerce execution breaks first at open hard stop: ${firstOpenHard.label}.`
-                : "No open hard stops — execution risk shifts to creative/measurement quality.";
+                : "This strategy can enter proof work; launch execution remains governed by the separate market-entry gates.";
         return {
             strategyId: strategy.id,
             supporting,
@@ -521,9 +602,6 @@ var VorgStrategyGenerator;
             evidenceScore = clamp(evidenceScore * HYBRID_EVIDENCE_DISCOUNT);
         const evidenceConfidence = supportW + contraW > 0 ? round2(supportW / (supportW + contraW)) : 0;
         const relevant = new Set();
-        for (const g of gates)
-            if (g.hardStop)
-                relevant.add(g.id);
         for (const id of strategy.requiredGateIds)
             relevant.add(id);
         let cleared = 0;
@@ -542,7 +620,7 @@ var VorgStrategyGenerator;
         preparedness = round2(preparedness);
         const totalScore = round2(evidenceScore * preparedness * strategy.goalFit);
         const reasons = [
-            `${stress.supporting.length} supporting vs ${stress.contradicting.length} contradicting external receipts (support weight ${round2(supportW)}, contradiction weight ${round2(contraW)}).`,
+            `${stress.supporting.length} supporting vs ${stress.contradicting.length} contradicting public-prior cards (support weight ${round2(supportW)}, contradiction weight ${round2(contraW)}).`,
             `Preparedness ${preparedness} from ${cleared}/${total} relevant hard-stop/required gates cleared with evidence.`,
             `Goal-fit heuristic ${strategy.goalFit} toward the sell-through goal (documented working assumption, recalibrated by first-party receipts).`
         ];
@@ -1108,8 +1186,11 @@ var VorgStrategyGenerator;
         const generatedAt = input.generatedAt || new Date().toISOString();
         const brand = input.brand;
         const goal = (_a = brand.sellThroughGoalPct) !== null && _a !== void 0 ? _a : VorgStrategyGenerator.DEFAULT_SELL_THROUGH_GOAL_PCT;
-        const gates = input.gates || [];
-        const library = (input.library || []).filter(usableCard);
+        const gates = (input.gates || []).filter((gate) => gateAppliesToMarkets(gate, input.markets || []));
+        const scopedInput = { ...input, gates };
+        const library = (input.library || [])
+            .map((card) => qualityAdjustedCard(card, generatedAt))
+            .filter((card) => Boolean(card));
         // Stage 1-3: strategy space, stress tests, scoring.
         const space = generateStrategySpace(library);
         const ranked = space
@@ -1120,6 +1201,17 @@ var VorgStrategyGenerator;
         // Stage 4: winner selection — public priors are sufficient; zero first-party sales required.
         const winner = ranked.length && ranked[0].stress.supporting.length > 0 ? ranked[0] : null;
         const runnerUp = winner ? ranked.filter((r) => r.strategyId !== winner.strategyId)[0] || null : null;
+        const winnerSetThresholdPoints = winner
+            ? round2(Math.max(STRATEGY_NEAR_TIE_MIN_POINTS, winner.totalScore * STRATEGY_NEAR_TIE_SHARE))
+            : 0;
+        const winnerSet = winner
+            ? ranked.filter((candidate) => winner.totalScore - candidate.totalScore <= winnerSetThresholdPoints)
+            : [];
+        const rankingStrength = !winner
+            ? "no-winner"
+            : winnerSet.length > 1
+                ? "co-winners"
+                : "clear-lead";
         const reversalConditions = winner
             ? [
                 `If two or more first-party wave receipts show ${runnerUp ? `runner-up (${runnerUp.label})` : "another strategy's"} mechanisms outperforming the winner's, switch strategies and re-run the generator.`,
@@ -1135,12 +1227,12 @@ var VorgStrategyGenerator;
         if (winner) {
             if (input.existingPlan && input.existingPlan.waves && input.existingPlan.waves.length) {
                 mode = "remix";
-                const remixed = remixPlan(input.existingPlan, winner, input, generatedAt);
+                const remixed = remixPlan(input.existingPlan, winner, scopedInput, generatedAt);
                 plan = remixed.plan;
                 remixImprovements = remixed.improvements;
             }
             else {
-                plan = compilePlan(winner, input, generatedAt);
+                plan = compilePlan(winner, scopedInput, generatedAt);
             }
         }
         // Stage 6: calibration loop (only when first-party results are supplied).
@@ -1164,8 +1256,9 @@ var VorgStrategyGenerator;
             `Sell-through goal ${goal}% is the pre-existing founder goal; the engine steers toward it but never claims it is achieved.`,
             `Test cash pool C$${Math.max(0, (_b = brand.testCashPoolCad) !== null && _b !== void 0 ? _b : 0)} is a founder-configurable working assumption, fully separate from the C$${brand.productionCeilingCad.min}-C$${brand.productionCeilingCad.max} production ceiling.`,
             "Goal-fit weights per strategy archetype are documented heuristics (working assumptions) that first-party receipts recalibrate.",
-            "Evidence cards describe what worked/failed for other companies; cross-industry cards carry an explicit transferability discount and tweak note.",
-            "Wedge metro is taken from the first supplied market candidate (assumed pre-ranked by the positioning engine)."
+            "Evidence cards describe what worked/failed for other companies; source class, age, cross-industry transferability, and duplicate-source dependence reduce their influence.",
+            "Wedge metro is taken from the first supplied market candidate; the runner must pass the positioning engine's actual ordered result, not rely on source-file order.",
+            `Only ${gates.length} route gate(s) apply to the active market path; unrelated later-market gates do not depress strategy preparedness or freeze this launch branch.`
         ];
         if (input.macro && (((_c = input.macro.headwinds) === null || _c === void 0 ? void 0 : _c.length) || ((_d = input.macro.tailwinds) === null || _d === void 0 ? void 0 : _d.length))) {
             assumptions.push(`Macro context supplied (${(input.macro.headwinds || []).length} headwind(s), ${(input.macro.tailwinds || []).length} tailwind(s)) — treated as planning context, not demand evidence.`);
@@ -1176,7 +1269,10 @@ var VorgStrategyGenerator;
             mode,
             goalSellThroughPct: goal,
             winner,
+            winnerSet,
+            winnerSetThresholdPoints,
             runnerUp,
+            rankingStrength,
             rankedStrategies: ranked,
             reversalConditions,
             plan,
@@ -1189,7 +1285,7 @@ var VorgStrategyGenerator;
                 dropOsImpact: "none",
                 productionSpendAuthorizedCad: 0,
                 invariants: [
-                    "Engine-generated forecast plan from external receipts (public priors); not demand proof.",
+                    "Engine-generated forecast plan from public-prior evidence cards; not demand proof.",
                     "No production spend is authorized; the production ceiling is untouched by test budgets.",
                     "Open hard-stop gates freeze affected plan branches until cleared with evidence.",
                     "Every plan line traces to at least one evidence card or is labeled working-assumption.",

@@ -14,7 +14,7 @@ vm.runInContext(source, sandbox, { filename: bundlePath });
 
 const engine = sandbox.VorgMarketPositioning;
 assert.ok(engine, 'engine global exists');
-assert.equal(engine.ENGINE_VERSION, 'VORG Market Positioning Prediction v1');
+assert.equal(engine.ENGINE_VERSION, 'VORG Market Positioning Prediction v1.1');
 assert.equal(engine.__test.hasEvidenceReference('https://example.com/x'), true);
 assert.equal(engine.__test.hasEvidenceReference('research/foo.json'), true);
 assert.equal(engine.__test.hasEvidenceReference('TBD'), false);
@@ -40,6 +40,8 @@ const result = engine.recommendPosition(baseInput);
 assert.equal(JSON.stringify(baseInput), JSON.stringify(frozenCopy), 'engine does not mutate inputs');
 assert.equal(result.dropOsImpact, 'none', 'forecast never claims Drop OS impact');
 assert.ok(result.provisionalWinner, 'can select provisional winner from public priors with zero receipts');
+assert.ok(result.provisionalWinners.length >= 2, 'near-tied markets are returned as a co-finalist set');
+assert.equal(result.rankingStrength, 'lead-hypothesis', 'missing metro search and a narrow lead cannot pose as a clear winner');
 assert.ok(result.provisionalWinner.metro, 'winner has a metro');
 assert.notEqual(result.provisionalWinner.metro.toLowerCase(), 'united states');
 assert.equal(result.decisionStatus, 'forecast-only', 'hard-stop gates keep status forecast-only');
@@ -110,6 +112,20 @@ const clearedGates = baseInput.gates.map((g) =>
 const testable = engine.recommendPosition({ ...baseInput, gates: clearedGates });
 assert.equal(testable.decisionStatus, 'testable');
 
+const onlyUsCleared = baseInput.gates.map((g) =>
+  String(g.region || '').includes('US') && g.hardStop
+    ? { ...g, state: 'cleared-with-evidence' }
+    : g
+);
+const scopedGateRun = engine.recommendPosition({ ...baseInput, gates: onlyUsCleared });
+assert.equal(scopedGateRun.decisionStatus, 'testable', 'Canada-only expansion gates do not freeze the U.S. market branch');
+
+const invalidDates = engine.recommendPosition({
+  ...baseInput,
+  sources: baseInput.sources.map((source) => ({ ...source, checkedOn: 'not-a-date' }))
+});
+assert.equal(invalidDates.provisionalWinner, null, 'invalid source dates cannot be treated as fresh evidence');
+
 const recal = engine.recommendPosition({
   ...baseInput,
   receipts: [
@@ -125,11 +141,48 @@ const recal = engine.recommendPosition({
   ]
 });
 assert.ok(recal.receiptAdjustments.length >= 1);
-assert.equal(recal.decisionStatus, 'recalibrated');
+assert.equal(recal.decisionStatus, 'forecast-only', 'receipts do not erase open route-to-market hard stops');
+assert.equal(recal.recalibrated, true, 'receipt adjustment is still disclosed');
 assert.ok(recal.rankedCandidates[0].candidateId === 'us-chicago' || recal.receiptAdjustments[0].candidateId === 'us-chicago');
 const chicago = recal.rankedCandidates.find((c) => c.candidateId === 'us-chicago');
 const chicagoPrior = result.rankedCandidates.find((c) => c.candidateId === 'us-chicago');
 assert.ok(chicago.posteriorScore > chicagoPrior.posteriorScore, 'receipts raise posterior');
+
+const negative = engine.recommendPosition({
+  ...baseInput,
+  receipts: [{
+    id: 'r-negative',
+    kind: 'checkout',
+    candidateId: 'us-nyc-brooklyn',
+    countedAt: '2026-08-21',
+    artifactUrl: 'research/market-positioning/fixtures/nyc-negative-checkout.json',
+    quantity: 4,
+    geoPrecision: 'metro',
+    outcome: 'negative'
+  }]
+});
+const negativeNyc = negative.rankedCandidates.find((c) => c.candidateId === 'us-nyc-brooklyn');
+const baseNyc = result.rankedCandidates.find((c) => c.candidateId === 'us-nyc-brooklyn');
+assert.ok(negativeNyc.posteriorScore < baseNyc.posteriorScore, 'negative receipts lower a candidate instead of only allowing upward movement');
+
+const alternatingReceipts = engine.recommendPosition({
+  ...baseInput,
+  receipts: Array.from({ length: 8 }, (_, index) => ({
+    id: `r-cap-${index}`,
+    kind: 'purchase',
+    candidateId: 'us-nyc-brooklyn',
+    countedAt: '2026-08-21',
+    artifactUrl: `research/market-positioning/fixtures/cap-${index}.json`,
+    quantity: 20,
+    geoPrecision: 'metro',
+    outcome: index % 2 ? 'negative' : 'positive'
+  }))
+});
+const totalReceiptMagnitude = alternatingReceipts.receiptAdjustments.reduce(
+  (sum, adjustment) => sum + Math.abs(adjustment.adjustment),
+  0
+);
+assert.ok(totalReceiptMagnitude <= 20, 'alternating positive/negative receipts cannot bypass the cumulative adjustment cap');
 
 console.log(
   JSON.stringify(

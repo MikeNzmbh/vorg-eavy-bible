@@ -13,8 +13,8 @@ The near-term business target is a conditionally gated Drop 001 in the November 
 - Initial inventory / production spend ceiling: C$5,000-C$6,000 max unless the founder explicitly revises it.
 - Open direct-to-consumer online drop; no password gate at launch.
 - One day-to-night pop-up (city after market proof / permissions).
-- Launch wedge: highest-gain market route — currently U.S./Brooklyn forecast track, pending hard-stop gates (`docs/DECISIONS.md` 2026-08-22). Not a demand-proof claim.
-- Ottawa/Gatineau remains the Canadian fallback / parallel proof option.
+- Launch wedge: U.S.-first, with Brooklyn as the current operating lead hypothesis and Chicago, Los Angeles, and Atlanta retained as co-finalists pending first-party proof (`docs/DECISIONS.md` 2026-08-22). Not a demand-proof claim.
+- Canada is the secondary expansion queue: Ontario, Quebec, Vancouver, then Halifax. Ottawa is not the launch focus.
 - Proof before scale.
 
 ## How To Work In This Repo
