@@ -213,3 +213,29 @@ Consequence:
 - Use `research/market-positioning/forecast-report-2026-08-22.md` and `research/market-positioning/generated-strategy-plan-2026-08-22.md` as the machine-generated decision outputs.
 - Use `strategy/artifacts/final-winner-explainer-2026-08-22.html`, `strategy/artifacts/VORG_US_Winner_Explained_2026-08-22.pdf`, and `strategy/artifacts/VORG_US_Winner_Strategy_2026-08-22.pptx` as the founder explanation and presentation package.
 - Capture identical metro-specific search/query evidence and first-party product/size/checkout actions before treating the city order as stable. Negative receipts must be logged and can reverse the lead.
+
+## 2026-08-22 - Adopt The C$100k August 2027 Goal Architecture
+
+Decision:
+
+Keep the founder's outcome contract fixed: at least **C$100,000 reconciled net sales in August 2027**, at least **85% sell-through inside 30 days**, and **45% per-release growth as the floor / 50% as the operating target**. Replace the old ten-week compounding rhythm for this goal with an approximately **40-day, eight-release planning architecture** from the conditional November 2026 Drop 001 to a final release around August 15, 2027.
+
+Use Growth + Finance Engine v3 as the goal-seeking planning layer. Plan capacity to the 50% path; authorize each increase only after the preceding 85% sell-through gate, retained-contribution gate, demand-range floor, size/return gate, supplier-capacity gate, channel-order coverage and cash waterfall clear.
+
+Founder compensation is modeled as a **C$3,000 monthly total corporate cash envelope** until the founder clarifies gross/net/annual meaning. The operating options are cash-gated salary or ring-fenced additional working capital of approximately **C$11,465 for the 45% floor path / C$12,258 for the 50% target path**. No working-capital injection counts as revenue. Dividends remain locked through month 12 and still require accountant and solvency clearance.
+
+Status:
+
+**Authorized goal architecture; forecast-only and proof-gated.** The working unit/pricing/COGS table remains unquoted. The initial production ceiling remains C$5,000-C$6,000. No bulk scale, salary payment, financing, ad spend, venue deposit or dividend is authorized by the model alone.
+
+Reason:
+
+The earlier finance simulator targeted C$100,000 cumulative sales on a ten-week cadence and assumed no founder pay. It did not answer the founder's newer C$100,000 calendar-month target, 4-6 week replenishment intent, Instagram/omnichannel mix, or compensation/dividend rule. v3 backsolves the dates, inventory, orders, channel jobs and working-capital bridge while preserving evidence gates.
+
+Consequence:
+
+- Use `finance/growth-finance-engine-v3.mjs` and `finance/growth-finance-engine-v3.md` as the current target model.
+- Use `launch/omnichannel-demand-system-2026-08-22.md` for the live channel architecture. The prior Ottawa/Gatineau session plan is frozen historical arithmetic only.
+- Use `research/growth/source-ledger-2026-08-22.md` for current channel, forecasting, tax and legal sources.
+- Use `strategy/vorg-100k-august-2027-winner-plan.md` and `strategy/artifacts/VORG_100K_August_2027_Growth_Dossier.html` for the founder/operator plan.
+- Replace assumptions with receipts after each drop; never tune history to make the engine look prescient.

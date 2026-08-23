@@ -16,6 +16,8 @@ The highest-probability move is to narrow the system:
 
 The launch wedge is **U.S.-first**. Per `docs/DECISIONS.md` (2026-08-22), **Brooklyn is the operating lead hypothesis**, while Chicago, Los Angeles, and Atlanta remain inside the engine's one-point co-finalist band. This is an authorized direction and a forecast-only first move, not proven U.S. demand. Canada is secondary: **Ontario -> Quebec -> Vancouver -> Halifax**. Ottawa is not the launch focus.
 
+The current growth outcome contract is: **C$100,000 reconciled net sales in August 2027**, **85% sell-through inside 30 days**, and **45% growth as the floor / 50% as the target** between eligible releases. Growth + Finance Engine v3 backsolves this into eight approximately 40-day releases through August 15, 2027. It is a goal-seeking plan, not proof that VORG demand, production or working capital already exist.
+
 ## Operating Model
 
 VORG-EAVY should sell a world before it sells a catalog.
@@ -60,6 +62,8 @@ Initial inventory / production spend ceiling: C$5,000-C$6,000 max.
 Total planned units: TBD.
 
 Base revenue target: TBD after unit quantities and prices are rebuilt.
+
+For long-range capacity planning only, the frozen working five-SKU assumptions are modeled in `finance/growth-finance-engine-v3.md`. Vendor quotes and approved samples still control every real purchase order.
 
 The older 3-SKU / 150-unit / C$20,550 model is superseded for purchase decisions. These are working assumptions, not vendor-quoted numbers.
 

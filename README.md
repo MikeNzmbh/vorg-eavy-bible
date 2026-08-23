@@ -31,3 +31,11 @@ For another agent, read these in order:
 3. `docs/MASTER_BRIEF.md`
 4. `docs/ATELIER_CONTEXT.md`
 5. `docs/DECISIONS.md`
+
+Current growth package:
+
+- `strategy/vorg-100k-august-2027-winner-plan.md`
+- `finance/growth-finance-engine-v3.md`
+- `launch/omnichannel-demand-system-2026-08-22.md`
+- `research/growth/source-ledger-2026-08-22.md`
+- `strategy/artifacts/VORG_100K_August_2027_Growth_Dossier.html`

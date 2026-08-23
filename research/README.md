@@ -28,3 +28,6 @@ Track candidates for garment segmentation, virtual try-on, image-to-3D, and prod
 - `commerce-intelligence/ads-public-priors/README.md` - free WordStream/IRP ads practice priors for paid-channel cash geometry; not spend authorization
 - `market-positioning/README.md` - U.S. metro prediction research pack, source ledger, US+Canada blindspots, creator/weather map, and forecast-only winner report
 - `trend-radar-industry-benchmark.md` - checked benchmark for a VORG-EAVY trend analytics and product stress-test system
+- `growth/README.md` - current channel, prediction-system, legal/tax and growth-finance research lane
+- `growth/source-ledger-2026-08-22.md` - dated primary/academic source ledger for Growth + Finance Engine v3
+- `growth/input-report-audit-2026-08-22.md` - governed audit of the two founder-supplied deep-research reports and unfinished shared brief

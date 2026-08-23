@@ -22,6 +22,8 @@ The immediate thesis:
 - Launch with a small controlled drop.
 - Use scarcity, community, product quality, and a controlled pop-up after the market is selected and permitted.
 - Reinvest first before founder withdrawal.
+- Current growth outcome contract: at least C$100,000 reconciled net sales in August 2027, 85% sell-through inside 30 days, 45% per-release growth floor / 50% target. The goal-seeking architecture uses eight approximately 40-day releases. See `finance/growth-finance-engine-v3.md`; this is not a PO authorization.
+- Founder pay is modeled as a working C$3,000 monthly total corporate cash envelope. Use a cash gate or a protected C$11,465-C$12,258 working-capital bridge; confirm gross/net/payroll meaning with the founder/accountant. No dividends before month 12 or without solvency/tax clearance.
 
 ## Active Launch Shape
 
@@ -30,7 +32,7 @@ The immediate thesis:
 - Initial inventory / production spend ceiling: C$5,000-C$6,000 max.
 - Planned units: TBD after vendor quotes.
 - Target revenue: TBD after prices and units are rebuilt.
-- Channel: direct-to-consumer only; U.S.-first Shopify + TikTok thesis is the authorized direction under test.
+- Channel: direct-to-consumer first; U.S.-first omnichannel portfolio across Shopify, Instagram, TikTok, creators, founder YouTube, Google, owned CRM, Pinterest, Shop and controlled offline proof. See `launch/omnichannel-demand-system-2026-08-22.md`.
 - Storefront: open online drop at launch; no password gate.
 - Event: one controlled day-to-night pop-up after market proof / permissions.
 - Wedge: U.S.-first; Brooklyn = operating lead hypothesis; Chicago / Los Angeles / Atlanta = co-finalists; Canada expands Ontario -> Quebec -> Vancouver -> Halifax.
@@ -73,10 +75,10 @@ Checked: 2026-08-19
 - **Code:** `site/drop-os.html`, `site/drop-os.js`, `site/drop-os-supabase.js`
 - **Local scoring:** `VORG Drop OS score v1.2` in `site/src/drop-os-algorithm.ts`; evidence-backed readiness, C$6,000 cap enforcement, production prerequisites, and deduplicated signal proof
 - **Sales predictor:** `VORG Sales Forecast v1.1` in `site/src/sales-forecast.ts`; deterministic range simulation, automatic stresses, frozen calls, linked outcomes, and calibration. Session + purchase counts can update the planning prior without a full funnel; that still grants zero readiness credit. Forecast Lab defaults to the licensed `public-transfer-v1` uncertainty profile, which keeps the entered VORG rate as its center. It has no path into readiness or ads authorization.
-- **Loaded working scenario:** 126 assumed units / C$3,712 assumed landed inventory cost / C$4,700 assumed non-inventory spend / 2,160 planned sessions (980 waitlist + 330 connector + 850 named paid ads, CAC unknown) / 135 planned pop-up visitors / 3.06% planning conversion / 1.25 units per order. Traffic is plan-only. See `launch/drop-001-traffic-channel-plan.md`, `launch/drop-001-sales-forecast-inputs.md`, and `launch/drop-001-sales-forecast-readout.md`. 85% sell-through is the coverage goal; the modeled P(85%) remains 25.3% under current uncertainty, not a green light.
+- **Frozen Forecast Lab comparison:** 126 assumed units / C$3,712 assumed landed inventory cost / C$4,700 assumed non-inventory spend / 2,160 legacy Ottawa/Gatineau planned sessions / 135 planned pop-up visitors / 3.06% planning conversion / 1.25 units per order. The session geography/composition is superseded and must not be used as the live U.S. channel plan. See `launch/drop-001-traffic-channel-plan.md` for the frozen comparison and `launch/omnichannel-demand-system-2026-08-22.md` for current direction. 85% remains the goal; the old modeled P(85%) is not a green light.
 - **Paid-ads practice priors:** `research/commerce-intelligence/ads-public-priors/` + `launch/simulate-paid-ads-practice.mjs`. Free WordStream apparel CPC/CTR and IRP fashion CVR fill empty paid fields for cash geometry only. Practice result: ~C$1,001 to buy 850 sessions at WordStream CPC vs C$450 paid-social working line; ~14.8 orders if IRP 1.74% holds. Not VORG CAC. Not a Hermes spend bot.
 - **Public-data challenger:** `research/commerce-intelligence/public-data-model/` trains on 12,330 public sessions and audits 541,909 retail transaction rows plus 165,474 fashion clicks. Random holdout AUC/Brier are 0.758938/0.121621; blocked-month AUC/Brier are 0.684304/0.158559. These are within-source diagnostics, not VORG accuracy.
-- **C$10k plus every-two-month funding simulation:** `finance/simulate-six-figure-path.mjs` separates owner capital from sales and now tests C$2,000 contributions every two months plus a proof-gated 45% net-sales growth target. At 85% sell-through every drop, the threshold path reaches C$119,192 by August 15, 2027 after C$12,000 of added owner capital; without proven 45% growth, funding alone retains the October 24, 2027 date. Public-transfer results remain uncertainty tests, not VORG probabilities. See `finance/six-figure-sales-simulation.md`.
+- **Current August-month engine:** `finance/growth-finance-engine-v3.mjs` targets a C$100k August 2027 net-sales month, not cumulative sales. Eight 40-day releases at 85%/45% model C$112,387 August net sales; the 50% target path models C$142,331. Full C$3,000 monthly founder pay requires a working C$11,465-C$12,258 protected bridge or the salary cash gate. The prior `simulate-six-figure-path.mjs` remains a frozen cumulative-sales comparison. Neither is a VORG probability or PO authorization.
 - **Synthetic predictor bench:** Forecast Lab's **Run synthetic evidence test** loads the generated receipts in `site/fixtures/synthetic-forecast/`, creates one frozen linked test outcome, and grades it only in synthetic calibration. Marked fixture paths fail closed to `synthetic-test`; live calibration and readiness exclude them.
 - **Supabase project:** `vorg-eavy-drop-os` (`ca-central-1`) — `site/supabase/schema-v2.sql` (auth + Storage)
 - **Squad sync v2:** email magic link + invite redemption — no shared PIN on `drop-001` (`auth_only = true`)

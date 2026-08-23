@@ -1,5 +1,7 @@
 # Drop 001 Traffic Channel Plan
 
+> **Superseded for market direction on 2026-08-22.** This file freezes the old Ottawa/Gatineau arithmetic for forecast comparison only. Do not use its 2,160 sessions, paid-geo line or pop-up location as the live U.S. plan. Current direction: `omnichannel-demand-system-2026-08-22.md`; current goal engine: `../finance/growth-finance-engine-v3.md`.
+
 Checked: 2026-08-19
 
 Status: named working plan; not a historical acquisition receipt and not spend authorization.

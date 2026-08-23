@@ -9,6 +9,7 @@ The current strategic direction is to build VORG-EAVY as a direct-to-consumer fa
 - One controlled drop architecture.
 - One site, one waitlist, one pop-up format after market selection.
 - Reinvest proof into the next product cycle.
+- Goal architecture: 85% sell-through inside 30 days; 45% per-release growth floor / 50% operating target; eight approximately 40-day releases from Drop 001 to an August 2027 C$100k net-sales month. This is a goal-seeking path, not a demand-proof claim.
 
 ## Decision Gates
 
@@ -16,7 +17,7 @@ January 2027 should be treated as a business-quality gate, not an emotional dead
 
 Minimum conditions before treating full-time self-employment as realistic:
 
-- Two launches at 85%+ sell-through within 21 days.
+- Two launches at 85%+ sell-through within 30 days.
 - Trailing 90-day average revenue of C$15k+/month.
 - Trailing 90-day net after founder salary load of C$4k+/month.
 - Next purchase order funded plus 3 months personal runway.
@@ -38,3 +39,5 @@ Minimum conditions before treating full-time self-employment as realistic:
 - `artifacts/VORG_US_Winner_Explained_2026-08-22.pdf` - rendered 12-page illustrated decision explainer
 - `artifacts/VORG_US_Winner_Strategy_2026-08-22.pptx` - editable 12-slide founder presentation with per-slide source notes
 - `brand-house-path-2026-08-22.md` - McKinsey-grade path from Drop 001 proof → repeatable drops → brand house; study peers Jacquemus / Nude Project / Hermès / Jaded London / Scuffers / EME Studios (mechanisms only); stage gates; C$5–6k production ceiling intact
+- `vorg-100k-august-2027-winner-plan.md` - omnichannel, prediction, finance, content, ecommerce and operating route to the August 2027 growth target
+- `artifacts/VORG_100K_August_2027_Growth_Dossier.html` - self-contained long-form founder presentation generated from the winner plan

@@ -20,8 +20,12 @@ The corrected ecommerce stress test in `../launch/fall-drop-launch-decision-repo
 
 ## Files
 
+- `growth-finance-engine-v3.mjs` - canonical goal-seeking engine for the C$100k August 2027 month, 85%/30-day sell-through, 45%-50% per-release growth, 40-day cadence, founder salary, cash waterfall, channels, prediction-method activation, tax boundaries, and anti-gaming controls
+- `growth-finance-engine-v3.md` - founder/operator readout for the eight-release winner path and C$11,465-C$12,258 protected salary bridge
 - `unit-economics.md` - first-drop SKU economics and scenario table
 - `simulate-six-figure-path.mjs` - deterministic cash, reinvestment, sell-through, owner-contribution, proof-gated growth, tax-inside, and six-figure timing simulator
 - `six-figure-sales-simulation.md` - founder readout for the C$10,000 starting path plus C$2,000 owner funding every two months to C$100,000 cumulative net sales and annual sales pace
 
-Run `cd site && npm run test:growth-path` after changing the starting budget, cost structure, pricing, demand model, scaling gate, or timing assumptions.
+The older simulator remains the frozen cumulative-sales comparison. v3 is the current August-month goal engine. Neither authorizes a purchase order.
+
+Run `cd site && npm run test:growth-path` after changing the starting budget, cost structure, pricing, demand model, scaling gate, salary route, or timing assumptions.
